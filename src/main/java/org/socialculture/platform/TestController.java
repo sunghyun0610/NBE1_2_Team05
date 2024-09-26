@@ -17,7 +17,7 @@ public class TestController {
     @GetMapping("/custom")
     public ApiResponse<String> getSuccessCustom(){
         String result="custom test 성공!!";
-        return ApiResponse.onSuccess(HttpStatus.CREATED,"성공",result);
+        return ApiResponse.onSuccess(HttpStatus.BAD_GATEWAY,"성공인줄 알았지",result);
     }
 
 }

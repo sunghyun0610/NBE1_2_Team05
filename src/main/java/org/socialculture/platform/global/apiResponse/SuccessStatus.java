@@ -22,23 +22,23 @@ public enum SuccessStatus implements BaseCode {
     }
 
 
-    @Override
-    public ResponseDto getResponseDetails() {
-        ResponseDto responseDto = ResponseDto.builder()
-                .isSuccess(true)
-                .code(code)
-                .message(message)
-                .build();
-        return responseDto;
-    }
-
-    @Override
-    public ResponseDto getResponseWithHttpStatus() {
-        return ResponseDto.builder()
-                .isSuccess(true)
-                .code(code)
-                .message(message)
-                .httpStatus(httpStatus)
-                .build();
-    }
+//    @Override
+//    public ResponseDto getResponseDetails() {
+//        ResponseDto responseDto = ResponseDto.builder()
+//                .isSuccess(true)
+//                .code(code)
+//                .message(message)
+//                .build();
+//        return responseDto;
+//    }
+//
+//    @Override
+//    public ResponseDto getResponseWithHttpStatus() {
+//        return ResponseDto.builder()
+//                .isSuccess(true)
+//                .code(code)
+//                .message(message)
+//                .httpStatus(httpStatus)
+//                .build();
+//    }
 }

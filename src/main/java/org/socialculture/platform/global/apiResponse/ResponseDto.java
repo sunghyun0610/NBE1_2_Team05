@@ -27,3 +27,4 @@ public class ResponseDto {
         return message;
     }
 }
+//사실상 필요없을 것같음.
