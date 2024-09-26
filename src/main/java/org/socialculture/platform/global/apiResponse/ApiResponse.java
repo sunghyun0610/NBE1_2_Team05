@@ -12,9 +12,9 @@ public class ApiResponse<T> {
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
     private final HttpStatus code;
-    private  String message;
+    private final String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private  T result;
+    private final T result;
 
     // 생성자
     public ApiResponse(Boolean isSuccess, HttpStatus code, String message, T result) {
@@ -24,11 +24,11 @@ public class ApiResponse<T> {
         this.result = result;
     }
 
-    public ApiResponse(Boolean isSuccess,HttpStatus code, String  message){
-        this.isSuccess=isSuccess;
-        this.code=code;
-        this.message=message;
-    }
+//    public ApiResponse(Boolean isSuccess,HttpStatus code, String  message){
+//        this.isSuccess=isSuccess;
+//        this.code=code;
+//        this.message=message;
+//    }
 
 
     // Getter 메서드
