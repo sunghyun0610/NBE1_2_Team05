@@ -1,12 +1,11 @@
-package org.socialculture.platform.global.Entity;
+package org.socialculture.platform.global.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,6 +16,7 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)// 자동으로 생성시간 수정시간 기록해준다.
 @SuperBuilder// 빌더패턴은 상속되지 않기때문 SuperBuilder를 사용해 상속받은 클래스에서도 빌더를 사용할 수 있게함.
 @Getter
+@NoArgsConstructor
 public class BaseEntity {
     @CreatedDate
     @Column(name = "created_at" ,nullable = false)
@@ -29,4 +29,7 @@ public class BaseEntity {
     @Column(name = "deleted_at")//null 가능
     private LocalDateTime deletedAt;
 
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
 }
