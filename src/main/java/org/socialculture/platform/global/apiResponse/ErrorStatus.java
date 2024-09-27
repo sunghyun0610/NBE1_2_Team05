@@ -14,6 +14,7 @@ public enum ErrorStatus implements BaseErrorCode{
     // 유저 관련 에러
     LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),;
 
+    //공연
 
     private final HttpStatus httpStatus;
     private final String code;

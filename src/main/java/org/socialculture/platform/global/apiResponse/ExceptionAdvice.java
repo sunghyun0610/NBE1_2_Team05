@@ -69,28 +69,28 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
         );
     }//일반적인 예외와 더불어 에러 발생 지점(errorPoint)에 대한 정보를 포함한 응답을 반환
 
-    private ResponseEntity<Object> handleExceptionInternalArgs(Exception e, HttpHeaders headers, ErrorStatus errorCommonStatus,
-                                                               WebRequest request, Map<String, String> errorArgs) {
-        ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getHttpStatus(), errorCommonStatus.getCode(), errorCommonStatus.getMessage(), errorArgs);
-        return super.handleExceptionInternal(
-                e,
-                body,
-                headers,
-                errorCommonStatus.getHttpStatus(),
-                request
-        );
-    }
-    private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorStatus errorCommonStatus,
-                                                                     HttpHeaders headers, WebRequest request) {
-        ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getHttpStatus(), errorCommonStatus.getCode(), errorCommonStatus.getMessage(), null);
-        return super.handleExceptionInternal(
-                e,
-                body,
-                headers,
-                errorCommonStatus.getHttpStatus(),
-                request
-        );
-    }
+//    private ResponseEntity<Object> handleExceptionInternalArgs(Exception e, HttpHeaders headers, ErrorStatus errorCommonStatus,
+//                                                               WebRequest request, Map<String, String> errorArgs) {
+//        ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getHttpStatus(), errorCommonStatus.getCode(), errorCommonStatus.getMessage(), errorArgs);
+//        return super.handleExceptionInternal(
+//                e,
+//                body,
+//                headers,
+//                errorCommonStatus.getHttpStatus(),
+//                request
+//        );
+//    }
+//    private ResponseEntity<Object> handleExceptionInternalConstraint(Exception e, ErrorStatus errorCommonStatus,
+//                                                                     HttpHeaders headers, WebRequest request) {
+//        ApiResponse<Object> body = ApiResponse.onFailure(errorCommonStatus.getHttpStatus(), errorCommonStatus.getCode(), errorCommonStatus.getMessage(), null);
+//        return super.handleExceptionInternal(
+//                e,
+//                body,
+//                headers,
+//                errorCommonStatus.getHttpStatus(),
+//                request
+//        );
+//    }
 
 
 

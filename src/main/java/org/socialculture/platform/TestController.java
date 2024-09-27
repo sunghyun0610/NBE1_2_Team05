@@ -53,7 +53,7 @@ public class TestController {
     public ApiResponse<Void> triggerValidationError() {
         int age = -1; // 나이가 음수인 경우 데이터 검증 실패로 간주
         if(age < 0) {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST); // 400 에러 발생
+            throw new GeneralException(ErrorStatus.LOGIN_FAIL); // 400 에러 발생
         }
         return ApiResponse.onSuccess();
     }
