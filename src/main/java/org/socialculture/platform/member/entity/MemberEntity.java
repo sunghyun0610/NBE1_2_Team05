@@ -2,11 +2,12 @@ package org.socialculture.platform.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
 
 @Entity
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "member")
