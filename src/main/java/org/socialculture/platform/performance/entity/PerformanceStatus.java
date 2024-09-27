@@ -1,4 +1,14 @@
 package org.socialculture.platform.performance.entity;
 
-public enum perfomanceStatus {
+import lombok.Getter;
+
+@Getter
+public enum PerformanceStatus {
+    NOT_CONFIRMED,
+    CONFIRMED,
+    CANCELED;
+
+    private String status;
+
+
 }
