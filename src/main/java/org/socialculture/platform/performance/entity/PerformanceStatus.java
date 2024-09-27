@@ -1,4 +1,4 @@
 package org.socialculture.platform.performance.entity;
 
-public class Performance {
+public enum perfomanceStatus {
 }
