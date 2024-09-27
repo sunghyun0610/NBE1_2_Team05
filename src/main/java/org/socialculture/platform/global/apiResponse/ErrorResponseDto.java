@@ -29,6 +29,9 @@ public class ErrorResponseDto {
         return isSuccess;
     }
 
+    public String getCode() {
+        return code;
+    }
 
     public String getMessage() {
         return message;

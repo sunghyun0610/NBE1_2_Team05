@@ -12,14 +12,16 @@ public class ApiResponse<T> {
 
     @JsonProperty("isSuccess")
     private final Boolean isSuccess;
-    private final HttpStatus code;
+    private final HttpStatus httpStatus;
+    private final String code;
     private final String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)//이 설정으로 null값이 들어오면 자동으로 출력에서 제외된다.
     private final T result;
 
     // 생성자
-    public ApiResponse(Boolean isSuccess, HttpStatus code, String message, T result) {
+    public ApiResponse(Boolean isSuccess, HttpStatus httpStatus,String code, String message, T result) {
         this.isSuccess = isSuccess;
+        this.httpStatus=httpStatus;
         this.code = code;
         this.message = message;
         this.result = result;
@@ -39,7 +41,11 @@ public class ApiResponse<T> {
         return isSuccess;
     }
 
-    public HttpStatus getCode() {
+    public HttpStatus getHttpStatus() {
+        return httpStatus;
+    }
+
+    public String getCode() {
         return code;
     }
 
@@ -53,23 +59,23 @@ public class ApiResponse<T> {
 
     // 성공한 경우 응답 생성
     public static <T> ApiResponse<T> onSuccess(T result) {
-        return new ApiResponse<>(true, HttpStatus.OK, SuccessStatus._OK.getMessage(), result);
+        return new ApiResponse<>(true, HttpStatus.OK,"COMMON200", SuccessStatus._OK.getMessage(), result);
     }//고정된 성공시 response반환값
 
-    public static <T> ApiResponse<T> onSuccess(HttpStatus code, String message,T result) {
-        return new ApiResponse<>(true, code, message, result);
+    public static <T> ApiResponse<T> onSuccess(HttpStatus httpStatus,String code, String message,T result) {
+        return new ApiResponse<>(true, httpStatus,code, message, result);
     }//커스텀한 성공시 response반환값
 
     //result 반환값이 없는경우도 만들어야함
 
     public static  ApiResponse<Void> onSuccess(){
-        return new ApiResponse<>(true,HttpStatus.OK,SuccessStatus._OK.getMessage(),null);
+        return new ApiResponse<>(true,HttpStatus.OK,"COMMON200",SuccessStatus._OK.getMessage(),null);
     }//반환할 result data가 없는경우
 
 
     // 실패한 경우 응답 생성
-    public static <T> ApiResponse<T> onFailure(HttpStatus code, String message, T data) {
-        return new ApiResponse<>(false, code, message, data);
+    public static <T> ApiResponse<T> onFailure(HttpStatus httpStatus,String code , String message, T data) {
+        return new ApiResponse<>(false, httpStatus,code, message, data);
     }
 
 }
