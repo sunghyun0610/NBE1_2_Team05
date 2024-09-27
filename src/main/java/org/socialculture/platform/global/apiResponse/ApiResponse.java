@@ -4,6 +4,7 @@ package org.socialculture.platform.global.apiResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.socialculture.platform.global.apiResponse.success.SuccessStatus;
 import org.springframework.http.HttpStatus;
 
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})

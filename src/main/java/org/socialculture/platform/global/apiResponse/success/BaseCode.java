@@ -1,4 +1,4 @@
-package org.socialculture.platform.global.apiResponse;
+package org.socialculture.platform.global.apiResponse.success;
 
 public interface BaseCode {
 //    ResponseDto getResponseDetails();//메서지, 코드, 결과

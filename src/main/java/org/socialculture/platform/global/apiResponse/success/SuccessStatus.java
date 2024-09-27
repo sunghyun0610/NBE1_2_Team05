@@ -1,4 +1,4 @@
-package org.socialculture.platform.global.apiResponse;
+package org.socialculture.platform.global.apiResponse.success;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

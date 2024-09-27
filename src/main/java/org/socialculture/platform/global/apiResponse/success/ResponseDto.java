@@ -1,4 +1,4 @@
-package org.socialculture.platform.global.apiResponse;
+package org.socialculture.platform.global.apiResponse.success;
 
 import lombok.Builder;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,6 @@ public class ResponseDto {
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess;
-    private final String code;
     private final String message;
 
     public HttpStatus getHttpStatus() {
@@ -17,10 +16,6 @@ public class ResponseDto {
 
     public boolean isSuccess() {
         return isSuccess;
-    }
-
-    public String getCode() {
-        return code;
     }
 
     public String getMessage() {
