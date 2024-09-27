@@ -3,16 +3,15 @@ package org.socialculture.platform.member.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.socialculture.platform.global.entity.BaseEntity;
 import org.socialculture.platform.member.MemberRole;
 import org.socialculture.platform.member.SocialProvider;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "member")
 @Getter
 @Setter
-public class MemberEntity {
+public class MemberEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,31 +31,18 @@ public class MemberEntity {
     @Column(name = "provider_id")
     private String providerId;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private MemberRole role;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
+    public enum MemberRole {
+        USER, PADMIN, ADMIN
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    public enum SocialProvider {
+        LOCAL, NAVER, KAKAO
     }
-
 }
