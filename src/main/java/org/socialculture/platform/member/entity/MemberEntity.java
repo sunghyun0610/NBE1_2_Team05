@@ -1,14 +1,15 @@
 package org.socialculture.platform.member.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.socialculture.platform.global.entity.BaseEntity;
 
 @Entity
-@Table(name = "member")
 @Getter
-@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "member")
 public class MemberEntity extends BaseEntity {
 
     @Id
