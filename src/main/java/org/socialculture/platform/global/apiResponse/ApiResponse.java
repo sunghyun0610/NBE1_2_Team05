@@ -13,7 +13,7 @@ public class ApiResponse<T> {
     private final Boolean isSuccess;
     private final HttpStatus code;
     private final String message;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)//이 설정으로 null값이 들어오면 자동으로 출력에서 제외된다.
     private final T result;
 
     // 생성자
@@ -23,6 +23,8 @@ public class ApiResponse<T> {
         this.message = message;
         this.result = result;
     }
+
+
 
 //    public ApiResponse(Boolean isSuccess,HttpStatus code, String  message){
 //        this.isSuccess=isSuccess;
@@ -63,9 +65,14 @@ public class ApiResponse<T> {
         return new ApiResponse<>(true,HttpStatus.OK,SuccessStatus._OK.getMessage(),null);
     }//반환할 result data가 없는경우
 
+
     // 실패한 경우 응답 생성
     public static <T> ApiResponse<T> onFailure(HttpStatus code, String message, T data) {
         return new ApiResponse<>(false, code, message, data);
     }
 
 }
+/*
+* 앞쪽의 <T>는 메서드가 제네릭 타입 T를 사용할 것이라고 선언하는 부분
+뒤쪽의 ApiResponse<T>는 반환 타입이 제네릭 타입 T를 포함한 ApiResponse 객체임을 나타냄.
+* */
