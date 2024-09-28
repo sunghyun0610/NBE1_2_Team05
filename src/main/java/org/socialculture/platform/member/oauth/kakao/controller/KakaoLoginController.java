@@ -3,7 +3,7 @@ package org.socialculture.platform.member.oauth.kakao.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
-import org.socialculture.platform.member.oauth.kakao.service.KakaoService;
+import org.socialculture.platform.member.oauth.kakao.service.KakaoClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/member/kakao")
 public class KakaoLoginController {
 
-    private final KakaoService kakaoService;
+    private final KakaoClient kakaoClient;
 
-    public KakaoLoginController(KakaoService kakaoService) {
-        this.kakaoService = kakaoService;
+    public KakaoLoginController(KakaoClient kakaoClient) {
+        this.kakaoClient = kakaoClient;
     }
 
     /**
@@ -29,8 +29,8 @@ public class KakaoLoginController {
     public ResponseEntity<?> callback(@RequestParam("code") String code)
             throws JsonProcessingException {
 
-        String accessToken = kakaoService.getAccessToken(code);
-        String email = kakaoService.getUserInfo(accessToken);
+        String accessToken = kakaoClient.getAccessToken(code);
+        String email = kakaoClient.getUserInfo(accessToken);
 
         log.info("accessToken = {}", accessToken);
         log.info("email = {}", email);

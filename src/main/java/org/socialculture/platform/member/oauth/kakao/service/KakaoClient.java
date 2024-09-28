@@ -15,15 +15,15 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-public class KakaoService {
+public class KakaoClient {
 
     private final String clientId;
     private final String redirectUri;
     private final String clientSecret;
 
-    public KakaoService(@Value("${kakao.client_id}") String clientId,
-                        @Value("${kakao.redirect_uri}") String redirectUri,
-                        @Value("${kakao.client_secret}") String clientSecret
+    public KakaoClient(@Value("${spring.kakao.client_id}") String clientId,
+                       @Value("${spring.kakao.redirect_uri}") String redirectUri,
+                       @Value("${spring.kakao.client_secret}") String clientSecret
                         ){
         this.clientId = clientId;
         this.redirectUri = redirectUri;

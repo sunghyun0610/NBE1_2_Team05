@@ -38,11 +38,4 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "role", nullable = false)
     private MemberRole role;
 
-    public enum MemberRole {
-        USER, PADMIN, ADMIN
-    }
-
-    public enum SocialProvider {
-        LOCAL, NAVER, KAKAO
-    }
 }
