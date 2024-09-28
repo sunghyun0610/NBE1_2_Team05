@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.socialculture.platform.global.exception.GlobalExceptionCode;
-import org.socialculture.platform.global.exception.InternalServerErrorException;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.ticket.dto.response.TicketResponse;
 import org.socialculture.platform.ticket.entity.MemberEntity;
 import org.socialculture.platform.ticket.entity.PerformanceEntity;
@@ -79,7 +79,7 @@ public class TicketServiceTest {
     @DisplayName("모든 티켓 조회 성공 테스트")
     void getAllTickets_Success() {
         // Given (Mock 동작 설정)
-        when(ticketRepository.findByMemberMemberId(member.getMemberId())).thenReturn(ticketList);
+        when(ticketRepository.findAllByMemberMemberId(member.getMemberId())).thenReturn(ticketList);
 
         // When (서비스 호출)
         List<TicketResponse> result = ticketService.getAllTicketsByMemberId();
@@ -93,57 +93,57 @@ public class TicketServiceTest {
         assertEquals(ticketEntity.getPerformance().getTitle(), ticketResponse.performanceTitle());  // 공연 제목이 일치하는지 확인
         assertEquals(ticketEntity.getPrice(), ticketResponse.price());  // 티켓 가격이 일치하는지 확인
 
-        verify(ticketRepository, times(1)).findByMemberMemberId(member.getMemberId());  // findAll()이 정확히 한 번 호출되었는지 확인
+        verify(ticketRepository, times(1)).findAllByMemberMemberId(member.getMemberId());  // findAll()이 정확히 한 번 호출되었는지 확인
     }
 
     @Test
     @DisplayName("모든 티켓 조회 - NullPointerException 발생 테스트")
     void getAllTickets_NullPointerException() {
         // Given (Mock 동작 설정)
-        when(ticketRepository.findByMemberMemberId(member.getMemberId())).thenThrow(new NullPointerException("Null 발생"));
+        when(ticketRepository.findAllByMemberMemberId(member.getMemberId())).thenThrow(new NullPointerException("Null 에러"));
 
         // When & Then (예외 발생 여부 검증)
-        InternalServerErrorException exception = assertThrows(InternalServerErrorException.class, () -> {
+        GeneralException exception = assertThrows(GeneralException.class, () -> {
             ticketService.getAllTicketsByMemberId();
         });
 
-        // 예외 메시지가 GlobalExceptionCode.INTERNAL_SERVER_ERROR 메시지와 일치하는지 확인
-        assertTrue(exception.getMessage().contains(GlobalExceptionCode.INTERNAL_SERVER_ERROR.getMessage()));
+        // 예외 메시지가 ErrorStatus._INTERNAL_SERVER_ERROR의 메시지와 일치하는지 확인
+        assertEquals(ErrorStatus._INTERNAL_SERVER_ERROR.getMessage(), exception.getCode().getResponseWithHttpStatus().getMessage());
 
-        verify(ticketRepository, times(1)).findByMemberMemberId(member.getMemberId());  // 메서드가 호출되었는지 확인
+        verify(ticketRepository, times(1)).findAllByMemberMemberId(member.getMemberId());  // 메서드가 호출되었는지 확인
     }
 
     @Test
     @DisplayName("모든 티켓 조회 - DataAccessException 발생 테스트")
     void getAllTickets_DataAccessException() {
         // Given (Mock 동작 설정)
-        when(ticketRepository.findByMemberMemberId(member.getMemberId())).thenThrow(new DataAccessException("데이터베이스 오류") {});
+        when(ticketRepository.findAllByMemberMemberId(member.getMemberId())).thenThrow(new DataAccessException("데이터베이스 오류") {});
 
         // When & Then (예외 발생 여부 검증)
-        InternalServerErrorException exception = assertThrows(InternalServerErrorException.class, () -> {
+        GeneralException exception = assertThrows(GeneralException.class, () -> {
             ticketService.getAllTicketsByMemberId();
         });
 
-        // 로그 메시지 확인
-        assertTrue(exception.getMessage().contains(GlobalExceptionCode.INTERNAL_SERVER_ERROR.getMessage()));
+        // 예외 메시지가 ErrorStatus._INTERNAL_SERVER_ERROR의 메시지와 일치하는지 확인
+        assertEquals(ErrorStatus._INTERNAL_SERVER_ERROR.getMessage(), exception.getCode().getResponseWithHttpStatus().getMessage());
 
-        verify(ticketRepository, times(1)).findByMemberMemberId(member.getMemberId());  // 메서드가 호출되었는지 확인
+        verify(ticketRepository, times(1)).findAllByMemberMemberId(member.getMemberId());  // 메서드가 호출되었는지 확인
     }
 
     @Test
     @DisplayName("모든 티켓 조회 - 예상치 못한 오류 발생 테스트")
     void getAllTickets_UnexpectedException() {
         // Given (Mock 동작 설정)
-        when(ticketRepository.findByMemberMemberId(member.getMemberId())).thenThrow(new RuntimeException("예상치 못한 오류"));
+        when(ticketRepository.findAllByMemberMemberId(member.getMemberId())).thenThrow(new RuntimeException("예상치 못한 오류"));
 
         // When & Then (예외 발생 여부 검증)
-        InternalServerErrorException exception = assertThrows(InternalServerErrorException.class, () -> {
+        GeneralException exception = assertThrows(GeneralException.class, () -> {
             ticketService.getAllTicketsByMemberId();
         });
 
-        // 로그 메시지 확인
-        assertTrue(exception.getMessage().contains(GlobalExceptionCode.INTERNAL_SERVER_ERROR.getMessage()));
+        // 예외 메시지가 ErrorStatus._INTERNAL_SERVER_ERROR의 메시지와 일치하는지 확인
+        assertEquals(ErrorStatus._INTERNAL_SERVER_ERROR.getMessage(), exception.getCode().getResponseWithHttpStatus().getMessage());
 
-        verify(ticketRepository, times(1)).findByMemberMemberId(member.getMemberId());  // 메서드가 호출되었는지 확인
+        verify(ticketRepository, times(1)).findAllByMemberMemberId(member.getMemberId());  // 메서드가 호출되었는지 확인
     }
 }
