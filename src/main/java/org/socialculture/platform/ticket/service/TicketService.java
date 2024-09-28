@@ -1,6 +1,5 @@
 package org.socialculture.platform.ticket.service;
 
-import org.socialculture.platform.ticket.dto.request.TicketRequest;
 import org.socialculture.platform.ticket.dto.response.TicketResponse;
 
 import java.util.List;
@@ -12,12 +11,11 @@ import java.util.List;
  */
 public interface TicketService {
 
-    List<TicketResponse> getAllTickets();
+    List<TicketResponse> getAllTicketsByMemberId();
 
-    TicketResponse getTicketById(Long id);
+    TicketResponse getTicketByMemberIdAndTicketId(Long ticketId);
 
     // TicketResponse createTicket(Long memberId, TicketRequest ticketRequest);
-
 
     // TicketResponse updateTicket(Long id, TicketRequest ticketRequest);
 
