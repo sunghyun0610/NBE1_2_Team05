@@ -1,8 +1,12 @@
 package org.socialculture.platform.ticket.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.ticket.dto.response.TicketResponse;
 import org.socialculture.platform.ticket.service.TicketService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,17 +31,20 @@ public class TicketController {
     }
 
     @GetMapping("/tickets")
-    public List<TicketResponse> getAllTicketsByMemberId() {
+    public ResponseEntity<ApiResponse<List<TicketResponse>>> getAllTicketsByMemberId() {
         log.info("Get all tickets by member id");
 
-        return ticketService.getAllTicketsByMemberId();
+        return ApiResponse.onSuccess(ticketService.getAllTicketsByMemberId());
     }
 
     @GetMapping("/tickets/{ticketId}")
-    public TicketResponse getTicketById(@PathVariable("ticketId") Long ticketId) {
+    public ResponseEntity<ApiResponse<TicketResponse>> getTicketById(@PathVariable("ticketId") Long ticketId) {
         log.info("Get ticket by id: {}", ticketId);
 
-        return ticketService.getTicketByMemberIdAndTicketId(ticketId);
+        if (ticketId == null) {
+            throw new GeneralException(ErrorStatus._TICKET_ID_MISSING);
+        }
+        return ApiResponse.onSuccess(ticketService.getTicketByMemberIdAndTicketId(ticketId));
     }
 
 
