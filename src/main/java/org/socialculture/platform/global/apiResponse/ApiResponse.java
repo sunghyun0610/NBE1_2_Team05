@@ -4,10 +4,12 @@ package org.socialculture.platform.global.apiResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Getter;
 import org.socialculture.platform.global.apiResponse.success.SuccessStatus;
 import org.springframework.http.HttpStatus;
 
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
+@Getter
 public class ApiResponse<T> {
 
     @JsonProperty("isSuccess")
@@ -36,26 +38,6 @@ public class ApiResponse<T> {
 //    }
 
 
-    // Getter 메서드
-    public Boolean getIsSuccess() {
-        return isSuccess;
-    }
-
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public T getResult() {
-        return result;
-    }
 
     // 성공한 경우 응답 생성
     public static <T> ApiResponse<T> onSuccess(T result) {

@@ -20,17 +20,7 @@ public enum ErrorStatus implements BaseErrorCode{
     private final String code;
     private final String message;
 
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
 
-    public String getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 
     private ErrorStatus(HttpStatus httpStatus, String code, String message){
         this.httpStatus=httpStatus;
