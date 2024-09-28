@@ -11,6 +11,10 @@ public enum ErrorStatus implements BaseErrorCode{
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"COMMON401","인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
 
+    // 티켓
+    _TICKET_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET4041", "해당 티켓을 찾을 수 없습니다."),
+    _TICKET_BOOKING_FAILED(HttpStatus.BAD_REQUEST, "TICKET4001", "티켓 예약에 실패했습니다."),
+
     // 유저 관련 에러
     LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),
 
