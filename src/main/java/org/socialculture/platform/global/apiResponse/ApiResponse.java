@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.socialculture.platform.global.apiResponse.success.SuccessStatus;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @JsonPropertyOrder({"isSuccess", "code", "message", "result"})
 @Getter
@@ -21,7 +22,7 @@ public class ApiResponse<T> {
     private final T result;
 
     // 생성자
-    public ApiResponse(Boolean isSuccess, HttpStatus httpStatus,String code, String message, T result) {
+    private ApiResponse(Boolean isSuccess, HttpStatus httpStatus,String code, String message, T result) {
         this.isSuccess = isSuccess;
         this.httpStatus=httpStatus;
         this.code = code;
@@ -39,20 +40,22 @@ public class ApiResponse<T> {
 
 
 
+
     // 성공한 경우 응답 생성
-    public static <T> ApiResponse<T> onSuccess(T result) {
-        return new ApiResponse<>(true, HttpStatus.OK,"COMMON200", SuccessStatus._OK.getMessage(), result);
-    }//고정된 성공시 response반환값
+    public static <T> ResponseEntity<ApiResponse<T>> onSuccess(T result) {
+        return ResponseEntity.ok(new ApiResponse<>(true, HttpStatus.OK,"COMMON200", SuccessStatus._OK.getMessage(), result));
+    }
 
-    public static <T> ApiResponse<T> onSuccess(HttpStatus httpStatus,String code, String message,T result) {
-        return new ApiResponse<>(true, httpStatus,code, message, result);
-    }//커스텀한 성공시 response반환값
+    // 커스텀한 성공시 response 반환값
+    public static <T> ResponseEntity<ApiResponse<T>> onSuccess(HttpStatus httpStatus, String code, String message, T result) {
+        return new ResponseEntity<>(new ApiResponse<>(true, httpStatus, code, message, result), httpStatus);
+    }
 
-    //result 반환값이 없는경우도 만들어야함
+    // 반환할 result data가 없는 경우
+    public static ResponseEntity<ApiResponse<Void>> onSuccess() {
+        return ResponseEntity.ok(new ApiResponse<>(true, HttpStatus.OK,"COMMON200", SuccessStatus._OK.getMessage(), null));
+    }
 
-    public static  ApiResponse<Void> onSuccess(){
-        return new ApiResponse<>(true,HttpStatus.OK,"COMMON200",SuccessStatus._OK.getMessage(),null);
-    }//반환할 result data가 없는경우
 
 
     // 실패한 경우 응답 생성

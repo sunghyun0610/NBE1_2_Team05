@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum SuccessStatus implements BaseCode {
+public enum SuccessStatus {
 
     // 일반적인 응답
     // 일반적인 성공 응답
@@ -28,23 +28,4 @@ public enum SuccessStatus implements BaseCode {
     }
 
 
-//    @Override
-//    public ResponseDto getResponseDetails() {
-//        ResponseDto responseDto = ResponseDto.builder()
-//                .isSuccess(true)
-//                .code(code)
-//                .message(message)
-//                .build();
-//        return responseDto;
-//    }
-//
-//    @Override
-//    public ResponseDto getResponseWithHttpStatus() {
-//        return ResponseDto.builder()
-//                .isSuccess(true)
-//                .code(code)
-//                .message(message)
-//                .httpStatus(httpStatus)
-//                .build();
-//    }
 }

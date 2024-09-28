@@ -1,4 +1,4 @@
-package org.socialculture.platform.global.apiResponse;
+package org.socialculture.platform.global.apiResponse.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -27,12 +27,6 @@ public enum ErrorStatus implements BaseErrorCode{
         this.code=code;
         this.message=message;
     }
-
-
-    @Override
-    public ErrorResponseDto getResponseDetails() {
-        return new ErrorResponseDto(message,code,false);
-    }// 상태코드제외 메세지와 실패 여부만 알림
 
     @Override
     public ErrorResponseDto getResponseWithHttpStatus() {
