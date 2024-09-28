@@ -3,8 +3,8 @@ package org.socialculture.platform.ticket.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.socialculture.platform.global.exception.GlobalExceptionCode;
-import org.socialculture.platform.global.exception.InternalServerErrorException;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.ticket.dto.response.TicketResponse;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +28,8 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.request;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 /**
@@ -68,10 +67,10 @@ public class TicketControllerTest {
         );
 
         // Mock TicketService의 getAllTickets 메서드가 호출되었을 때, 가짜 응답 데이터를 반환하도록 설정
-        when(ticketService.getAllTickets()).thenReturn(mockTicketResponses);
+        when(ticketService.getAllTicketsByMemberId()).thenReturn(mockTicketResponses);
 
         // MockMvc를 통해 "/api/v1/ticket" 경로에 GET 요청을 보낼 준비
-        MockHttpServletRequestBuilder requestBuilder = get("/api/v1/ticket")
+        MockHttpServletRequestBuilder requestBuilder = get("/api/v1/tickets")
                 //.header("", "")  // (필요한 경우) 요청에 헤더를 추가할 수 있음
                 //.param("", "")  // (필요한 경우) 요청에 추가적인 파라미터를 설정할 수 있음
                 .with(csrf())  // (필요한 경우) CSRF 보호를 우회하는 설정
@@ -88,10 +87,10 @@ public class TicketControllerTest {
     @DisplayName("티켓 조회 실패 - 티켓이 없는 경우")
     void getTickets_NoTickets() throws Exception {
         // 빈 응답을 반환하도록 Mock 설정
-        when(ticketService.getAllTickets()).thenReturn(Collections.emptyList());
+        when(ticketService.getAllTicketsByMemberId()).thenReturn(Collections.emptyList());
 
-        // MockMvc를 통해 "/api/v1/ticket" 경로에 GET 요청을 보냄
-        MockHttpServletRequestBuilder requestBuilder = get("/api/v1/ticket")
+        // MockMvc를 통해 "/api/v1/tickets" 경로에 GET 요청을 보냄
+        MockHttpServletRequestBuilder requestBuilder = get("/api/v1/tickets")
                 .contentType(MediaType.APPLICATION_JSON);
 
         // 응답이 200 OK 이고, 비어 있는 목록이 반환되는지 검증
@@ -104,10 +103,10 @@ public class TicketControllerTest {
     @DisplayName("티켓 조회 실패 - 서비스 예외 발생")
     void getTickets_ServiceException() throws Exception {
         // 서비스에서 예외 발생하도록 설정
-        when(ticketService.getAllTickets()).thenThrow(new InternalServerErrorException(GlobalExceptionCode.INTERNAL_SERVER_ERROR));
+        when(ticketService.getAllTicketsByMemberId()).thenThrow(new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR));
 
-        // MockMvc를 통해 "/api/v1/ticket" 경로에 GET 요청을 보냄
-        MockHttpServletRequestBuilder requestBuilder = get("/api/v1/ticket")
+        // MockMvc를 통해 "/api/v1/tickets" 경로에 GET 요청을 보냄
+        MockHttpServletRequestBuilder requestBuilder = get("/api/v1/tickets")
                 .contentType(MediaType.APPLICATION_JSON);
 
         // 응답이 500 Internal Server Error인지 검증

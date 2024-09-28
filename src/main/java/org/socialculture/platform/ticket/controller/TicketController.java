@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.ticket.dto.response.TicketResponse;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,10 +26,19 @@ public class TicketController {
         this.ticketService = ticketService;
     }
 
-    @GetMapping("/ticket")
-    public List<TicketResponse> getTickets() {
-        log.info("Get all tickets");
+    @GetMapping("/tickets")
+    public List<TicketResponse> getAllTicketsByMemberId() {
+        log.info("Get all tickets by member id");
 
-        return ticketService.getAllTickets();
+        return ticketService.getAllTicketsByMemberId();
     }
+
+    @GetMapping("/tickets/{ticketId}")
+    public TicketResponse getTicketById(@PathVariable("ticketId") Long ticketId) {
+        log.info("Get ticket by id: {}", ticketId);
+
+        return ticketService.getTicketByMemberIdAndTicketId(ticketId);
+    }
+
+
 }
