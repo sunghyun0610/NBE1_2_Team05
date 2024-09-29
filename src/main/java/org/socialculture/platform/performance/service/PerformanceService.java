@@ -5,5 +5,5 @@ import org.socialculture.platform.performance.dto.response.PerformanceListRespon
 import java.util.List;
 
 public interface PerformanceService {
-    List<PerformanceListResponse> getPerformanceList();
+    List<PerformanceListResponse> getPerformanceList(Integer page, Integer size);
 }

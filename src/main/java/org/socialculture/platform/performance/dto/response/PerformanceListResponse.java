@@ -2,8 +2,7 @@ package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
 import org.socialculture.platform.performance.dto.CategoryDTO;
-import org.socialculture.platform.performance.entity.CategoryEntity;
-import org.socialculture.platform.performance.entity.PerformanceEntity;
+import org.socialculture.platform.performance.dto.PerformanceWithCategory;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,24 +18,21 @@ public record PerformanceListResponse(
         String imageUrl,
         int price,
         String status,
-        List<String> category
+        List<CategoryDTO> category
 ) {
 
-
-
-    public static PerformanceListResponse of(PerformanceEntity performanceEntity) {
+    public static PerformanceListResponse from(PerformanceWithCategory performanceWithCategory) {
         return PerformanceListResponse.builder()
-                .memberName(performanceEntity.getMember().getName())
-                .performanceId(performanceEntity.getPerformanceId())
-                .title(performanceEntity.getTitle())
-                .dateStartTime(performanceEntity.getDateStartTime())
-                .dateEndTime(performanceEntity.getDateEndTime())
-                .address(performanceEntity.getAddress())
-                .imageUrl(performanceEntity.getImageUrl())
-                .price(performanceEntity.getPrice())
-                .status(performanceEntity.getPerformanceStatus().getStatus())
-                .category(performanceEntity.getPerformanceCategoryList().stream()
-                        .map(e -> e.getCategory().getNameKr()).toList())
+                .memberName(performanceWithCategory.memberName())
+                .performanceId(performanceWithCategory.performanceId())
+                .title(performanceWithCategory.title())
+                .dateStartTime(performanceWithCategory.dateStartTime())
+                .dateEndTime(performanceWithCategory.dateEndTime())
+                .address(performanceWithCategory.address())
+                .imageUrl(performanceWithCategory.imageUrl())
+                .price(performanceWithCategory.price())
+                .status(performanceWithCategory.status())
+                .category(performanceWithCategory.category())
                 .build();
     }
 }
