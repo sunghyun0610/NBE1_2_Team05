@@ -1,6 +1,5 @@
 package org.socialculture.platform.ticket.dto.response;
 
-import org.socialculture.platform.ticket.entity.PerformanceEntity;
 import org.socialculture.platform.ticket.entity.TicketEntity;
 
 import java.time.LocalDateTime;
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
  *
  * @author ycjung
  */
-public record TicketResponse(
+public record TicketResponseDto(
         Long ticketId,
         String performanceTitle,
         LocalDateTime dateTime, // 티켓예매시간
@@ -21,9 +20,9 @@ public record TicketResponse(
 
 ) {
     // 정적 팩토리 메서드 of
-    public static TicketResponse of(Long ticketId, String performanceTitle, LocalDateTime dateTime,
-                                    int quantity, int price, LocalDateTime dateStartTime, LocalDateTime dateEndTime) {
-        return new TicketResponse(
+    public static TicketResponseDto of(Long ticketId, String performanceTitle, LocalDateTime dateTime,
+                                       int quantity, int price, LocalDateTime dateStartTime, LocalDateTime dateEndTime) {
+        return new TicketResponseDto(
                 ticketId,
                 performanceTitle,
                 dateTime,
@@ -35,8 +34,8 @@ public record TicketResponse(
     }
 
     // 엔티티 로 부터 DTO 생성하는 메서드 from
-    public static TicketResponse from(TicketEntity ticketEntity) {
-        return new TicketResponse(
+    public static TicketResponseDto from(TicketEntity ticketEntity) {
+        return new TicketResponseDto(
                 ticketEntity.getTicketId(),
                 ticketEntity.getPerformance().getTitle(),
                 ticketEntity.getDateTime(),
