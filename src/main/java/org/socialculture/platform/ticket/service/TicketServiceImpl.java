@@ -3,9 +3,9 @@ package org.socialculture.platform.ticket.service;
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
-import org.socialculture.platform.ticket.dto.response.TicketResponse;
+import org.socialculture.platform.member.repository.MemberRepository;
+import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.entity.TicketEntity;
-import org.socialculture.platform.ticket.repository.MemberRepository;
 import org.socialculture.platform.ticket.repository.TicketRepository;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -34,11 +34,11 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public List<TicketResponse> getAllTicketsByMemberId() {
+    public List<TicketResponseDto> getAllTicketsByMemberId() {
         try {
             // 데이터베이스에서 모든 티켓을 조회하고, TicketResponse로 변환
             return ticketRepository.findAllByMemberMemberId(MEMBER_ID).stream()
-                    .map(TicketResponse::from)
+                    .map(TicketResponseDto::from)
                     .collect(Collectors.toList());
         } catch (NullPointerException e) {
             log.error("티켓 데이터 변환 문제 발생 : {}", e.getMessage(), e);
@@ -53,11 +53,11 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public TicketResponse getTicketByMemberIdAndTicketId(Long ticketId) {
+    public TicketResponseDto getTicketByMemberIdAndTicketId(Long ticketId) {
         TicketEntity ticketEntity = ticketRepository.findByMemberMemberIdAndTicketId(MEMBER_ID, ticketId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
-        return TicketResponse.from(ticketEntity);
+        return TicketResponseDto.from(ticketEntity);
     }
 
 }

@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
-import org.socialculture.platform.ticket.dto.response.TicketResponse;
+import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.entity.MemberEntity;
 import org.socialculture.platform.ticket.entity.PerformanceEntity;
 import org.socialculture.platform.ticket.entity.TicketEntity;
@@ -82,16 +82,16 @@ public class TicketServiceTest {
         when(ticketRepository.findAllByMemberMemberId(member.getMemberId())).thenReturn(ticketList);
 
         // When (서비스 호출)
-        List<TicketResponse> result = ticketService.getAllTicketsByMemberId();
+        List<TicketResponseDto> result = ticketService.getAllTicketsByMemberId();
 
         // Then (결과 검증)
         assertFalse(result.isEmpty());  // 결과가 비어있지 않은지 확인
         assertEquals(1, result.size());  // 결과 리스트 크기가 1인지 확인
 
-        TicketResponse ticketResponse = result.get(0);
-        assertEquals(ticketEntity.getTicketId(), ticketResponse.ticketId());  // 티켓 ID가 일치하는지 확인
-        assertEquals(ticketEntity.getPerformance().getTitle(), ticketResponse.performanceTitle());  // 공연 제목이 일치하는지 확인
-        assertEquals(ticketEntity.getPrice(), ticketResponse.price());  // 티켓 가격이 일치하는지 확인
+        TicketResponseDto ticketResponseDto = result.get(0);
+        assertEquals(ticketEntity.getTicketId(), ticketResponseDto.ticketId());  // 티켓 ID가 일치하는지 확인
+        assertEquals(ticketEntity.getPerformance().getTitle(), ticketResponseDto.performanceTitle());  // 공연 제목이 일치하는지 확인
+        assertEquals(ticketEntity.getPrice(), ticketResponseDto.price());  // 티켓 가격이 일치하는지 확인
 
         verify(ticketRepository, times(1)).findAllByMemberMemberId(member.getMemberId());  // findAll()이 정확히 한 번 호출되었는지 확인
     }

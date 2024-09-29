@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
-import org.socialculture.platform.ticket.dto.response.TicketResponse;
+import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -61,13 +61,13 @@ public class TicketControllerTest {
     @DisplayName("티켓 컨트롤러 조회 테스트")
     void getTickets() throws Exception {
         // 테스트에 사용할 가짜 티켓 응답 데이터를 생성
-        List<TicketResponse> mockTicketResponses = List.of(
-                TicketResponse.of(1L, "꿈의 교향곡", LocalDateTime.now(), 2, 100, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)),
-                TicketResponse.of(2L, "영원의 메아리", LocalDateTime.now(), 3, 150, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2))
+        List<TicketResponseDto> mockTicketResponsDtos = List.of(
+                TicketResponseDto.of(1L, "꿈의 교향곡", LocalDateTime.now(), 2, 100, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)),
+                TicketResponseDto.of(2L, "영원의 메아리", LocalDateTime.now(), 3, 150, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2))
         );
 
         // Mock TicketService의 getAllTickets 메서드가 호출되었을 때, 가짜 응답 데이터를 반환하도록 설정
-        when(ticketService.getAllTicketsByMemberId()).thenReturn(mockTicketResponses);
+        when(ticketService.getAllTicketsByMemberId()).thenReturn(mockTicketResponsDtos);
 
         // MockMvc를 통해 "/api/v1/ticket" 경로에 GET 요청을 보낼 준비
         MockHttpServletRequestBuilder requestBuilder = get("/api/v1/tickets")
