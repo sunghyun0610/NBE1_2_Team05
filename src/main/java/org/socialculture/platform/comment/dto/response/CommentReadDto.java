@@ -1,7 +1,8 @@
-package org.socialculture.platform.comment.dto;
+package org.socialculture.platform.comment.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.socialculture.platform.comment.entity.CommentEntity;
 import org.socialculture.platform.comment.entity.CommentStatus;
 
 import java.time.LocalDateTime;
@@ -20,5 +21,9 @@ public class CommentReadDto {
     private LocalDateTime updatedAt;
     private long parentId;
     private CommentStatus commentStatus;
+
+//    public static CommentEntity toEntity(CommentReadDto commentReadDto){
+//
+//    }//Dto->entity 변환하기
 
 }

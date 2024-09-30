@@ -21,7 +21,7 @@ public class CommentEntity extends BaseEntity {
     private String content;
 
     @Column(name = "parent_id", nullable = true)//default null
-    private String parentId;
+    private long parentId;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)//Enum값을 문자열로 저장
@@ -29,7 +29,7 @@ public class CommentEntity extends BaseEntity {
 
 //    @ManyToOne
 //    @JoinColumn(name = "performance_id" ,nullable = false)
-//    private Performance performanceId; 아직 Performance 엔티티 없어서 보류
+//    private Performance performanceId; //아직 Performance 엔티티 없어서 보류
 //
 //    @ManyToOne
 //    @JoinColumn(name = "user_id" ,nullable = false)
