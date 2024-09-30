@@ -18,8 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,6 +56,33 @@ public class TicketControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("page", "0")
                         .param("size", "3")
+        );
+
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("티켓 컨트롤러 상세 조회 테스트")
+    @WithMockUser(username = "user@example.com")
+    void getTicketDetail() throws Exception {
+        // 가짜 티켓 응답 DTO 생성
+        TicketResponseDto mockTicketResponse = TicketResponseDto.of(
+                1L,
+                "꿈의 교향곡",
+                LocalDateTime.now(),
+                2,
+                100,
+                LocalDateTime.now().minusDays(1),
+                LocalDateTime.now().plusDays(1)
+        );
+
+        given(ticketService.getTicketByEmailAndTicketId(eq(1L)))
+                .willReturn(mockTicketResponse);
+
+        // 실제 요청을 보내는 부분
+        ResultActions result = this.mockMvc.perform(
+                get("/api/v1/tickets/1")
+                        .contentType(MediaType.APPLICATION_JSON)
         );
 
         result.andExpect(status().isOk());
