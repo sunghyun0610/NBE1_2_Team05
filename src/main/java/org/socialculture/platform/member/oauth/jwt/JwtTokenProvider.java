@@ -58,5 +58,14 @@ public class JwtTokenProvider {
             return false;
         }
     }
+
+    // 토큰으로 사용자 이메일 가져오기
+    public String getMemberEmailFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
 }
 
