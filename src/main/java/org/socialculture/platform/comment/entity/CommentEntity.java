@@ -30,7 +30,7 @@ public class CommentEntity extends BaseEntity {
 //    @ManyToOne
 //    @JoinColumn(name = "performance_id" ,nullable = false)
 //    private Performance performanceId; 아직 Performance 엔티티 없어서 보류
-
+//
 //    @ManyToOne
 //    @JoinColumn(name = "user_id" ,nullable = false)
 //    private User userId;  아직 User 엔티티 없어서 보류
