@@ -1,6 +1,9 @@
 package org.socialculture.platform.performance.service;
 
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
+import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
 import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.springframework.data.domain.PageRequest;
@@ -25,5 +28,12 @@ public class PerformanceServiceImpl implements PerformanceService {
         return performanceList.stream()
                 .map(PerformanceListResponse::from)
                 .toList();
+    }
+
+    @Override
+    public PerformanceDetailResponse getPerformanceDetail(Long performanceId) {
+        return performanceRepository.getPerformanceDetail(performanceId)
+                .map(PerformanceDetailResponse::from)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
     }
 }

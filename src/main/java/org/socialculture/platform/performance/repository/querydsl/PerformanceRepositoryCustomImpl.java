@@ -1,16 +1,22 @@
 package org.socialculture.platform.performance.repository.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.socialculture.platform.member.entity.QMember;
 import org.socialculture.platform.performance.dto.CategoryDTO;
+import org.socialculture.platform.performance.dto.PerformanceDetail;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
+import org.socialculture.platform.performance.entity.PerformanceStatus;
 import org.socialculture.platform.performance.entity.QCategoryEntity;
 import org.socialculture.platform.performance.entity.QPerformanceCategoryEntity;
 import org.socialculture.platform.performance.entity.QPerformanceEntity;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.socialculture.platform.performance.entity.PerformanceStatus.NOT_CONFIRMED;
 
@@ -25,6 +31,26 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
     QPerformanceCategoryEntity qPerformanceCategoryEntity = QPerformanceCategoryEntity.performanceCategoryEntity;
     QMember qMember = QMember.member;
     QCategoryEntity qCategoryEntity = QCategoryEntity.categoryEntity;
+
+    public static BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f) {
+        try {
+            return new BooleanBuilder(f.get());
+        } catch (IllegalArgumentException e) {
+            return new BooleanBuilder();
+        }
+    }
+
+    private BooleanBuilder performanceStatusNe(PerformanceStatus status) {
+        return nullSafeBuilder(() -> qPerformanceEntity.performanceStatus.eq(status));
+    }
+
+    private BooleanBuilder performanceIdEq(Long performanceId) {
+        return nullSafeBuilder(() -> qPerformanceEntity.performanceId.eq(performanceId));
+    }
+
+    private BooleanBuilder performanceCategoryEq(PerformanceWithCategory performanceWithCategory) {
+        return nullSafeBuilder(() -> qPerformanceCategoryEntity.performance.performanceId.eq(performanceWithCategory.getPerformanceId()));
+    }
 
     /**
      * 공연 리스트 조회
@@ -49,32 +75,69 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember)
-                .where(qPerformanceEntity.performanceStatus.ne(NOT_CONFIRMED))
+                .where(performanceStatusNe(NOT_CONFIRMED))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return getCategoriesByPerformances(performances);
+        return addCategoriesToPerformances(performances);
     }
 
-    private List<PerformanceWithCategory> getCategoriesByPerformances(List<PerformanceWithCategory> performances) {
-        // 조회된 공연 대상으로 각 공연당 카테고리 조회
+    private List<PerformanceWithCategory> addCategoriesToPerformances(List<PerformanceWithCategory> performances) {
         for (PerformanceWithCategory performance : performances) {
-            List<CategoryDTO> categories = jpaQueryFactory.select(Projections.constructor(CategoryDTO.class,
-                            qCategoryEntity.categoryId,
-                            qCategoryEntity.nameEn,
-                            qCategoryEntity.nameKr))
-                    .from(qCategoryEntity)
-                    .join(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
-                    .where(qPerformanceCategoryEntity.performance.performanceId.eq(performance.getPerformanceId()))
-                    .fetch();
-
-
-            // 카테고리 리스트를 PerformanceWithCategory에 설정
+            List<CategoryDTO> categories = getCategoriesByPerformance(performance.getPerformanceId());
             performance.updateCategories(categories);
         }
-
         return performances;
     }
 
+    private List<CategoryDTO> getCategoriesByPerformance(Long performanceId) {
+        // 조회된 공연 대상으로 각 공연당 카테고리 조회
+        return jpaQueryFactory.select(Projections.constructor(CategoryDTO.class,
+                        qCategoryEntity.categoryId,
+                        qCategoryEntity.nameEn,
+                        qCategoryEntity.nameKr))
+                .from(qCategoryEntity)
+                .join(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
+                .where(performanceIdEq(performanceId))
+                .fetch();
+    }
+
+    /**
+     * 공연 상세 조회
+     * @author Icecoff22
+     * @param performanceId
+     * @return Optional PerformanceDetail dto
+     *
+     */
+    @Override
+    public Optional<PerformanceDetail> getPerformanceDetail(Long performanceId) {
+        PerformanceDetail performanceDetail = jpaQueryFactory.select(Projections.constructor(PerformanceDetail.class,
+                        qMember.name.as("memberName"),
+                        qPerformanceEntity.performanceId.as("performanceId"),
+                        qPerformanceEntity.title.as("title"),
+                        qPerformanceEntity.dateStartTime.as("dateStartTime"),
+                        qPerformanceEntity.dateEndTime.as("dateEndTime"),
+                        qPerformanceEntity.address.as("address"),
+                        qPerformanceEntity.description.as("description"),
+                        qPerformanceEntity.maxAudience.as("maxAudience"),
+                        qPerformanceEntity.imageUrl.as("imageUrl"),
+                        qPerformanceEntity.price.as("price"),
+                        qPerformanceEntity.remainingTickets.as("remainingTickets"),
+                        qPerformanceEntity.performanceStatus.as("status"),
+                        qPerformanceEntity.createdAt.as("createdAt"),
+                        qPerformanceEntity.updatedAt.as("updatedAt")
+                ))
+                .from(qPerformanceEntity)
+                .leftJoin(qMember)
+                .where(performanceIdEq(performanceId))
+                .fetchOne();
+
+        if (performanceDetail != null) {
+            List<CategoryDTO> categories = getCategoriesByPerformance(performanceDetail.getPerformanceId());
+            performanceDetail.updateCategories(categories);
+        }
+
+        return Optional.ofNullable(performanceDetail);
+    }
 }
