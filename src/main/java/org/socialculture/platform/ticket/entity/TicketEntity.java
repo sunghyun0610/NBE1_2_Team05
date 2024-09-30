@@ -26,11 +26,11 @@ public class TicketEntity extends BaseEntity {
     @Column(name = "ticket_id", nullable = false)
     private Long ticketId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "performance_id", nullable = false)
     private PerformanceEntity performance;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private MemberEntity member;
 
