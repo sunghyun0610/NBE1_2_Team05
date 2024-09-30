@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
+import org.socialculture.platform.member.entity.MemberEntity;
 
 import java.time.LocalDateTime;
 

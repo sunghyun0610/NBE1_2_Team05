@@ -1,6 +1,6 @@
 package org.socialculture.platform.ticket.dto.request;
 
-import org.socialculture.platform.ticket.entity.MemberEntity;
+import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.ticket.entity.PerformanceEntity;
 import org.socialculture.platform.ticket.entity.TicketEntity;
 
