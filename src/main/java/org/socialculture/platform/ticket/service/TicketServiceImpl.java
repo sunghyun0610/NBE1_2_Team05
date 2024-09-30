@@ -22,70 +22,22 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
-    private final MemberRepository memberRepository;
-    // private final PerformanceRepository performanceRepository;
 
-    private static Long MEMBER_ID = 1L;
+    private static String MEMBER_EMAIL = "ello@test.com"; // 임시 메일 테스트 -> 토큰 발행되면 수정
 
     @Override
-    public List<TicketResponseDto> getAllTicketsByMemberId() {
-        try {
-            return ticketRepository.getAllTicketsByMemberId(MEMBER_ID).stream()
-                    .map(TicketResponseDto::from)
-                    .collect(Collectors.toList());
-        } catch (NullPointerException e) {
-            log.error("티켓 데이터 변환 문제 발생 : {}", e.getMessage(), e);
-            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
-        } catch (DataAccessException e) {
-            log.error("데이터베이스 오류 발생: {}", e.getMessage(), e);
-            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            log.error("예상치 못한 오류 발생: {}", e.getMessage(), e);
-            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    public List<TicketResponseDto> getAllTicketsByMemberIdWithPage(int page, int size) {
+    public List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOptionDesc(int page, int size, String sortOption) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        try {
-            return ticketRepository.getAllTicketsByMemberIdWithPage(MEMBER_ID, pageRequest.getOffset(), pageRequest.getPageSize())
-                    .stream()
-                    .map(TicketResponseDto::from)
-                    .collect(Collectors.toList());
-        } catch (NullPointerException e) {
-            log.error("티켓 데이터 변환 문제 발생 : {}", e.getMessage(), e);
-            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
-        } catch (DataAccessException e) {
-            log.error("데이터베이스 오류 발생: {}", e.getMessage(), e);
-            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            log.error("예상치 못한 오류 발생: {}", e.getMessage(), e);
-            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @Override
-    public List<TicketResponseDto> getAllTicketsByMemberIdWithPageAndSortOptionDesc(int page, int size, String sortOption) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        return ticketRepository.getAllTicketsByMemberIdWithPageAndSortOptionDesc(MEMBER_ID, pageRequest.getOffset(),
-                        pageRequest.getPageSize(), sortOption)
+        return ticketRepository.getAllTicketsByEmailWithPageAndSortOptionDesc(MEMBER_EMAIL,
+                        pageRequest.getOffset(),
+                        pageRequest.getPageSize(),
+                        sortOption)
                 .stream()
                 .map(TicketResponseDto::from)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public TicketResponseDto getTicketByMemberIdAndTicketId(Long ticketId) {
-        TicketEntity ticketEntity = ticketRepository.findByMemberMemberIdAndTicketId(MEMBER_ID, ticketId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
-
-        return TicketResponseDto.from(ticketEntity);
     }
 }
