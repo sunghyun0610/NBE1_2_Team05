@@ -54,6 +54,10 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .limit(pageable.getPageSize())
                 .fetch();
 
+        return getCategoriesByPerformances(performances);
+    }
+
+    private List<PerformanceWithCategory> getCategoriesByPerformances(List<PerformanceWithCategory> performances) {
         // 조회된 공연 대상으로 각 공연당 카테고리 조회
         for (PerformanceWithCategory performance : performances) {
             List<CategoryDTO> categories = jpaQueryFactory.select(Projections.constructor(CategoryDTO.class,
@@ -72,4 +76,5 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
         return performances;
     }
+
 }
