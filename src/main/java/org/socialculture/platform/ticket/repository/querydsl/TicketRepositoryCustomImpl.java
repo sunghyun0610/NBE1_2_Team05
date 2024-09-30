@@ -12,6 +12,7 @@ import org.socialculture.platform.ticket.entity.TicketEntity;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * QueryDSL 을 사용하기 위한 repo impl
@@ -53,5 +54,18 @@ public class TicketRepositoryCustomImpl implements TicketRepositoryCustom {
                 .limit(pageSize)
                 .orderBy(orderSpecifier)
                 .fetch();
+    }
+
+    @Override
+    public Optional<TicketEntity> getTicketByEmailAndTicketId(String email, Long ticketId) {
+        QTicketEntity ticketEntity = QTicketEntity.ticketEntity;
+
+        TicketEntity ticket = jpaQueryFactory.selectFrom(ticketEntity)
+                .join(ticketEntity.performance, QPerformanceEntity.performanceEntity).fetchJoin()
+                .where(ticketEntity.ticketId.eq(ticketId)
+                        .and(ticketEntity.member.email.eq(email)))
+                .fetchOne();
+
+        return Optional.ofNullable(ticket);
     }
 }
