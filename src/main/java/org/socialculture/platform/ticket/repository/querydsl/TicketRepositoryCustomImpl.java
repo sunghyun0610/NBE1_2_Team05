@@ -9,8 +9,6 @@ import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.performance.entity.QPerformanceEntity;
 import org.socialculture.platform.ticket.entity.QTicketEntity;
 import org.socialculture.platform.ticket.entity.TicketEntity;
-import org.socialculture.platform.ticket.repository.TicketRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Objects;

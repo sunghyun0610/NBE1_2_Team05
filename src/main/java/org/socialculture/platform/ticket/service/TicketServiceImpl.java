@@ -1,14 +1,8 @@
 package org.socialculture.platform.ticket.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
-import org.socialculture.platform.global.apiResponse.exception.GeneralException;
-import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
-import org.socialculture.platform.ticket.entity.TicketEntity;
 import org.socialculture.platform.ticket.repository.TicketRepository;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
