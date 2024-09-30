@@ -2,14 +2,16 @@ package org.socialculture.platform.ticket.controller;
 
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
-import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
-import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -19,10 +21,10 @@ import java.util.List;
  * @author ycjung
  */
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/tickets")
 @RequiredArgsConstructor
-@Slf4j
 public class TicketController {
+    private static final Logger logger = LoggerFactory.getLogger(TicketController.class);
 
     private final TicketService ticketService;
 
@@ -33,28 +35,11 @@ public class TicketController {
      * @param option
      * @return
      */
-    @GetMapping("/tickets")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<TicketResponseDto>>> getAllTicketsByMemberIdWithPageAndSortOptionDesc(
             @RequestParam("page") int page, @RequestParam("size") int size, @Nullable @RequestParam("option") String option) {
-        log.info("Get tickets by member id with pagination and sort - Page: {}, Size: {}, Sort Option: {}", page, size, option);
+        logger.info("Get tickets by member id with pagination and sort - Page: {}, Size: {}, Sort Option: {}", page, size, option);
 
-        return ApiResponse.onSuccess(ticketService.getAllTicketsByMemberIdWithPageAndSortOptionDesc(page, size, option));
+        return ApiResponse.onSuccess(ticketService.getAllTicketsByEmailWithPageAndSortOptionDesc(page, size, option));
     }
-
-    /**
-     * 나의 티켓 상세 조회
-     * @param ticketId
-     * @return
-     */
-    @GetMapping("/tickets/{ticketId}")
-    public ResponseEntity<ApiResponse<TicketResponseDto>> getTicketById(@PathVariable("ticketId") Long ticketId) {
-        log.info("Get ticket by id: {}", ticketId);
-
-        if (ticketId == null) {
-            throw new GeneralException(ErrorStatus._TICKET_ID_MISSING);
-        }
-        return ApiResponse.onSuccess(ticketService.getTicketByMemberIdAndTicketId(ticketId));
-    }
-
-
 }
