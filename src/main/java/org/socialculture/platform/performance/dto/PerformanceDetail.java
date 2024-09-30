@@ -14,19 +14,19 @@ public class PerformanceDetail {
     private LocalDateTime dateStartTime;
     private LocalDateTime dateEndTime;
     private String description;
-    private int maxAudience;
+    private Integer maxAudience;
     private String address;
     private String imageUrl;
-    private int price;
-    private int remainingTickets;
+    private Integer price;
+    private Integer remainingTickets;
     private LocalDateTime startDate;
     private PerformanceStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CategoryDTO> categories;
 
-    PerformanceDetail() {}
-    PerformanceDetail(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String description,
+    private PerformanceDetail() {}
+    public PerformanceDetail(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String description,
                       int maxAudience, String address, String imageUrl, int price, int remainingTickets, LocalDateTime startDate, PerformanceStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.memberName = memberName;
         this.performanceId = performanceId;

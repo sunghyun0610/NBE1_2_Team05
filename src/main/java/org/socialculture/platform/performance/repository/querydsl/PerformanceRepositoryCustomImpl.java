@@ -48,8 +48,8 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         return nullSafeBuilder(() -> qPerformanceEntity.performanceId.eq(performanceId));
     }
 
-    private BooleanBuilder performanceCategoryEq(PerformanceWithCategory performanceWithCategory) {
-        return nullSafeBuilder(() -> qPerformanceCategoryEntity.performance.performanceId.eq(performanceWithCategory.getPerformanceId()));
+    private BooleanBuilder performanceCategoryEq(Long performanceId) {
+        return nullSafeBuilder(() -> qPerformanceCategoryEntity.performance.performanceId.eq(performanceId));
     }
 
     /**
@@ -99,7 +99,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qCategoryEntity.nameKr))
                 .from(qCategoryEntity)
                 .join(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
-                .where(performanceIdEq(performanceId))
+                .where(performanceCategoryEq(performanceId))
                 .fetch();
     }
 
@@ -118,12 +118,13 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.title.as("title"),
                         qPerformanceEntity.dateStartTime.as("dateStartTime"),
                         qPerformanceEntity.dateEndTime.as("dateEndTime"),
-                        qPerformanceEntity.address.as("address"),
                         qPerformanceEntity.description.as("description"),
                         qPerformanceEntity.maxAudience.as("maxAudience"),
+                        qPerformanceEntity.address.as("address"),
                         qPerformanceEntity.imageUrl.as("imageUrl"),
                         qPerformanceEntity.price.as("price"),
                         qPerformanceEntity.remainingTickets.as("remainingTickets"),
+                        qPerformanceEntity.startDate.as("startDate"),
                         qPerformanceEntity.performanceStatus.as("status"),
                         qPerformanceEntity.createdAt.as("createdAt"),
                         qPerformanceEntity.updatedAt.as("updatedAt")
