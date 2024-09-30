@@ -25,7 +25,7 @@ public class CommentEntity extends BaseEntity {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)//Enum값을 문자열로 저장
-    private CommentStatus commentStatus;
+    private CommentStatus commentStatus=CommentStatus.ACTIVE;//기본값 설정
 
 //    @ManyToOne
 //    @JoinColumn(name = "performance_id" ,nullable = false)
