@@ -6,6 +6,9 @@ import org.socialculture.platform.performance.entity.PerformanceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * query dsl로 모든 공연 정보를 받는 dto
+ */
 @Getter
 public class PerformanceWithCategory {
     private String memberName;

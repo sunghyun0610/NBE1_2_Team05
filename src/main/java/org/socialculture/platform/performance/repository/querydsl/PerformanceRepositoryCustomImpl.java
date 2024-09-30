@@ -28,7 +28,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
     /**
      * 공연 리스트 조회
-     * @author 정승주
+     * @author Icecoff22
      * @param pageable
      * @return PerformanceWithCategory 형태의 리스트
      *
@@ -54,7 +54,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .limit(pageable.getPageSize())
                 .fetch();
 
-
+        // 조회된 공연 대상으로 각 공연당 카테고리 조회
         for (PerformanceWithCategory performance : performances) {
             List<CategoryDTO> categories = jpaQueryFactory.select(Projections.constructor(CategoryDTO.class,
                             qCategoryEntity.categoryId,
@@ -62,7 +62,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                             qCategoryEntity.nameKr))
                     .from(qCategoryEntity)
                     .join(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
-                    .where(qPerformanceCategoryEntity.performance.performanceId.eq(performance.getPerformanceId())) // 공연 ID로 필터링
+                    .where(qPerformanceCategoryEntity.performance.performanceId.eq(performance.getPerformanceId()))
                     .fetch();
 
 
