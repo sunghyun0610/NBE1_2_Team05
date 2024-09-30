@@ -10,9 +10,12 @@ import java.util.List;
  * @author ycjung
  */
 public interface TicketService {
-
+    // 전체 조회
     List<TicketResponseDto> getAllTicketsByMemberId();
+    List<TicketResponseDto> getAllTicketsByMemberIdWithPage(int page, int size);
+    List<TicketResponseDto> getAllTicketsByMemberIdWithPageAndSortOptionDesc(int page, int size, String sortOption);
 
+    // 상세 조회
     TicketResponseDto getTicketByMemberIdAndTicketId(Long ticketId);
 
     // TicketResponse createTicket(Long memberId, TicketRequest ticketRequest);
