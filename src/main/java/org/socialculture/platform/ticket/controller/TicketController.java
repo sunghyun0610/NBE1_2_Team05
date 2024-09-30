@@ -5,13 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,5 +40,20 @@ public class TicketController {
         logger.info("Get tickets by member id with pagination and sort - Page: {}, Size: {}, Sort Option: {}", page, size, option);
 
         return ApiResponse.onSuccess(ticketService.getAllTicketsByEmailWithPageAndSortOptionDesc(page, size, option));
+    }
+
+    /**
+     * 나의 티켓 상세 조회
+     * @param ticketId
+     * @return
+     */
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<ApiResponse<TicketResponseDto>> getTicketById(@PathVariable("ticketId") Long ticketId) {
+        logger.info("Get ticket detail by id: {}", ticketId);
+
+        if (ticketId == null) {
+            throw new GeneralException(ErrorStatus._TICKET_ID_MISSING);
+        }
+        return ApiResponse.onSuccess(ticketService.getTicketByEmailAndTicketId(ticketId));
     }
 }
