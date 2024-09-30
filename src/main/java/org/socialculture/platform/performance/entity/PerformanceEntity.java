@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
 import org.socialculture.platform.member.entity.MemberEntity;
 
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Entity(name = "performance")
 @Getter
+@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PerformanceEntity extends BaseEntity {
     @Id
