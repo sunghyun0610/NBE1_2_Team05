@@ -6,7 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
-import org.socialculture.platform.ticket.entity.QPerformanceEntity;
+import org.socialculture.platform.performance.entity.QPerformanceEntity;
 import org.socialculture.platform.ticket.entity.QTicketEntity;
 import org.socialculture.platform.ticket.entity.TicketEntity;
 import org.springframework.stereotype.Repository;
