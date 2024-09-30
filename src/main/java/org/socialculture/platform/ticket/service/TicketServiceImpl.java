@@ -1,7 +1,10 @@
 package org.socialculture.platform.ticket.service;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
+import org.socialculture.platform.ticket.entity.TicketEntity;
 import org.socialculture.platform.ticket.repository.TicketRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -33,5 +36,13 @@ public class TicketServiceImpl implements TicketService {
                 .stream()
                 .map(TicketResponseDto::from)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public TicketResponseDto getTicketByEmailAndTicketId(Long ticketId) {
+        TicketEntity ticketEntity = ticketRepository.getTicketByEmailAndTicketId(MEMBER_EMAIL, ticketId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
+
+        return TicketResponseDto.from(ticketEntity);
     }
 }

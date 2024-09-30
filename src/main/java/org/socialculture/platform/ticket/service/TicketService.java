@@ -14,7 +14,7 @@ public interface TicketService {
     List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOptionDesc(int page, int size, String sortOption);
 
     // 상세 조회
-    // TicketResponseDto getTicketByEmailAndTicketId(Long ticketId);
+    TicketResponseDto getTicketByEmailAndTicketId(Long ticketId);
 
     // TicketResponse createTicket(Long memberId, TicketRequest ticketRequest);
 
