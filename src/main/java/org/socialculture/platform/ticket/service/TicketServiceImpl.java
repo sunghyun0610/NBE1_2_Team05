@@ -6,7 +6,6 @@ import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
-import org.socialculture.platform.ticket.entity.MemberEntity;
 import org.socialculture.platform.ticket.entity.TicketEntity;
 import org.socialculture.platform.ticket.repository.TicketRepository;
 import org.springframework.dao.DataAccessException;
