@@ -1,18 +1,16 @@
 package org.socialculture.platform.performance.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/performances")
 public class PerformanceController {
 
     private final PerformanceService performanceService;
-
-    public PerformanceController(PerformanceService performanceService) {
-        this.performanceService = performanceService;
-    }
 
     /**
      * 공연에 대한 전반적인 정보를 모두 조회.

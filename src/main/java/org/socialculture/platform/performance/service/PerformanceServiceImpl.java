@@ -1,5 +1,6 @@
 package org.socialculture.platform.performance.service;
 
+import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
@@ -12,13 +13,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PerformanceServiceImpl implements PerformanceService {
 
     private final PerformanceRepository performanceRepository;
-
-    public PerformanceServiceImpl(PerformanceRepository performanceRepository) {
-        this.performanceRepository = performanceRepository;
-    }
 
     @Override
     public List<PerformanceListResponse> getPerformanceList(Integer page, Integer size) {
