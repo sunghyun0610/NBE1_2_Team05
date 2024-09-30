@@ -50,8 +50,8 @@ public class TicketServiceTest {
                 .performanceId(1L)
                 .title("꿈의 교향곡")
                 .price(50000)
-                .startTime(LocalDateTime.of(2023, 9, 1, 19, 0))
-                .endTime(LocalDateTime.of(2023, 9, 1, 21, 0))
+                .dateStartTime(LocalDateTime.of(2023, 9, 1, 19, 0))
+                .dateEndTime(LocalDateTime.of(2023, 9, 1, 21, 0))
                 .build();
 
         // MemberEntity 샘플 데이터 생성
