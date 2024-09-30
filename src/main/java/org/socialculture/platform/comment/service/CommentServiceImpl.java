@@ -1,5 +1,6 @@
 package org.socialculture.platform.comment.service;
 
+import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
 import org.socialculture.platform.comment.entity.CommentEntity;
 import org.socialculture.platform.comment.repository.CommentRepository;
@@ -46,4 +47,18 @@ public class CommentServiceImpl implements CommentService{
         }
         return commentReadDtos;
     }
+
+    /*
+    * 댓글 생성*/
+    @Override
+    public boolean createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
+        CommentEntity commentEntity = CommentEntity.builder()
+                .content(commentCreateRequest.content())
+                .parentId(commentCreateRequest.parentId())
+                .build();
+        commentRepository.save(commentEntity);
+        return true;
+    }
+
+
 }

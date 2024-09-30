@@ -22,8 +22,6 @@ public class CommentReadDto {
     private long parentId;
     private CommentStatus commentStatus;
 
-//    public static CommentEntity toEntity(CommentReadDto commentReadDto){
-//
-//    }//Dto->entity 변환하기
+
 
 }
