@@ -1,7 +1,6 @@
 package org.socialculture.platform.performance.repository.querydsl;
 
 import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.socialculture.platform.member.entity.QMember;
 import org.socialculture.platform.performance.dto.CategoryDTO;
@@ -32,33 +31,45 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
      * @author 정승주
      * @param pageable
      * @return PerformanceWithCategory 형태의 리스트
-     * @Discription
+     *
      */
     @Override
     public List<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable) {
 
-        return jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
-                        qMember.name,
-                qPerformanceEntity.performanceId,
-                qPerformanceEntity.title,
-                qPerformanceEntity.dateStartTime,
-                qPerformanceEntity.dateEndTime,
-                qPerformanceEntity.address,
-                qPerformanceEntity.imageUrl,
-                qPerformanceEntity.price,
-                qPerformanceEntity.performanceStatus,
-                        JPAExpressions.select(Projections.constructor(CategoryDTO.class,
-                                qCategoryEntity.categoryId,
-                                qCategoryEntity.nameEn,
-                                qCategoryEntity.nameKr))
-                                .from(qCategoryEntity)
-                                .where(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
+        List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
+                        qMember.name.as("memberName"),
+                        qPerformanceEntity.performanceId.as("performanceId"),
+                        qPerformanceEntity.title.as("title"),
+                        qPerformanceEntity.dateStartTime.as("dateStartTime"),
+                        qPerformanceEntity.dateEndTime.as("dateEndTime"),
+                        qPerformanceEntity.address.as("address"),
+                        qPerformanceEntity.imageUrl.as("imageUrl"),
+                        qPerformanceEntity.price.as("price"),
+                        qPerformanceEntity.performanceStatus.as("status")
                 ))
                 .from(qPerformanceEntity)
-                .leftJoin(qMember).on(qMember.eq(qPerformanceEntity.member))
-                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceEntity.eq(qPerformanceCategoryEntity.performance))
-                .leftJoin(qCategoryEntity).on(qCategoryEntity.eq(qPerformanceCategoryEntity.category))
+                .leftJoin(qMember)
                 .where(qPerformanceEntity.performanceStatus.ne(NOT_CONFIRMED))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
+
+
+        for (PerformanceWithCategory performance : performances) {
+            List<CategoryDTO> categories = jpaQueryFactory.select(Projections.constructor(CategoryDTO.class,
+                            qCategoryEntity.categoryId,
+                            qCategoryEntity.nameEn,
+                            qCategoryEntity.nameKr))
+                    .from(qCategoryEntity)
+                    .join(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
+                    .where(qPerformanceCategoryEntity.performance.performanceId.eq(performance.getPerformanceId())) // 공연 ID로 필터링
+                    .fetch();
+
+
+            // 카테고리 리스트를 PerformanceWithCategory에 설정
+            performance.updateCategories(categories);
+        }
+
+        return performances;
     }
 }

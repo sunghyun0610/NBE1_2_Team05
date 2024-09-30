@@ -23,16 +23,16 @@ public record PerformanceListResponse(
 
     public static PerformanceListResponse from(PerformanceWithCategory performanceWithCategory) {
         return PerformanceListResponse.builder()
-                .memberName(performanceWithCategory.memberName())
-                .performanceId(performanceWithCategory.performanceId())
-                .title(performanceWithCategory.title())
-                .dateStartTime(performanceWithCategory.dateStartTime())
-                .dateEndTime(performanceWithCategory.dateEndTime())
-                .address(performanceWithCategory.address())
-                .imageUrl(performanceWithCategory.imageUrl())
-                .price(performanceWithCategory.price())
-                .status(performanceWithCategory.status())
-                .category(performanceWithCategory.category())
+                .memberName(performanceWithCategory.getMemberName())
+                .performanceId(performanceWithCategory.getPerformanceId())
+                .title(performanceWithCategory.getTitle())
+                .dateStartTime(performanceWithCategory.getDateStartTime())
+                .dateEndTime(performanceWithCategory.getDateEndTime())
+                .address(performanceWithCategory.getAddress())
+                .imageUrl(performanceWithCategory.getImageUrl())
+                .price(performanceWithCategory.getPrice())
+                .status(String.valueOf(performanceWithCategory.getStatus()))
+                .category(performanceWithCategory.getCategories())
                 .build();
     }
 }
