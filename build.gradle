@@ -26,6 +26,19 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    //jwt
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    testImplementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    //Java 9 이상에서 javax.xml.bind.DatatypeConverter 클래스가 기본 JDK에 포함되지 않음
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
 }
 
 tasks.named('test') {
