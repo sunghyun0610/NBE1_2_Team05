@@ -1,6 +1,7 @@
 package org.socialculture.platform.ticket.repository;
 
 import org.socialculture.platform.ticket.entity.TicketEntity;
+import org.socialculture.platform.ticket.repository.querydsl.TicketRepositoryCustom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,9 +13,5 @@ import java.util.Optional;
  * 
  * @author ycjung
  */
-@Repository
-public interface TicketRepository extends JpaRepository<TicketEntity, Long>, DslTicketRepository {
-
-    List<TicketEntity> findAllByMemberMemberId(Long memberId);
-    Optional<TicketEntity> findByMemberMemberIdAndTicketId(Long memberId, Long ticketId);
+public interface TicketRepository extends JpaRepository<TicketEntity, Long>, TicketRepositoryCustom {
 }
