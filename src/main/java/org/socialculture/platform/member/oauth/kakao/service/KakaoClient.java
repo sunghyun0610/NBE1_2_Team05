@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.socialculture.platform.member.entity.SocialProvider;
+import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -69,12 +71,12 @@ public class KakaoClient {
     }
 
     /**
-     * accessToken을 이용하여 카카오에서 유저의 email 을 따온다.
+     * accessToken을 이용하여 카카오에서 유저의 정보(이메일, id)를 가져온다.
      * @param accessToken
-     * @return email
+     * @return email, id
      * @throws JsonProcessingException
      */
-    public String getUserInfo(String accessToken) throws JsonProcessingException {
+    public SocialMemberCheckDto getUserInfo(String accessToken) throws JsonProcessingException {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kapi.kakao.com")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
@@ -96,8 +98,9 @@ public class KakaoClient {
         JsonNode jsonNode = objectMapper.readTree(responseBody);
 
         String email = jsonNode.get("kakao_account").get("email").asText();
+        String providerId = jsonNode.get("id").asText();
 
-        return email;
+        return new SocialMemberCheckDto(email, providerId, SocialProvider.KAKAO);
     }
 
 
