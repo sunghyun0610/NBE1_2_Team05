@@ -1,7 +1,9 @@
 package org.socialculture.platform.comment.controller;
 
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
+import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
+import org.socialculture.platform.comment.dto.response.CommentUpdateResponse;
 import org.socialculture.platform.comment.service.CommentServiceImpl;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
@@ -40,5 +42,19 @@ public class CommentController {
         else {
             throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PatchMapping("/comments/{commentId}")
+    public ResponseEntity<ApiResponse<CommentUpdateResponse>> updateComment(@PathVariable long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest){
+        boolean isSuccess=true;
+        //commentId를 통해서 performanceId를 가져와야함.
+        CommentUpdateResponse commentUpdateResponse=CommentUpdateResponse.from(1);
+        if(isSuccess){
+            return ApiResponse.onSuccess(commentUpdateResponse);
+        }
+        else {
+            throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+        }
+
     }
 }

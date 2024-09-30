@@ -7,8 +7,6 @@ import org.socialculture.platform.comment.entity.CommentStatus;
 import org.socialculture.platform.comment.repository.CommentRepository;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
-import org.socialculture.platform.performance.entity.PerformanceEntity;
-import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

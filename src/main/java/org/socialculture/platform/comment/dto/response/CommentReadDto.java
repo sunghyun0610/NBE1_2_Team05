@@ -25,3 +25,5 @@ public class CommentReadDto {
 
 
 }
+
+//이건 추후에 record로 바꾸겠슴다.
