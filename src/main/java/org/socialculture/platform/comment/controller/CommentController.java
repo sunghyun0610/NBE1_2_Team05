@@ -31,8 +31,9 @@ public class CommentController {
 
     @PostMapping("/comments/{performanceId}")
     public ResponseEntity<ApiResponse<Void>> createComment(@PathVariable long performanceId, @RequestBody CommentCreateRequest commentCreateRequest) {
-
+        System.out.println("----before service");
         boolean isSuccess = commentService.createComment(performanceId, commentCreateRequest);
+        System.out.println("----after"+isSuccess);
         if (isSuccess) {
             return ApiResponse.onSuccess(HttpStatus.CREATED, "COMMNET201", "댓글 작성 성공", null);
         }

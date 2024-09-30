@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
+import org.socialculture.platform.performance.entity.PerformanceEntity;
 
 @Entity
 @SuperBuilder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)//Jpa는 리플렉션을 사용해 객체를 생성하기 때문에 기본생성자가 Protected이상으로 선언되어야함.
+@Table(name = "comment")
 public class CommentEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,13 +25,14 @@ public class CommentEntity extends BaseEntity {
     @Column(name = "parent_id", nullable = true)//default null
     private long parentId;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = true)
     @Enumerated(EnumType.STRING)//Enum값을 문자열로 저장
     private CommentStatus commentStatus=CommentStatus.ACTIVE;//기본값 설정
 
-//    @ManyToOne
-//    @JoinColumn(name = "performance_id" ,nullable = false)
-//    private PerformanceEntity performanceId; //아직 Performance 엔티티 없어서 보류
+    @ManyToOne
+    @JoinColumn(name = "performance_id", nullable = false)
+    private PerformanceEntity performance;
+
 //
 //    @ManyToOne
 //    @JoinColumn(name = "user_id" ,nullable = false)
