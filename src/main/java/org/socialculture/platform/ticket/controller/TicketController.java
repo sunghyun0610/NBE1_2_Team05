@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 티켓 데이터 컨트롤러
@@ -58,9 +59,9 @@ public class TicketController {
      */
     @GetMapping("/{ticketId}")
     public ResponseEntity<ApiResponse<TicketResponseDto>> getTicketById(@PathVariable("ticketId") Long ticketId) {
-        logger.info("Get ticket detail by id: {}", ticketId);
+        log.info("Get ticket detail by id: {}", ticketId);
 
-        if (ticketId == null) {
+        if (Objects.isNull(ticketId)) {
             throw new GeneralException(ErrorStatus._TICKET_ID_MISSING);
         }
         return ApiResponse.onSuccess(ticketService.getTicketByEmailAndTicketId(ticketId));
