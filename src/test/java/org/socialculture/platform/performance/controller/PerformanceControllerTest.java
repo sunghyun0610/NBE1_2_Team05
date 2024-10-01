@@ -41,9 +41,6 @@ public class PerformanceControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private PerformanceService performanceService;
 
@@ -94,7 +91,7 @@ public class PerformanceControllerTest {
                 .willReturn(performanceList);
 
         ResultActions result = this.mockMvc.perform(
-                get("/api/v1/performance")
+                get("/api/v1/performances")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("page", "0")
                         .param("size", "3")
