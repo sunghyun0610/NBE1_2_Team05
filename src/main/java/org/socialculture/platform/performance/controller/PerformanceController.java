@@ -1,9 +1,14 @@
 package org.socialculture.platform.performance.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
+import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +26,8 @@ public class PerformanceController {
      * @return 200, 공연응답 리스트
      */
     @GetMapping
-    public ResponseEntity<?> getPerformanceList(@RequestParam(name = "page") Integer page, @RequestParam(name = "size") Integer size) {
-        return ResponseEntity.ok(performanceService.getPerformanceList(page, size));
+    public ResponseEntity<ApiResponse<List<PerformanceListResponse>>> getPerformanceList(@RequestParam(name = "page") Integer page, @RequestParam(name = "size") Integer size) {
+        return ApiResponse.onSuccess(performanceService.getPerformanceList(page, size));
     }
 
     /**
@@ -32,7 +37,7 @@ public class PerformanceController {
      * @return 200, 공연응답 리스트
      */
     @GetMapping("/{performanceId}")
-    public ResponseEntity<?> getPerformanceById(@PathVariable("performanceId") Long performanceId) {
-        return ResponseEntity.ok(performanceService.getPerformanceDetail(performanceId));
+    public ResponseEntity<ApiResponse<PerformanceDetailResponse>> getPerformanceById(@PathVariable("performanceId") Long performanceId) {
+        return ApiResponse.onSuccess(performanceService.getPerformanceDetail(performanceId));
     }
 }
