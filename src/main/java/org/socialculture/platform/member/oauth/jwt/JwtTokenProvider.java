@@ -122,5 +122,25 @@ public class JwtTokenProvider implements InitializingBean {
             return null;
         }
     }
+
+    //token으로 사용자 정보 반환
+    public Authentication getAuthentication(String token) {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        String email = claims.getSubject();
+
+        Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
+
+        MemberEntity member = MemberEntity.builder()
+                .email(email)
+                .build();
+
+        return new UsernamePasswordAuthenticationToken(member, token, authorities);
+    }
 }
 
