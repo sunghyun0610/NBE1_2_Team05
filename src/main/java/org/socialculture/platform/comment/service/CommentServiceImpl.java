@@ -2,6 +2,7 @@ package org.socialculture.platform.comment.service;
 
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
 import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
+import org.socialculture.platform.comment.dto.response.CommentCreateResponse;
 import org.socialculture.platform.comment.dto.response.CommentDeleteResponse;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
 import org.socialculture.platform.comment.dto.response.CommentUpdateResponse;
@@ -10,6 +11,7 @@ import org.socialculture.platform.comment.entity.CommentStatus;
 import org.socialculture.platform.comment.repository.CommentRepository;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
+import org.socialculture.platform.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,9 +24,11 @@ public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
 //    private PerformanceRepository performanceRepository;// performanceRepo도 필요하겠지?
+    private final MemberRepository memberRepository;
 
-    public CommentServiceImpl(CommentRepository commentRepository) {
+    public CommentServiceImpl(CommentRepository commentRepository, MemberRepository memberRepository) {
         this.commentRepository = commentRepository;
+        this.memberRepository= memberRepository;
 //        this.performanceRepository=performanceRepository;
     }
 
@@ -58,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
     /*
      * 댓글 생성*/
     @Override
-    public boolean createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
+    public CommentCreateResponse createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
 
 //        PerformanceEntity performance = performanceRepository.findById(performanceId)
 //                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
@@ -70,7 +74,10 @@ public class CommentServiceImpl implements CommentService {
                 .build();
         System.out.println(commentCreateRequest.content() + "입니다");
         commentRepository.save(commentEntity);
-        return true;
+
+        CommentCreateResponse commentCreateResponse= CommentCreateResponse.from(commentEntity.getCommentId(),commentEntity.getContent(),commentEntity.getPerformance().getPerformanceId());
+
+        return commentCreateResponse;
     }//일단 userid도 없어서 보류
 
     @Override
@@ -80,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
 
         commentEntity.builder()
                 .content(commentUpdateRequest.content())
-                .updatedAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())//이거는 불필요한 코드일 수도?
                 .build();
 
         commentRepository.save(commentEntity);
@@ -97,7 +104,7 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));
 
         CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.of(commentEntity.getPerformance().getPerformanceId());
-
+        commentEntity.setDeletedAt(LocalDateTime.now());
         commentRepository.delete(commentEntity);
 
         return  commentDeleteResponse;
