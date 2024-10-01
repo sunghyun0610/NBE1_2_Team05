@@ -1,7 +1,9 @@
 package org.socialculture.platform.comment.service;
 
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
+import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
+import org.socialculture.platform.comment.dto.response.CommentUpdateResponse;
 import org.socialculture.platform.comment.entity.CommentEntity;
 import org.socialculture.platform.comment.entity.CommentStatus;
 import org.socialculture.platform.comment.repository.CommentRepository;
@@ -9,18 +11,19 @@ import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CommentServiceImpl implements CommentService{
+public class CommentServiceImpl implements CommentService {
 
-    private CommentRepository commentRepository;
+    private final CommentRepository commentRepository;
 //    private PerformanceRepository performanceRepository;// performanceRepo도 필요하겠지?
 
-    public CommentServiceImpl(CommentRepository commentRepository){
-        this.commentRepository=commentRepository;
+    public CommentServiceImpl(CommentRepository commentRepository) {
+        this.commentRepository = commentRepository;
 //        this.performanceRepository=performanceRepository;
     }
 
@@ -29,15 +32,15 @@ public class CommentServiceImpl implements CommentService{
 
 
         // 주어진 id값으로 댓글 테이블 조회하믄댐
-        List<CommentEntity> commentEntityList= commentRepository.findAllByPerformance_PerformanceId(performanceId);
+        List<CommentEntity> commentEntityList = commentRepository.findAllByPerformance_PerformanceId(performanceId);
 
         if (commentEntityList == null) {
             throw new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND);// 예외처리 하기 전
         }
-        List<CommentReadDto> commentReadDtos=new ArrayList<>();
+        List<CommentReadDto> commentReadDtos = new ArrayList<>();
 
-        for(CommentEntity commentEntity : commentEntityList){
-            CommentReadDto commentReadDto=CommentReadDto.builder()
+        for (CommentEntity commentEntity : commentEntityList) {
+            CommentReadDto commentReadDto = CommentReadDto.builder()
                     .commentId(commentEntity.getCommentId())
                     .memberId(1)//아직은 테스트
                     .content(commentEntity.getContent())
@@ -52,7 +55,7 @@ public class CommentServiceImpl implements CommentService{
     }
 
     /*
-    * 댓글 생성*/
+     * 댓글 생성*/
     @Override
     public boolean createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
 
@@ -64,13 +67,27 @@ public class CommentServiceImpl implements CommentService{
                 .commentStatus(CommentStatus.ACTIVE)
 //                .performance(performance)
                 .build();
-        System.out.println(commentCreateRequest.content()+"입니다");
+        System.out.println(commentCreateRequest.content() + "입니다");
         commentRepository.save(commentEntity);
         return true;
     }//일단 userid도 없어서 보류
 
+    @Override
+    public CommentUpdateResponse updateComment(long commentId, CommentUpdateRequest commentUpdateRequest) {
+        CommentEntity commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));//comment 객체찾아주고
 
+        commentEntity.builder()
+                .content(commentUpdateRequest.content())
+                .updatedAt(LocalDateTime.now())
+                .build();
 
+        commentRepository.save(commentEntity);
+
+        CommentUpdateResponse commentUpdateResponse = CommentUpdateResponse.from(commentEntity.getPerformance().getPerformanceId());
+
+        return commentUpdateResponse;
+    }
 
 
 }
