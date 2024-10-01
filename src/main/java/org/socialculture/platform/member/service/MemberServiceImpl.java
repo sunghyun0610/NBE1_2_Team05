@@ -109,6 +109,7 @@ public class MemberServiceImpl implements MemberService{
         });
     }
 
+
     /**
      * 이메일 중복 확인(이메일 형식 검증도 같이확인)
      * @param email
@@ -136,9 +137,6 @@ public class MemberServiceImpl implements MemberService{
         return memberRepository.existsByName(name);
     }
 
-    // 토큰부분 추후
-    public void updateNickname(String name) {
 
-    }
 
 }
