@@ -2,8 +2,8 @@ package org.socialculture.platform.coupon.repository.querydsl;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.socialculture.platform.coupon.dto.response.CouponResponseDto;
 import org.socialculture.platform.coupon.entity.CouponEntity;
+import org.socialculture.platform.coupon.entity.QCouponEntity;
 
 import java.util.List;
 
@@ -19,8 +19,10 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom{
 
     @Override
     public List<CouponEntity> getAllCouponsByMemberEmail(String email) {
-        
+        QCouponEntity couponEntity = QCouponEntity.couponEntity;
 
-        return List.of();
+        return jpaQueryFactory.selectFrom(couponEntity)
+                .where(couponEntity.member.email.eq(email))
+                .fetch();
     }
 }
