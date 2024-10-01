@@ -28,5 +28,4 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
                 UsernamePasswordAuthenticationFilter.class
         );
     }
-
 }
