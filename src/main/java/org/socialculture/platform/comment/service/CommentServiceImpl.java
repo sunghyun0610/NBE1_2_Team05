@@ -2,6 +2,7 @@ package org.socialculture.platform.comment.service;
 
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
 import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
+import org.socialculture.platform.comment.dto.response.CommentDeleteResponse;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
 import org.socialculture.platform.comment.dto.response.CommentUpdateResponse;
 import org.socialculture.platform.comment.entity.CommentEntity;
@@ -89,5 +90,17 @@ public class CommentServiceImpl implements CommentService {
         return commentUpdateResponse;
     }
 
+    @Override
+    public CommentDeleteResponse deleteComment(long commentId) {
+        // 댓글이 존재하지 않을 경우 예외를 던지고, 존재할 경우 바로 삭제
+        CommentEntity commentEntity = commentRepository.findById(commentId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.of(commentEntity.getPerformance().getPerformanceId());
+
+        commentRepository.delete(commentEntity);
+
+        return  commentDeleteResponse;
+    }
 
 }

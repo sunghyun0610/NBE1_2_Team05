@@ -2,6 +2,7 @@ package org.socialculture.platform.comment.controller;
 
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
 import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
+import org.socialculture.platform.comment.dto.response.CommentDeleteResponse;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
 import org.socialculture.platform.comment.dto.response.CommentUpdateResponse;
 import org.socialculture.platform.comment.service.CommentService;
@@ -53,4 +54,10 @@ public class CommentController {
         return ApiResponse.onSuccess(commentUpdateResponse);
     }
 
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(@PathVariable long commentId){
+        CommentDeleteResponse commentDeleteResponse = commentService.deleteComment(commentId);
+        return ApiResponse.onSuccess(commentDeleteResponse);
+
+    }
 }
