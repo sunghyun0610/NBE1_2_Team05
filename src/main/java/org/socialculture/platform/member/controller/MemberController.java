@@ -22,7 +22,11 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    // 이메일 중복 체크
+    /**
+     * 일반사용자 이메일 중복 체크
+     * @param email
+     * @return true면 중복x
+     */
     @GetMapping("/exists/email/{email}")
     public ResponseEntity<ApiResponse<Boolean>> checkEmail(@PathVariable("email") String email) {
         boolean emailInUse = memberService.isEmailInUse(email);
@@ -32,7 +36,11 @@ public class MemberController {
         return ApiResponse.onSuccess(true);
     }
 
-    // 닉네임 중복 체크
+    /**
+     * 일반사용자 닉네임 중복 체크
+     * @param name
+     * @return true면 중복x
+     */
     @GetMapping("/exists/name/{name}")
     public ResponseEntity<ApiResponse<Boolean>> checkName(@PathVariable("name") String name) {
         boolean nameInUse = memberService.isNameInUse(name);
@@ -43,14 +51,20 @@ public class MemberController {
     }
 
 
-    // 일반 사용자 회원가입
+    /**
+     * 일반사용자 회원가입
+     * @param localRegisterRequest
+     * @return 가입에 성공하면 JWT토큰과 닉네임 반환
+     */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
             @RequestBody LocalRegisterRequest localRegisterRequest) {
 
-            RegisterResponse registerResponse = memberService.registerBasicUser(localRegisterRequest);
-            return ApiResponse.onSuccess(registerResponse);
+        RegisterResponse registerResponse = memberService.registerBasicUser(localRegisterRequest);
+        return ApiResponse.onSuccess(registerResponse);
     }
 
+    // 사용자 닉네임 변경
+//    @PatchMapping("/nickname")
 
 }

@@ -78,7 +78,8 @@ public class MemberServiceImpl implements MemberService{
             throw new GeneralException(ErrorStatus.PASSWORD_INVALID);
         }
         MemberEntity savedMember = memberRepository.save(member);
-        RegisterResponse registerResponse = new RegisterResponse("jwtToken", savedMember.getName());
+        // JWT 토큰 발행 이후 수정
+        RegisterResponse registerResponse = new RegisterResponse("jwtToken");
         return registerResponse;
     }
 
@@ -133,6 +134,11 @@ public class MemberServiceImpl implements MemberService{
             throw new GeneralException(ErrorStatus.NAME_DUPLICATE);
         }
         return memberRepository.existsByName(name);
+    }
+
+    // 토큰부분 추후
+    public void updateNickname(String name) {
+
     }
 
 }

@@ -66,7 +66,7 @@ public class KakaoLoginController {
      * 소셜 사용자가 회원가입시 닉네임 중복체크를 하고, 회원가입 진행
      * @param memberInfoDto
      * @param session
-     * @return 회원가입 완료되면 MemberEmtity 반환
+     * @return 회원가입 완료되면 JWT토큰 반환
      */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
