@@ -1,5 +1,6 @@
 package org.socialculture.platform.comment.service;
 
+import org.socialculture.platform.comment.converter.DtoConverter;
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
 import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
 import org.socialculture.platform.comment.dto.response.CommentCreateResponse;
@@ -30,7 +31,16 @@ public class CommentServiceImpl implements CommentService {
         this.commentRepository = commentRepository;
         this.memberRepository= memberRepository;
 //        this.performanceRepository=performanceRepository;
-    }
+    }//생성자 의존성 주입
+
+
+    /**
+     * 댓글 전체 조회 로직
+     * @author sunghyun0610
+     * @param performanceId
+     * @return 공통 Response사용하여 commentReadResponse list 반환
+     *
+     */
 
     @Override
     public List<CommentReadDto> getAllComment(long performanceId) {
@@ -39,28 +49,25 @@ public class CommentServiceImpl implements CommentService {
         // 주어진 id값으로 댓글 테이블 조회하믄댐
         List<CommentEntity> commentEntityList = commentRepository.findAllByPerformance_PerformanceId(performanceId);
 
-        if (commentEntityList == null) {
-            throw new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND);// 예외처리 하기 전
+        if (commentEntityList.isEmpty()) {
+            throw new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND);
         }
         List<CommentReadDto> commentReadDtos = new ArrayList<>();
 
         for (CommentEntity commentEntity : commentEntityList) {
-            CommentReadDto commentReadDto = CommentReadDto.builder()
-                    .commentId(commentEntity.getCommentId())
-                    .memberId(1)//아직은 테스트
-                    .content(commentEntity.getContent())
-                    .createdAt(commentEntity.getCreatedAt())
-                    .updatedAt(commentEntity.getUpdatedAt())
-                    .parentId(commentEntity.getParentId())
-                    .commentStatus(commentEntity.getCommentStatus())
-                    .build();
+            CommentReadDto commentReadDto= DtoConverter.fromCommentReadDto(commentEntity);
             commentReadDtos.add(commentReadDto);
         }
         return commentReadDtos;
     }
 
-    /*
-     * 댓글 생성*/
+    /**
+     * 댓글 생성 로직
+     * @author sunghyun0610
+     * @param performanceId
+     * @return 공통 Response사용하여 commentCreateResponse 반환
+     *
+     */
     @Override
     public CommentCreateResponse createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
 
@@ -78,8 +85,16 @@ public class CommentServiceImpl implements CommentService {
         CommentCreateResponse commentCreateResponse= CommentCreateResponse.from(commentEntity.getCommentId(),commentEntity.getContent(),commentEntity.getPerformance().getPerformanceId());
 
         return commentCreateResponse;
-    }//일단 userid도 없어서 보류
+    }//일단 userid도 없어서 보류 ->jwt로 이메일 가져오고싶음!
 
+
+    /**
+     * 댓글 전체 조회
+     * @author sunghyun0610
+     * @param commentId
+     * @return 공통 Response사용하여 CommentUpdateResponse 반환
+     *
+     */
     @Override
     public CommentUpdateResponse updateComment(long commentId, CommentUpdateRequest commentUpdateRequest) {
         CommentEntity commentEntity = commentRepository.findById(commentId)
@@ -96,6 +111,14 @@ public class CommentServiceImpl implements CommentService {
 
         return commentUpdateResponse;
     }
+
+    /**
+     * 댓글 전체 조회
+     * @author sunghyun0610
+     * @param commentId
+     * @return 공통 Response사용하여 deleteComment반환
+     *
+     */
 
     @Override
     public CommentDeleteResponse deleteComment(long commentId) {

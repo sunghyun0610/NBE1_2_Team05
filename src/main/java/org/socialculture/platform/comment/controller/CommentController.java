@@ -60,6 +60,13 @@ public class CommentController {
 
     }
 
+    /**
+     * 댓글 수정
+     * @author sunghyun0610
+     * @param commentId
+     * @return 공통 Response사용하여 commentUpdateResponse 반환
+     *
+     */
     @PatchMapping("/{commentId}")
     public ResponseEntity<ApiResponse<CommentUpdateResponse>> updateComment(@PathVariable long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest){
         //commentId를 통해서 performanceId를 가져와야함. -> 반환해줘야함
@@ -67,6 +74,13 @@ public class CommentController {
         return ApiResponse.onSuccess(commentUpdateResponse);
     }
 
+    /**
+     * 댓글 삭제
+     * @author sunghyun0610
+     * @param commentId
+     * @return 공통 Response사용하여 commentDeleteResponse 반환
+     *
+     */
     @DeleteMapping("/{commentId}")
     public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(@PathVariable long commentId){
         CommentDeleteResponse commentDeleteResponse = commentService.deleteComment(commentId);
