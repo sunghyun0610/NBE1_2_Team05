@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
+import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
+import org.socialculture.platform.performance.dto.request.PerformanceRegisterResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
@@ -21,6 +23,12 @@ import java.util.List;
 public class PerformanceServiceImpl implements PerformanceService {
 
     private final PerformanceRepository performanceRepository;
+
+    @Override
+    public PerformanceRegisterResponse registerPerformance(PerformanceRegisterRequest performanceRegisterRequest) {
+
+        return null;
+    }
 
     @Override
     public List<PerformanceListResponse> getPerformanceList(Integer page, Integer size) {
