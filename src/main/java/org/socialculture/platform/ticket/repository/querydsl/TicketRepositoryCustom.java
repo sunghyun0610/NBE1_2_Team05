@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface TicketRepositoryCustom {
 
-    List<TicketEntity> getAllTicketsByEmailWithPageAndSortOptionDesc(String email, long offset, int pageSize, String sortOption);
+    List<TicketEntity> getAllTicketsByEmailWithPageAndSortOption(String email, long offset, int pageSize, String sortOption, boolean isAscending);
 }

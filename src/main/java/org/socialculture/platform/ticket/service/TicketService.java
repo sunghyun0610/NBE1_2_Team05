@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface TicketService {
     // 전체 조회
-    List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOptionDesc(int page, int size, String sortOption);
+    List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOption(int page, int size, String sortOption, boolean isAscending);
 
     // 상세 조회
     // TicketResponseDto getTicketByEmailAndTicketId(Long ticketId);

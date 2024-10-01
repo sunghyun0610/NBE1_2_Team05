@@ -32,18 +32,22 @@ public class TicketRepositoryCustomImpl implements TicketRepositoryCustom {
      * @return
      */
     @Override
-    public List<TicketEntity> getAllTicketsByEmailWithPageAndSortOptionDesc(String email, long offset, int pageSize, String sortOption) {
+    public List<TicketEntity> getAllTicketsByEmailWithPageAndSortOption(String email, long offset, int pageSize, String sortOption, boolean isAscending) {
         QTicketEntity ticketEntity = QTicketEntity.ticketEntity;
         OrderSpecifier<?> orderSpecifier;
 
-        if (Objects.isNull(sortOption)) {
-            orderSpecifier = new OrderSpecifier<>(Order.DESC, ticketEntity.ticketId);
-        } else if (sortOption.equals("price")) { // 가격 기준 내림차순
-            orderSpecifier = new OrderSpecifier<>(Order.DESC, ticketEntity.price);
-        } else if (sortOption.equals("expired")) { // 만료 기준 내림차순
-            orderSpecifier = new OrderSpecifier<>(Order.DESC, ticketEntity.deletedAt);
+        // 정렬 순서 설정 (isAscending 값에 따라 결정)
+        Order order = isAscending ? Order.ASC : Order.DESC;
+
+        // sortOption 에 따른 분기 처리
+        if (Objects.isNull(sortOption) || sortOption.equals("ticketId")) { // sortOption 이 null 일 경우 ticketId 기준 정렬
+            orderSpecifier = new OrderSpecifier<>(order, ticketEntity.ticketId);
+        } else if (sortOption.equals("price")) { // sortOption 이 'price'일 경우 price 기준 정렬
+            orderSpecifier = new OrderSpecifier<>(order, ticketEntity.price);
+        } else if (sortOption.equals("expired")) { // sortOption 이 'expired'일 경우 deletedAt 기준 정렬
+            orderSpecifier = new OrderSpecifier<>(order, ticketEntity.deletedAt);
         } else {
-            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+            throw new GeneralException(ErrorStatus._TICKET_INVALID_SORT_OPTION);
         }
 
         return jpaQueryFactory.selectFrom(ticketEntity)
