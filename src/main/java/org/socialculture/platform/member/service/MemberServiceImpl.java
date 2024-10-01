@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService{
     /**
      * 일반 사용자 회원가입
      * @param localRegisterRequest
-     * @return 가입되어진 회원정보
+     * @return JWT Token
      */
     @Override
     public RegisterResponse registerBasicUser(LocalRegisterRequest localRegisterRequest) {
@@ -52,7 +52,7 @@ public class MemberServiceImpl implements MemberService{
     /**
      * 소셜 사용자 회원가입
      * @param socialRegisterRequest
-     * @return 가입되어진 회원정보
+     * @return JWT Token
      */
     @Override
     public RegisterResponse registerSocialUser(SocialRegisterRequest socialRegisterRequest) {
@@ -63,7 +63,7 @@ public class MemberServiceImpl implements MemberService{
     /**
      * 일반,소셜 사용자 모두 회원가입 진행
      * @param member
-     * @return JwtToken, name
+     * @return JwtToken
      */
     @Transactional
     protected RegisterResponse registerUser(MemberEntity member) {
