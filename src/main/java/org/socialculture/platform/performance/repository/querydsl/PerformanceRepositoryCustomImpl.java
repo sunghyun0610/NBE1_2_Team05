@@ -74,7 +74,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.performanceStatus.as("status")
                 ))
                 .from(qPerformanceEntity)
-                .leftJoin(qMember)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .where(performanceStatusNe(NOT_CONFIRMED))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -130,7 +130,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.updatedAt.as("updatedAt")
                 ))
                 .from(qPerformanceEntity)
-                .leftJoin(qMember)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .where(performanceIdEq(performanceId))
                 .fetchOne();
 
