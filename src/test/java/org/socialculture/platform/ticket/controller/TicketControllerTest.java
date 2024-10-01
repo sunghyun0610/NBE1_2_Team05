@@ -48,7 +48,7 @@ public class TicketControllerTest {
                 TicketResponseDto.of(2L, "영원의 메아리", LocalDateTime.now(), 3, 150, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2))
         );
 
-        given(ticketService.getAllTicketsByEmailWithPageAndSortOptionDesc(anyInt(), anyInt(), isNull()))
+        given(ticketService.getAllTicketsByEmailWithPageAndSortOption(anyInt(), anyInt(), isNull(), anyBoolean()))
                 .willReturn(mockTicketResponsDtos);
 
         ResultActions result = this.mockMvc.perform(

@@ -15,6 +15,8 @@ public enum ErrorStatus implements BaseErrorCode{
     _TICKET_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET404", "해당 티켓을 찾을 수 없습니다."),
     _TICKET_BOOKING_FAILED(HttpStatus.BAD_REQUEST, "TICKET400", "티켓 예약에 실패했습니다."),
     _TICKET_ID_MISSING(HttpStatus.BAD_REQUEST, "TICKET400", "티켓 ID가 제공되지 않았습니다."),
+    _TICKET_INVALID_SORT_OPTION(HttpStatus.BAD_REQUEST, "TICKET400", "잘못된 정렬 옵션입니다. 허용된 값은 'ticketId', 'price', 'expired'입니다."),
+    _TICKET_INVALID_PAGINATION_PARAMETERS(HttpStatus.BAD_REQUEST, "TICKET400", "페이지나 크기 값이 유효하지 않습니다. 0 이상의 값을 입력해 주세요."),
 
     // 유저 관련 에러
     LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),;
