@@ -106,19 +106,23 @@ public class PerformanceControllerTest {
                                parameterWithName("size").description("페이지 사이즈")
                         ),
                         responseFields(
-                                fieldWithPath("[].memberName").type(JsonFieldType.STRING).description("주최자 이름"),
-                                fieldWithPath("[].performanceId").type(JsonFieldType.NUMBER).description("공연 ID"),
-                                fieldWithPath("[].title").type(JsonFieldType.STRING).description("공연 제목"),
-                                fieldWithPath("[].dateStartTime").type(JsonFieldType.STRING).description("공연 시작시간"),
-                                fieldWithPath("[].dateEndTime").type(JsonFieldType.STRING).description("공연 종료시간"),
-                                fieldWithPath("[].address").type(JsonFieldType.STRING).description("공연장 주소"),
-                                fieldWithPath("[].imageUrl").type(JsonFieldType.STRING).description("공연 이미지 URL"),
-                                fieldWithPath("[].price").type(JsonFieldType.NUMBER).description("티켓 가격"),
-                                fieldWithPath("[].status").type(JsonFieldType.STRING).description("공연 상태"),
-                                fieldWithPath("[].category[]").description("공연 카테고리 배열"),
-                                fieldWithPath("[].category[].categoryId").type(JsonFieldType.NUMBER).description("카테고리 ID"),
-                                fieldWithPath("[].category[].nameKr").type(JsonFieldType.STRING).description("카테고리 한국어"),
-                                fieldWithPath("[].category[].nameEn").type(JsonFieldType.STRING).description("카테고리 영어")
+                                fieldWithPath("isSuccess").description("성공 여부"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("httpStatus").description("HTTP 상태"),
+                                fieldWithPath("result[].memberName").type(JsonFieldType.STRING).description("주최자 이름"),
+                                fieldWithPath("result[].performanceId").type(JsonFieldType.NUMBER).description("공연 ID"),
+                                fieldWithPath("result[].title").type(JsonFieldType.STRING).description("공연 제목"),
+                                fieldWithPath("result[].dateStartTime").type(JsonFieldType.STRING).description("공연 시작시간"),
+                                fieldWithPath("result[].dateEndTime").type(JsonFieldType.STRING).description("공연 종료시간"),
+                                fieldWithPath("result[].address").type(JsonFieldType.STRING).description("공연장 주소"),
+                                fieldWithPath("result[].imageUrl").type(JsonFieldType.STRING).description("공연 이미지 URL"),
+                                fieldWithPath("result[].price").type(JsonFieldType.NUMBER).description("티켓 가격"),
+                                fieldWithPath("result[].status").type(JsonFieldType.STRING).description("공연 상태"),
+                                fieldWithPath("result[].category[]").description("공연 카테고리 배열"),
+                                fieldWithPath("result[].category[].categoryId").type(JsonFieldType.NUMBER).description("카테고리 ID"),
+                                fieldWithPath("result[].category[].nameKr").type(JsonFieldType.STRING).description("카테고리 한국어"),
+                                fieldWithPath("result[].category[].nameEn").type(JsonFieldType.STRING).description("카테고리 영어")
                         )
                 ));
     }
