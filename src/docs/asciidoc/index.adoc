@@ -1,0 +1,4 @@
+include::{snippets}/performance-list/http-request.adoc[]
+include::{snippets}/performance-list/request-fields.adoc[]
+include::{snippets}/performance-list/http-response.adoc[]
+include::{snippets}/performance-list/response-fields.adoc[]
