@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
+import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
+import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
+import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -33,5 +37,12 @@ public class PerformanceServiceImpl implements PerformanceService {
         return performanceRepository.getPerformanceDetail(performanceId)
                 .map(PerformanceDetailResponse::from)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+    }
+
+    // Todo : 사용자 이메일과 같은지 확인 절차 추가할 것
+    @Override
+    @Transactional
+    public PerformanceUpdateResponse updatePerformance(Long performanceId, PerformanceUpdateRequest performanceUpdateRequest) {
+        return null;
     }
 }
