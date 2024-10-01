@@ -2,7 +2,7 @@ package org.socialculture.platform.performance.repository.querydsl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.socialculture.platform.member.entity.QMember;
+import org.socialculture.platform.member.entity.QMemberEntity;
 import org.socialculture.platform.performance.dto.CategoryDTO;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
 import org.socialculture.platform.performance.entity.QCategoryEntity;
@@ -23,7 +23,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
     QPerformanceEntity qPerformanceEntity = QPerformanceEntity.performanceEntity;
     QPerformanceCategoryEntity qPerformanceCategoryEntity = QPerformanceCategoryEntity.performanceCategoryEntity;
-    QMember qMember = QMember.member;
+    QMemberEntity qMember = QMemberEntity.memberEntity;
     QCategoryEntity qCategoryEntity = QCategoryEntity.categoryEntity;
 
     /**
