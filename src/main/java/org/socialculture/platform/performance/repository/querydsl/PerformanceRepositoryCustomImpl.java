@@ -4,7 +4,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.socialculture.platform.member.entity.QMember;
+import org.socialculture.platform.member.entity.QMemberEntity;
 import org.socialculture.platform.performance.dto.CategoryDTO;
 import org.socialculture.platform.performance.dto.PerformanceDetail;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
@@ -29,7 +29,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
     QPerformanceEntity qPerformanceEntity = QPerformanceEntity.performanceEntity;
     QPerformanceCategoryEntity qPerformanceCategoryEntity = QPerformanceCategoryEntity.performanceCategoryEntity;
-    QMember qMember = QMember.member;
+    QMemberEntity qMember = QMemberEntity.memberEntity;
     QCategoryEntity qCategoryEntity = QCategoryEntity.categoryEntity;
 
     public static BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f) {
