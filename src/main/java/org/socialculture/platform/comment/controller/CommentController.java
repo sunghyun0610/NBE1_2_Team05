@@ -1,5 +1,7 @@
 package org.socialculture.platform.comment.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.slf4j.LoggerFactory;
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
 import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
 import org.socialculture.platform.comment.dto.response.CommentCreateResponse;
@@ -17,16 +19,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
 
 @RestController
 @RequestMapping("/api/v1/comments")
+@RequiredArgsConstructor
 public class CommentController {
+
+    private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
 
     private final CommentService commentService;
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
-    }
+//    public CommentController(CommentService commentService) {
+//        this.commentService = commentService;
+//    }
 
 
     /**
@@ -37,7 +43,7 @@ public class CommentController {
      *
      */
     @GetMapping("/{performanceId}")
-    public ResponseEntity<ApiResponse<List<CommentReadDto>>> getComment(@PathVariable long performanceId) {
+    public ResponseEntity<ApiResponse<List<CommentReadDto>>> getComment(@PathVariable("performanceId") long performanceId) {
         List<CommentReadDto> commentReadDtos = commentService.getAllComment(performanceId);
         return ApiResponse.onSuccess(commentReadDtos);
     }
@@ -51,11 +57,12 @@ public class CommentController {
      *
      */
     @PostMapping("/{performanceId}")
-    public ResponseEntity<ApiResponse<CommentCreateResponse>> createComment(@PathVariable long performanceId, @RequestBody CommentCreateRequest commentCreateRequest) {
-        System.out.println("----before service");
+    public ResponseEntity<ApiResponse<CommentCreateResponse>> createComment(@PathVariable("performanceId") long performanceId, @RequestBody CommentCreateRequest commentCreateRequest) {
+        logger.info("서비스 호출 전 : {}", performanceId);
         CommentCreateResponse commentCreateResponse = commentService.createComment(performanceId, commentCreateRequest);
+        logger.info("Successfully created a comment for performanceId: {}", performanceId);
 
-            return ApiResponse.onSuccess(HttpStatus.CREATED, "COMMNET201", "댓글 작성 성공", commentCreateResponse);
+        return ApiResponse.onSuccess(HttpStatus.CREATED, "COMMNET201", "댓글 작성 성공", commentCreateResponse);
 
 
     }
@@ -68,7 +75,7 @@ public class CommentController {
      *
      */
     @PatchMapping("/{commentId}")
-    public ResponseEntity<ApiResponse<CommentUpdateResponse>> updateComment(@PathVariable long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest){
+    public ResponseEntity<ApiResponse<CommentUpdateResponse>> updateComment(@PathVariable("commentId") long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest){
         //commentId를 통해서 performanceId를 가져와야함. -> 반환해줘야함
         CommentUpdateResponse commentUpdateResponse = commentService.updateComment(commentId,commentUpdateRequest);
         return ApiResponse.onSuccess(commentUpdateResponse);
@@ -82,7 +89,7 @@ public class CommentController {
      *
      */
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(@PathVariable long commentId){
+    public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(@PathVariable("commentId") long commentId){
         CommentDeleteResponse commentDeleteResponse = commentService.deleteComment(commentId);
         return ApiResponse.onSuccess(commentDeleteResponse);
 

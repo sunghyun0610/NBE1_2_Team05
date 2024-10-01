@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
+import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 
 @Entity
@@ -17,7 +18,7 @@ public class CommentEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
-    private long commentId;
+    private Long commentId; // id값은 원시형이 아닌 wrapper로 사용하자
 
     @Column(name = "comment", unique = true, nullable = false)
     private String content;
@@ -33,10 +34,16 @@ public class CommentEntity extends BaseEntity {
     @JoinColumn(name = "performance_id", nullable = false)
     private PerformanceEntity performance;
 
-//
-//    @ManyToOne
-//    @JoinColumn(name = "user_id" ,nullable = false)
-//    private User userId;  아직 User 엔티티 없어서 보류
 
+    @ManyToOne
+    @JoinColumn(name = "member_id" ,nullable = false)
+    private MemberEntity member;
+
+
+    // Update content and updatedAt fields
+    public void updateContent(String newContent) {
+        this.content = newContent;
+    }
 
 }
+

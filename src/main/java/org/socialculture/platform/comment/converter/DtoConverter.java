@@ -7,7 +7,7 @@ import org.socialculture.platform.comment.entity.CommentEntity;
 
 public class DtoConverter{
     public static CommentReadDto fromCommentReadDto(CommentEntity commentEntity){
-        CommentReadDto commentReadDto =CommentReadDto.builder()
+        CommentReadDto commentReadDto = CommentReadDto.builder()
                 .commentId(commentEntity.getCommentId())
                 .memberId(1)//아직은 테스트
                 .content(commentEntity.getContent())
