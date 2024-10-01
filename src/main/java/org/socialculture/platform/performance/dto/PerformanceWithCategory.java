@@ -6,8 +6,11 @@ import org.socialculture.platform.performance.entity.PerformanceStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * query dsl로 모든 공연 정보를 받는 dto
+ */
 @Getter
-public class PerformanceWithoutCategory {
+public class PerformanceWithCategory {
     private String memberName;
     private Long performanceId;
     private String title;
@@ -19,9 +22,9 @@ public class PerformanceWithoutCategory {
     private PerformanceStatus status;
     private List<CategoryDTO> categories;
 
-    private PerformanceWithoutCategory() {}
+    private PerformanceWithCategory() {}
 
-    public PerformanceWithoutCategory(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String address, String imageUrl, int price, PerformanceStatus status) {
+    public PerformanceWithCategory(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String address, String imageUrl, int price, PerformanceStatus status) {
         this.memberName = memberName;
         this.performanceId = performanceId;
         this.title = title;

@@ -2,6 +2,7 @@ package org.socialculture.platform.performance.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -61,5 +62,6 @@ public class PerformanceEntity extends BaseEntity {
     private PerformanceStatus performanceStatus;
 
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<PerformanceCategoryEntity> performanceCategoryList = new ArrayList<>();
 }
