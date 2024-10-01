@@ -18,7 +18,7 @@ public record PerformanceListResponse(
         String imageUrl,
         int price,
         String status,
-        List<CategoryDTO> category
+        List<CategoryDTO> categories
 ) {
 
     public static PerformanceListResponse from(PerformanceWithCategory performanceWithCategory) {
@@ -32,7 +32,7 @@ public record PerformanceListResponse(
                 .imageUrl(performanceWithCategory.getImageUrl())
                 .price(performanceWithCategory.getPrice())
                 .status(String.valueOf(performanceWithCategory.getStatus()))
-                .category(performanceWithCategory.getCategories())
+                .categories(performanceWithCategory.getCategories())
                 .build();
     }
 }
