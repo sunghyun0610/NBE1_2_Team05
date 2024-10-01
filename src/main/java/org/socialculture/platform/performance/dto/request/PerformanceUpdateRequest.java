@@ -12,9 +12,9 @@ public record PerformanceUpdateRequest(
         LocalDateTime dateEndTime,
         String address,
         String imageUrl,
-        int price,
+        Integer price,
         String description,
-        int maxAudience
+        Integer maxAudience
 ) {
     public static PerformanceEntity toEntity(PerformanceUpdateRequest performanceUpdateRequest) {
         return PerformanceEntity.builder()

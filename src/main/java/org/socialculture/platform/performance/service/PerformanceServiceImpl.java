@@ -43,6 +43,10 @@ public class PerformanceServiceImpl implements PerformanceService {
     @Override
     @Transactional
     public PerformanceUpdateResponse updatePerformance(Long performanceId, PerformanceUpdateRequest performanceUpdateRequest) {
-        return null;
+        PerformanceEntity performanceEntity = performanceRepository.findById(performanceId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+
+        performanceEntity.updatePerformance(PerformanceUpdateRequest.toEntity(performanceUpdateRequest));
+        return PerformanceUpdateResponse.from(performanceEntity.getPerformanceId());
     }
 }
