@@ -23,13 +23,14 @@ public class TicketServiceImpl implements TicketService {
     private static String MEMBER_EMAIL = "ello@test.com"; // 임시 메일 테스트 -> 토큰 발행되면 수정
 
     @Override
-    public List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOptionDesc(int page, int size, String sortOption) {
+    public List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOption(int page, int size, String sortOption, boolean isAscending) {
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        return ticketRepository.getAllTicketsByEmailWithPageAndSortOptionDesc(MEMBER_EMAIL,
+        return ticketRepository.getAllTicketsByEmailWithPageAndSortOption(MEMBER_EMAIL,
                         pageRequest.getOffset(),
                         pageRequest.getPageSize(),
-                        sortOption)
+                        sortOption,
+                        isAscending)
                 .stream()
                 .map(TicketResponseDto::from)
                 .collect(Collectors.toList());
