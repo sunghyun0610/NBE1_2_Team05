@@ -5,7 +5,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.socialculture.platform.member.entity.QMemberEntity;
-import org.socialculture.platform.performance.dto.CategoryDTO;
+import org.socialculture.platform.performance.dto.CategoryContent;
 import org.socialculture.platform.performance.dto.PerformanceDetail;
 import org.socialculture.platform.performance.dto.PerformanceWithCategory;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
@@ -85,15 +85,15 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
     private List<PerformanceWithCategory> addCategoriesToPerformances(List<PerformanceWithCategory> performances) {
         for (PerformanceWithCategory performance : performances) {
-            List<CategoryDTO> categories = getCategoriesByPerformance(performance.getPerformanceId());
+            List<CategoryContent> categories = getCategoriesByPerformance(performance.getPerformanceId());
             performance.updateCategories(categories);
         }
         return performances;
     }
 
-    private List<CategoryDTO> getCategoriesByPerformance(Long performanceId) {
+    private List<CategoryContent> getCategoriesByPerformance(Long performanceId) {
         // 조회된 공연 대상으로 각 공연당 카테고리 조회
-        return jpaQueryFactory.select(Projections.constructor(CategoryDTO.class,
+        return jpaQueryFactory.select(Projections.constructor(CategoryContent.class,
                         qCategoryEntity.categoryId,
                         qCategoryEntity.nameEn,
                         qCategoryEntity.nameKr))
@@ -135,7 +135,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .fetchOne();
 
         if (performanceDetail != null) {
-            List<CategoryDTO> categories = getCategoriesByPerformance(performanceDetail.getPerformanceId());
+            List<CategoryContent> categories = getCategoriesByPerformance(performanceDetail.getPerformanceId());
             performanceDetail.updateCategories(categories);
         }
 

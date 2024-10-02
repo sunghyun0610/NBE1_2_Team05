@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.socialculture.platform.performance.dto.CategoryDTO;
-import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
+import org.socialculture.platform.performance.dto.CategoryContent;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
@@ -72,8 +70,8 @@ public class PerformanceControllerTest {
                         .status("NOT_CONFIRMED")
                         .categories(
                                 List.of(
-                                        CategoryDTO.of(1L, "노래", "MUSIC"),
-                                        CategoryDTO.of(4L, "스탠드업", "STANDUP")
+                                        CategoryContent.of(1L, "노래", "MUSIC"),
+                                        CategoryContent.of(4L, "스탠드업", "STANDUP")
                                 )
                         )
                         .build()
@@ -90,8 +88,8 @@ public class PerformanceControllerTest {
                         .status("CONFIRMED")
                         .categories(
                                 List.of(
-                                        CategoryDTO.of(1L, "노래", "MUSIC"),
-                                        CategoryDTO.of(2L, "춤", "DANCE")
+                                        CategoryContent.of(1L, "노래", "MUSIC"),
+                                        CategoryContent.of(2L, "춤", "DANCE")
                                 )
                         )
                         .build()
@@ -161,8 +159,8 @@ public class PerformanceControllerTest {
                         .updatedAt(LocalDateTime.now())
                         .categories(
                                 List.of(
-                                        CategoryDTO.of(1L, "노래", "MUSIC"),
-                                        CategoryDTO.of(4L, "스탠드업", "STANDUP")
+                                        CategoryContent.of(1L, "노래", "MUSIC"),
+                                        CategoryContent.of(4L, "스탠드업", "STANDUP")
                                 )
                         )
                         .build();
