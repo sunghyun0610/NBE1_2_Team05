@@ -3,7 +3,7 @@ package org.socialculture.platform.performance.controller;
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
-import org.socialculture.platform.performance.dto.request.PerformanceRegisterResponse;
+import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;

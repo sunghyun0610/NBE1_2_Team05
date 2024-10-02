@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.socialculture.platform.performance.dto.CategoryDTO;
+import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
+import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
