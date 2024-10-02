@@ -64,4 +64,10 @@ public class PerformanceController {
     ) {
         return ApiResponse.onSuccess(performanceService.updatePerformance(performanceId, performanceUpdateRequest));
     }
+
+    @DeleteMapping("/{performanceId}")
+    public ResponseEntity<ApiResponse<String>> deletePerformance(@PathVariable("performanceId") Long performanceId) {
+        performanceService.deletePerformance(performanceId);
+        return ApiResponse.onSuccess();
+    }
 }
