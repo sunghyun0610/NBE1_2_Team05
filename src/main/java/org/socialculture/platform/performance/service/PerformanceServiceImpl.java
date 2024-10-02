@@ -3,7 +3,7 @@ package org.socialculture.platform.performance.service;
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
-import org.socialculture.platform.performance.dto.PerformanceWithCategory;
+import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;

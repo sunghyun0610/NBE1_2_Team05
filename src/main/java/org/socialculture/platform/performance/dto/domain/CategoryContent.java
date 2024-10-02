@@ -1,4 +1,4 @@
-package org.socialculture.platform.performance.dto;
+package org.socialculture.platform.performance.dto.domain;
 
 import lombok.Builder;
 

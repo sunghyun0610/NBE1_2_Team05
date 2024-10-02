@@ -1,7 +1,7 @@
 package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
-import org.socialculture.platform.performance.dto.CategoryContent;
+import org.socialculture.platform.performance.dto.domain.CategoryContent;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
 

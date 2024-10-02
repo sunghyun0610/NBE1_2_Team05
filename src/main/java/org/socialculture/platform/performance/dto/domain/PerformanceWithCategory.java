@@ -1,4 +1,4 @@
-package org.socialculture.platform.performance.dto;
+package org.socialculture.platform.performance.dto.domain;
 
 import lombok.Getter;
 import org.socialculture.platform.performance.entity.PerformanceStatus;

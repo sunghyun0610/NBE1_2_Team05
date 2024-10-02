@@ -1,8 +1,8 @@
 package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
-import org.socialculture.platform.performance.dto.CategoryContent;
-import org.socialculture.platform.performance.dto.PerformanceWithCategory;
+import org.socialculture.platform.performance.dto.domain.CategoryContent;
+import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 
 import java.time.LocalDateTime;
 import java.util.List;
