@@ -72,8 +72,6 @@ tasks.withType(JavaCompile) {
     options.generatedSourceOutputDirectory = file(querydslSrcDir)
 }
 
-
-
 tasks.named('test') {
     outputs.dir snippetsDir // snippetsDir변수 test의 output.dir로 설정.
     useJUnitPlatform()
