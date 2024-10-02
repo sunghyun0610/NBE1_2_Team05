@@ -140,10 +140,12 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));
 
         CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.from(commentEntity.getPerformance().getPerformanceId());
-        commentEntity.setDeletedAt(LocalDateTime.now());
-        commentRepository.delete(commentEntity);
+        commentEntity.recordDeletedAt(LocalDateTime.now());
+        commentEntity.changeCommentStatus(CommentStatus.DELETED);
 
+        commentRepository.save(commentEntity);
         return  commentDeleteResponse;
     }
+    //DB에서 삭제하는 것이 아닌 상태만 Deleted로 바꿔주는 것
 
 }
