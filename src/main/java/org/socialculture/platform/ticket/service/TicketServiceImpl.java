@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.repository.TicketRepository;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,13 +26,11 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOption(int page, int size, String sortOption, boolean isAscending) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        // Pageable 객체 생성 (정렬은 sortOption과 isAscending에 기반하여 설정)
+        Sort sort = isAscending ? Sort.by(sortOption).ascending() : Sort.by(sortOption).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
 
-        return ticketRepository.getAllTicketsByEmailWithPageAndSortOption(MEMBER_EMAIL,
-                        pageRequest.getOffset(),
-                        pageRequest.getPageSize(),
-                        sortOption,
-                        isAscending)
+        return ticketRepository.getAllTicketsByEmailWithPageAndSortOption(MEMBER_EMAIL, pageable)
                 .stream()
                 .map(TicketResponseDto::from)
                 .collect(Collectors.toList());
