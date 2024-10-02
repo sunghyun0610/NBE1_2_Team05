@@ -1,7 +1,7 @@
 package org.socialculture.platform.performance.repository.querydsl;
 
-import org.socialculture.platform.performance.dto.PerformanceDetail;
-import org.socialculture.platform.performance.dto.PerformanceWithCategory;
+import org.socialculture.platform.performance.dto.domain.PerformanceDetail;
+import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;

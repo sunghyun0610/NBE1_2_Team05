@@ -1,4 +1,4 @@
-package org.socialculture.platform.performance.dto;
+package org.socialculture.platform.performance.dto.domain;
 
 import lombok.Getter;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
@@ -20,7 +20,7 @@ public class PerformanceWithCategory {
     private String imageUrl;
     int price;
     private PerformanceStatus status;
-    private List<CategoryDTO> categories;
+    private List<CategoryContent> categories;
 
     private PerformanceWithCategory() {}
 
@@ -36,7 +36,7 @@ public class PerformanceWithCategory {
         this.status = status;
     }
 
-    public void updateCategories(List<CategoryDTO> categories) {
+    public void updateCategories(List<CategoryContent> categories) {
         this.categories = categories;
     }
 }

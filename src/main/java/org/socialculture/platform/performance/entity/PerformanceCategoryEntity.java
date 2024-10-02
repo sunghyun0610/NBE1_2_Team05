@@ -29,4 +29,15 @@ public class PerformanceCategoryEntity {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    private PerformanceCategoryEntity(PerformanceEntity performance, CategoryEntity category, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.performance = performance;
+        this.category = category;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static PerformanceCategoryEntity of(PerformanceEntity performanceEntity, CategoryEntity categoryEntity) {
+        return new PerformanceCategoryEntity(performanceEntity, categoryEntity, LocalDateTime.now(), LocalDateTime.now());
+    }
 }
