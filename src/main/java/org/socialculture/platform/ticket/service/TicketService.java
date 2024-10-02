@@ -1,12 +1,13 @@
 package org.socialculture.platform.ticket.service;
 
+import org.socialculture.platform.ticket.dto.request.TicketRequestDto;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 
 import java.util.List;
 
 /**
  * 티켓 서비스 인터페이스
- * 
+ *
  * @author ycjung
  */
 public interface TicketService {
@@ -16,7 +17,7 @@ public interface TicketService {
     // 상세 조회
     TicketResponseDto getTicketByEmailAndTicketId(Long ticketId);
 
-    // TicketResponse createTicket(Long memberId, TicketRequest ticketRequest);
+    TicketResponseDto registerticket(TicketRequestDto ticketRequest);
 
     // TicketResponse updateTicket(Long id, TicketRequest ticketRequest);
 

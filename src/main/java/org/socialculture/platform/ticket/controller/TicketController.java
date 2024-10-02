@@ -1,13 +1,11 @@
 package org.socialculture.platform.ticket.controller;
 
-import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
+import org.socialculture.platform.ticket.dto.request.TicketRequestDto;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +28,7 @@ public class TicketController {
 
     /**
      * 나의 티켓 전체 조회 - 페이징 처리
+     *
      * @param page
      * @param size
      * @param option
@@ -54,6 +53,7 @@ public class TicketController {
 
     /**
      * 나의 티켓 상세 조회
+     *
      * @param ticketId
      * @return
      */
@@ -65,5 +65,12 @@ public class TicketController {
             throw new GeneralException(ErrorStatus._TICKET_ID_MISSING);
         }
         return ApiResponse.onSuccess(ticketService.getTicketByEmailAndTicketId(ticketId));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<TicketResponseDto>> buyTicket(@RequestBody TicketRequestDto ticketRequestDto) {
+        log.info("Buy ticket: {}", ticketRequestDto);
+
+        return ApiResponse.onSuccess(ticketService.registerticket(ticketRequestDto));
     }
 }
