@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(controllers = TicketController.class)  // TicketController를 대상으로 WebMvcTest를 수행 (컨트롤러 단위 테스트)
 @ExtendWith(SpringExtension.class)
-@MockBean(JpaMetamodelMappingContext.class)  // JPA 메타모델 문제 해결을 위한 MockBean 설정 (테스트 환경에서 메타모델을 Mock으로 사용)
 public class TicketControllerTest {
 
     @Autowired
