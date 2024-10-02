@@ -43,4 +43,8 @@ public class CouponEntity extends BaseEntity {
 
     @Column(name = "expire_time", nullable = false)
     private LocalDateTime expireTime;
+
+    public void setUsed(boolean used) {
+        this.isUsed = used;
+    }
 }
