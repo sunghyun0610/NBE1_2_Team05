@@ -11,12 +11,10 @@ import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 티켓 데이터 컨트롤러
@@ -52,5 +50,20 @@ public class TicketController {
         }
 
         return ApiResponse.onSuccess(ticketService.getAllTicketsByEmailWithPageAndSortOption(page, size, option, isAscending));
+    }
+
+    /**
+     * 나의 티켓 상세 조회
+     * @param ticketId
+     * @return
+     */
+    @GetMapping("/{ticketId}")
+    public ResponseEntity<ApiResponse<TicketResponseDto>> getTicketById(@PathVariable("ticketId") Long ticketId) {
+        log.info("Get ticket detail by id: {}", ticketId);
+
+        if (Objects.isNull(ticketId)) {
+            throw new GeneralException(ErrorStatus._TICKET_ID_MISSING);
+        }
+        return ApiResponse.onSuccess(ticketService.getTicketByEmailAndTicketId(ticketId));
     }
 }
