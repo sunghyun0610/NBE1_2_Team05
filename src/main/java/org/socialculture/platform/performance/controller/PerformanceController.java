@@ -2,8 +2,10 @@ package org.socialculture.platform.performance.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
+import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,5 +41,13 @@ public class PerformanceController {
     @GetMapping("/{performanceId}")
     public ResponseEntity<ApiResponse<PerformanceDetailResponse>> getPerformanceById(@PathVariable("performanceId") Long performanceId) {
         return ApiResponse.onSuccess(performanceService.getPerformanceDetail(performanceId));
+    }
+
+    @PatchMapping("/{performanceId}")
+    public ResponseEntity<ApiResponse<PerformanceUpdateResponse>> updatePerformance(
+            @PathVariable("performanceId") Long performanceId,
+            @RequestBody PerformanceUpdateRequest performanceUpdateRequest
+    ) {
+        return ApiResponse.onSuccess(performanceService.updatePerformance(performanceId, performanceUpdateRequest));
     }
 }
