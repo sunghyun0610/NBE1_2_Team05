@@ -19,7 +19,7 @@ public class CommentReadDto {
     private String content; //엔티티 상에서는 comment
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private long parentId;
+    private Long parentId;
     private CommentStatus commentStatus;
 
 

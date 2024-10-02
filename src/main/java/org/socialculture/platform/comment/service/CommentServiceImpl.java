@@ -83,12 +83,13 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(()->new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR));//임의로 넣었음 나중에 jwt에서 추출할 예정
 
         //대댓글 기능 로직
-        Long parentId= commentCreateRequest.parentId();
+        Long parentId= commentCreateRequest.parentId();//생성 할떄 이걸 dto로 넘겨주는게 맞냐?, client에서 이값을 넘겨줄 수 있나..? 의문이듬
         CommentEntity parentComment=null;
         if(parentId!=null){//즉 parentId가 있다면
             parentComment=commentRepository.findById(parentId)
                     .orElseThrow(()->new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));
         }
+
 
 
         CommentEntity commentEntity = CommentEntity.builder()
