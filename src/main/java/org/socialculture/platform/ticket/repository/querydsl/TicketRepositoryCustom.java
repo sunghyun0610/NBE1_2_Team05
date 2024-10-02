@@ -1,6 +1,7 @@
 package org.socialculture.platform.ticket.repository.querydsl;
 
 import org.socialculture.platform.ticket.entity.TicketEntity;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,6 @@ import java.util.Optional;
  */
 public interface TicketRepositoryCustom {
 
-    List<TicketEntity> getAllTicketsByEmailWithPageAndSortOption(String email, long offset, int pageSize, String sortOption, boolean isAscending);
+    List<TicketEntity> getAllTicketsByEmailWithPageAndSortOption(String email, Pageable pageable);
     Optional<TicketEntity> getTicketByEmailAndTicketId(String email, Long ticketId);
 }
