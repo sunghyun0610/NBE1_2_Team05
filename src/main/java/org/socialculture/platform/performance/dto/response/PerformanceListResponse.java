@@ -1,7 +1,7 @@
 package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
-import org.socialculture.platform.performance.dto.domain.CategoryContent;
+import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 
 import java.time.LocalDateTime;
@@ -18,10 +18,13 @@ public record PerformanceListResponse(
         String imageUrl,
         int price,
         String status,
-        List<CategoryContent> categories
+        List<CategoryDto> categories
 ) {
 
     public static PerformanceListResponse from(PerformanceWithCategory performanceWithCategory) {
+        List<CategoryDto> categoryDtos = performanceWithCategory.getCategories().stream()
+                .map(CategoryDto::toDto).toList();
+
         return PerformanceListResponse.builder()
                 .memberName(performanceWithCategory.getMemberName())
                 .performanceId(performanceWithCategory.getPerformanceId())
@@ -32,7 +35,7 @@ public record PerformanceListResponse(
                 .imageUrl(performanceWithCategory.getImageUrl())
                 .price(performanceWithCategory.getPrice())
                 .status(String.valueOf(performanceWithCategory.getStatus()))
-                .categories(performanceWithCategory.getCategories())
+                .categories(categoryDtos)
                 .build();
     }
 }

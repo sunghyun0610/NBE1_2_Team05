@@ -1,6 +1,7 @@
 package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
+import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.CategoryContent;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
@@ -25,9 +26,9 @@ public record PerformanceRegisterResponse(
         PerformanceStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<CategoryContent> categories
+        List<CategoryDto> categories
 ) {
-    public PerformanceRegisterResponse of(PerformanceEntity performanceEntity, List<CategoryContent> categories) {
-
+    public PerformanceRegisterResponse of(PerformanceEntity performanceEntity, List<CategoryDto> categories) {
+        return null;
     }
 }

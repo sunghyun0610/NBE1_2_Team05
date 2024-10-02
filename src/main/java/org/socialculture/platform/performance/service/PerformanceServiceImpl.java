@@ -3,6 +3,7 @@ package org.socialculture.platform.performance.service;
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
+import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
@@ -37,7 +38,8 @@ public class PerformanceServiceImpl implements PerformanceService {
         PerformanceEntity performanceEntity = performanceRegisterRequest.toEntity(performanceRegisterRequest);
         performanceEntity = performanceRepository.save(performanceEntity);
 
-        performanceCategorySave(performanceEntity, performanceRegisterRequest.categories());
+        List<CategoryEntity> categoryEntities = performanceCategorySave(performanceEntity, performanceRegisterRequest.categories());
+
         return null;
     }
 
@@ -69,7 +71,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         return PerformanceUpdateResponse.from(performanceEntity.getPerformanceId());
     }
 
-    private void performanceCategorySave(PerformanceEntity performanceEntity, List<String> categories) {
+    private List<CategoryEntity> performanceCategorySave(PerformanceEntity performanceEntity, List<String> categories) {
         List<CategoryEntity> categoryEntities = categoryRepository.findAllByNameKrIn(categories); // 한 번에 조회
 
         if (categoryEntities.isEmpty()) {
@@ -78,5 +80,7 @@ public class PerformanceServiceImpl implements PerformanceService {
 
         categoryEntities.forEach(e ->
                 performanceCategoryRepository.save(PerformanceCategoryEntity.of(performanceEntity, e)));
+
+        return categoryEntities;
     }
 }

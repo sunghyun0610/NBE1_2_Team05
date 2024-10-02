@@ -1,7 +1,7 @@
 package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
-import org.socialculture.platform.performance.dto.domain.CategoryContent;
+import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceDetail;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
 
@@ -25,9 +25,12 @@ public record PerformanceDetailResponse(
     PerformanceStatus status,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    List<CategoryContent>categories
+    List<CategoryDto>categories
 ) {
     public static PerformanceDetailResponse from(PerformanceDetail performanceDetail) {
+        List<CategoryDto> categoryDtos = performanceDetail.getCategories().stream()
+                .map(CategoryDto::toDto).toList();
+
         return PerformanceDetailResponse.builder()
                 .memberName(performanceDetail.getMemberName())
                 .performanceId(performanceDetail.getPerformanceId())
@@ -44,7 +47,7 @@ public record PerformanceDetailResponse(
                 .status(performanceDetail.getStatus())
                 .createdAt(performanceDetail.getCreatedAt())
                 .updatedAt(performanceDetail.getUpdatedAt())
-                .categories(performanceDetail.getCategories())
+                .categories(categoryDtos)
                 .build();
     }
 }
