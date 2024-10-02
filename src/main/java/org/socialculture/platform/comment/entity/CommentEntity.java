@@ -24,7 +24,7 @@ public class CommentEntity extends BaseEntity {
     private String content;
 
     @Column(name = "parent_id", nullable = true)//default null
-    private long parentId;
+    private long parentId=0;
 
     @Column(name = "status", nullable = true)
     @Enumerated(EnumType.STRING)//Enum값을 문자열로 저장

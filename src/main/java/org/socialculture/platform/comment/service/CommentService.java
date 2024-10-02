@@ -11,7 +11,7 @@ import org.socialculture.platform.comment.dto.response.CommentUpdateResponse;
 import java.util.List;
 
 public interface CommentService {
-    List<CommentReadDto> getAllComment(long performanceId);// 댓글 전체조회
+    List<CommentReadDto> getAllComment(long performanceId, int page, int size);// 댓글 전체조회
 
     CommentCreateResponse createComment(long performanceId, CommentCreateRequest commentCreateRequest);
 

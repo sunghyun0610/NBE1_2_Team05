@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.slf4j.Logger;
 
 @RestController
@@ -37,24 +38,26 @@ public class CommentController {
 
     /**
      * 전체 댓글 조회
-     * @author sunghyun0610
+     *
      * @param performanceId
      * @return 공통 Response사용하여 CommentReadDto리스트 반환
-     *
+     * @author sunghyun0610
      */
     @GetMapping("/{performanceId}")
-    public ResponseEntity<ApiResponse<List<CommentReadDto>>> getComment(@PathVariable("performanceId") long performanceId) {
-        List<CommentReadDto> commentReadDtos = commentService.getAllComment(performanceId);
+    public ResponseEntity<ApiResponse<List<CommentReadDto>>> getComment(@PathVariable("performanceId") long performanceId,
+                                                                        @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
+        //page는 인덱스이기 때문에 0번부터 시작
+        List<CommentReadDto> commentReadDtos = commentService.getAllComment(performanceId, page, size);
         return ApiResponse.onSuccess(commentReadDtos);
     }
 
 
     /**
      * 댓글 생성
-     * @author sunghyun0610
+     *
      * @param performanceId
      * @return 공통 Response사용하여 commentCreateResponse 반환
-     *
+     * @author sunghyun0610
      */
     @PostMapping("/{performanceId}")
     public ResponseEntity<ApiResponse<CommentCreateResponse>> createComment(@PathVariable("performanceId") long performanceId, @RequestBody CommentCreateRequest commentCreateRequest) {
@@ -69,27 +72,27 @@ public class CommentController {
 
     /**
      * 댓글 수정
-     * @author sunghyun0610
+     *
      * @param commentId
      * @return 공통 Response사용하여 commentUpdateResponse 반환
-     *
+     * @author sunghyun0610
      */
     @PatchMapping("/{commentId}")
-    public ResponseEntity<ApiResponse<CommentUpdateResponse>> updateComment(@PathVariable("commentId") long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest){
+    public ResponseEntity<ApiResponse<CommentUpdateResponse>> updateComment(@PathVariable("commentId") long commentId, @RequestBody CommentUpdateRequest commentUpdateRequest) {
         //commentId를 통해서 performanceId를 가져와야함. -> 반환해줘야함
-        CommentUpdateResponse commentUpdateResponse = commentService.updateComment(commentId,commentUpdateRequest);
+        CommentUpdateResponse commentUpdateResponse = commentService.updateComment(commentId, commentUpdateRequest);
         return ApiResponse.onSuccess(commentUpdateResponse);
     }
 
     /**
      * 댓글 삭제
-     * @author sunghyun0610
+     *
      * @param commentId
      * @return 공통 Response사용하여 commentDeleteResponse 반환
-     *
+     * @author sunghyun0610
      */
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(@PathVariable("commentId") long commentId){
+    public ResponseEntity<ApiResponse<CommentDeleteResponse>> deleteComment(@PathVariable("commentId") long commentId) {
         CommentDeleteResponse commentDeleteResponse = commentService.deleteComment(commentId);
         return ApiResponse.onSuccess(commentDeleteResponse);
 

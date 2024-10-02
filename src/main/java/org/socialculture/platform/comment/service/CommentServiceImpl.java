@@ -16,6 +16,8 @@ import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.repository.PerformanceRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -47,11 +49,12 @@ public class CommentServiceImpl implements CommentService {
      */
 
     @Override
-    public List<CommentReadDto> getAllComment(long performanceId) {
+    public List<CommentReadDto> getAllComment(long performanceId, int page, int size) {
 
+        Pageable pageable= PageRequest.of(page, size);
 
         // 주어진 id값으로 댓글 테이블 조회하믄댐
-        List<CommentEntity> commentEntityList = commentRepository.findAllByPerformance_PerformanceId(performanceId);
+        List<CommentEntity> commentEntityList = commentRepository.findAllByPerformance_PerformanceId(performanceId, pageable);
 
         if (commentEntityList.isEmpty()) {
             throw new GeneralException(ErrorStatus.COMMENT_NOT_FOUND);
