@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.socialculture.platform.global.apiResponse.exception.ErrorStatus.PERFORMANCE_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 public class PerformanceServiceImpl implements PerformanceService {
@@ -59,7 +61,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     public PerformanceDetailResponse getPerformanceDetail(Long performanceId) {
         return performanceRepository.getPerformanceDetail(performanceId)
                 .map(PerformanceDetailResponse::from)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
     }
 
     // Todo : 사용자 이메일과 같은지 확인 절차 추가할 것
@@ -67,7 +69,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     @Transactional
     public PerformanceUpdateResponse updatePerformance(Long performanceId, PerformanceUpdateRequest performanceUpdateRequest) {
         PerformanceEntity performanceEntity = performanceRepository.findById(performanceId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+                .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
 
         performanceEntity.updatePerformance(PerformanceUpdateRequest.toEntity(performanceUpdateRequest));
         return PerformanceUpdateResponse.from(performanceEntity.getPerformanceId());
@@ -84,5 +86,19 @@ public class PerformanceServiceImpl implements PerformanceService {
                 performanceCategoryRepository.save(PerformanceCategoryEntity.of(performanceEntity, e)));
 
         return categoryEntities;
+    }
+
+    @Override
+    public List<PerformanceListResponse> getMyPerformanceList(String email, Integer page, Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<PerformanceWithCategory> performanceList = performanceRepository.getMyPerformanceWithCategoryList(email, pageRequest);
+
+        if (performanceList.isEmpty()) {
+            throw new GeneralException(PERFORMANCE_NOT_FOUND);
+        }
+
+        return performanceList.stream()
+                .map(PerformanceListResponse::from)
+                .toList();
     }
 }
