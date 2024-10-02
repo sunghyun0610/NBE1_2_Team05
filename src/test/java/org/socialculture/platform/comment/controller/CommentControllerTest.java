@@ -1,0 +1,89 @@
+package org.socialculture.platform.comment.controller;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.socialculture.platform.comment.controller.CommentController;
+
+import org.socialculture.platform.comment.dto.response.CommentReadDto;
+import org.socialculture.platform.comment.service.CommentService;
+import org.socialculture.platform.comment.entity.CommentStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+@WebMvcTest(CommentController.class)
+public class CommentControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private CommentService commentService;
+
+    @Test
+    @DisplayName("전체 댓글 조회 테스트")
+    @WithMockUser
+        // 인증된 사용자로 테스트 수행
+    void testGetComment() throws Exception {
+        // given : 테스트 전 준비 단계 , 필요한 데이터 세팅 및 환경 구성
+        CommentReadDto comment1 = CommentReadDto.builder()
+                .commentId(1L)
+                .memberId(1L)
+                .content("Great performance!")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .parentId(null) // 최상위 댓글일 경우 null
+                .commentStatus(CommentStatus.ACTIVE)
+                .build();//첫번째 댓글
+
+        CommentReadDto comment2 = CommentReadDto.builder()
+                .commentId(2L)
+                .memberId(1L)
+                .content("Amazing show!")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .parentId(1L) // 부모 댓글의 ID 설정
+                .commentStatus(CommentStatus.ACTIVE)
+                .build();//대댓긋
+
+        List<CommentReadDto> commentList = List.of(comment1, comment2);
+
+        Mockito.when(commentService.getAllComment(anyLong(), anyInt(), anyInt()))
+                .thenReturn(commentList);
+
+        // when : 실제 테스트 동작
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/comments/1")
+                .param("page", "0")
+                .param("size", "10")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions.andExpect(status().isOk())//응답상태 검증
+                .andExpect(jsonPath("$.result", hasSize(2))) // 댓글이 2개 반환되었는지 확인
+                .andExpect(jsonPath("$.result[0].content").value("Great performance!"))//댓글의 내용 확인
+                .andExpect(jsonPath("$.result[1].content").value("Amazing show!"))
+                .andExpect(jsonPath("$.result[0].memberId").value(1L))
+                .andExpect(jsonPath("$.result[1].memberId").value(1L))
+                .andDo(print());
+
+    }
+}
