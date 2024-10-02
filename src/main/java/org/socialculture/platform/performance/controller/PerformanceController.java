@@ -9,6 +9,7 @@ import org.socialculture.platform.performance.dto.response.PerformanceDetailResp
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.socialculture.platform.performance.service.PerformanceService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +31,14 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse<PerformanceRegisterResponse>> registerPerformance(
             @RequestBody PerformanceRegisterRequest registerPerformanceRequest
     ) {
-        return ApiResponse.onSuccess(performanceService.registerPerformance(registerPerformanceRequest));
+        PerformanceRegisterResponse performanceRegisterResponse = performanceService.registerPerformance(registerPerformanceRequest);
+
+        return ApiResponse.onSuccess(
+                HttpStatus.CREATED,
+                "PERFORMANCE201",
+                "공연이 등록되었습니다.",
+                performanceRegisterResponse
+        );
     }
 
     /**
@@ -66,7 +74,7 @@ public class PerformanceController {
     }
 
     @DeleteMapping("/{performanceId}")
-    public ResponseEntity<ApiResponse<String>> deletePerformance(@PathVariable("performanceId") Long performanceId) {
+    public ResponseEntity<ApiResponse<Void>> deletePerformance(@PathVariable("performanceId") Long performanceId) {
         performanceService.deletePerformance(performanceId);
         return ApiResponse.onSuccess();
     }
