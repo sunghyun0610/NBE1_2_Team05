@@ -39,8 +39,10 @@ public class PerformanceServiceImpl implements PerformanceService {
         performanceEntity = performanceRepository.save(performanceEntity);
 
         List<CategoryEntity> categoryEntities = performanceCategorySave(performanceEntity, performanceRegisterRequest.categories());
+        List<CategoryDto> categoryDtos = categoryEntities.stream()
+                .map(CategoryDto::toDto).toList();
 
-        return null;
+        return PerformanceRegisterResponse.of(performanceEntity, categoryDtos);
     }
 
     @Override

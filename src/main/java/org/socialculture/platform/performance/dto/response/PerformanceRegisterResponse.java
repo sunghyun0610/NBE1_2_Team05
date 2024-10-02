@@ -2,7 +2,6 @@ package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
 import org.socialculture.platform.performance.dto.CategoryDto;
-import org.socialculture.platform.performance.dto.domain.CategoryContent;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
 
@@ -28,7 +27,24 @@ public record PerformanceRegisterResponse(
         LocalDateTime updatedAt,
         List<CategoryDto> categories
 ) {
-    public PerformanceRegisterResponse of(PerformanceEntity performanceEntity, List<CategoryDto> categories) {
-        return null;
+    public static PerformanceRegisterResponse of(PerformanceEntity performanceEntity, List<CategoryDto> categories) {
+        return PerformanceRegisterResponse.builder()
+                .memberName(performanceEntity.getMember().getName())
+                .performanceId(performanceEntity.getPerformanceId())
+                .title(performanceEntity.getTitle())
+                .dateStartTime(performanceEntity.getDateStartTime())
+                .dateEndTime(performanceEntity.getDateEndTime())
+                .description(performanceEntity.getDescription())
+                .maxAudience(performanceEntity.getMaxAudience())
+                .address(performanceEntity.getAddress())
+                .imageUrl(performanceEntity.getImageUrl())
+                .price(performanceEntity.getPrice())
+                .remainingTickets(performanceEntity.getRemainingTickets())
+                .startDate(performanceEntity.getStartDate())
+                .status(performanceEntity.getPerformanceStatus())
+                .createdAt(performanceEntity.getCreatedAt())
+                .updatedAt(performanceEntity.getUpdatedAt())
+                .categories(categories)
+                .build();
     }
 }
