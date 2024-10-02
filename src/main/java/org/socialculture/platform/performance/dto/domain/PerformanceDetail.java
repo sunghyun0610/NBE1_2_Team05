@@ -1,4 +1,4 @@
-package org.socialculture.platform.performance.dto;
+package org.socialculture.platform.performance.dto.domain;
 
 import lombok.Getter;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
@@ -23,7 +23,7 @@ public class PerformanceDetail {
     private PerformanceStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<CategoryDTO> categories;
+    private List<CategoryContent> categories;
 
     private PerformanceDetail() {}
     public PerformanceDetail(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String description,
@@ -45,7 +45,7 @@ public class PerformanceDetail {
         this.updatedAt = updatedAt;
     }
 
-    public void updateCategories(List<CategoryDTO> categories) {
+    public void updateCategories(List<CategoryContent> categories) {
         this.categories = categories;
     }
 }

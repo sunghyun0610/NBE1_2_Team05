@@ -1,4 +1,43 @@
+= Coonect API Document
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+
+== Performance 관련 API
+
+=== 전체 공연 조회
+==== 요청
 include::{snippets}/performance-list/http-request.adoc[]
-include::{snippets}/performance-list/request-fields.adoc[]
+
+==== 응답
 include::{snippets}/performance-list/http-response.adoc[]
+
+==== 응답 필드
 include::{snippets}/performance-list/response-fields.adoc[]
+
+
+=== 공연 상세 조회
+==== 요청
+include::{snippets}/performance-detail/http-request.adoc[]
+
+==== 응답
+include::{snippets}/performance-detail/http-response.adoc[]
+
+==== 응답 필드
+include::{snippets}/performance-detail/response-fields.adoc[]
+
+
+=== 공연 수정
+==== 요청
+include::{snippets}/performance-update/http-request.adoc[]
+
+==== 요청 필드
+include::{snippets}/performance-update/request-fields.adoc[]
+
+==== 응답
+include::{snippets}/performance-update/http-response.adoc[]
+
+==== 응답 필드
+include::{snippets}/performance-update/response-fields.adoc[]
