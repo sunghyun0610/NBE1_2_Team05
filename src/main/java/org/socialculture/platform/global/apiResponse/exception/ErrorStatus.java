@@ -30,13 +30,13 @@ public enum ErrorStatus implements BaseErrorCode{
     SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL4006", "사용자의 기본정보가 적절하지 않습니다."),
 
 
-    // 카테고리 관련
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY4045", "해당 카테고리가 존재하지 않습니다."),
+    // 멤버 카테고리 관련
+    MEMBER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY4045", "해당 카테고리가 존재하지 않습니다."),
 
-
-    ;
 
     //공연
+    PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연을 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다."),;
 
     private final HttpStatus httpStatus;
     private final String code;

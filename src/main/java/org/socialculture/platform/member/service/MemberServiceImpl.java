@@ -190,7 +190,7 @@ public class MemberServiceImpl implements MemberService{
         List<Long> categoryIds = memberCategoryRequest.categories();
         for (Long categoryId : categoryIds) {
             CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId).orElseThrow(() ->
-                    new GeneralException(ErrorStatus.CATEGORY_NOT_FOUND));
+                    new GeneralException(ErrorStatus.MEMBER_CATEGORY_NOT_FOUND));
 
             MemberCategoryEntity memberCategoryEntity = MemberCategoryEntity.builder()
                     .category(categoryEntity)
