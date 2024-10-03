@@ -3,6 +3,7 @@ package org.socialculture.platform.member.oauth.naver.service;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.member.oauth.naver.dto.NaverUserInfoResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -21,6 +22,7 @@ import java.util.Objects;
  * @author 김연수
  */
 @Service
+@Slf4j
 public class NaverClientService {
     private final String clientId;
     private final String redirectURI;
@@ -98,7 +100,7 @@ public class NaverClientService {
                 HttpMethod.POST,
                 memberInfoRequest,
                 String.class);
-        System.out.println("response = " + response);
+        log.info("response : {}", response);
 
         // JSON 파싱
         JsonObject jsonObject = JsonParser
