@@ -27,6 +27,7 @@ public record SocialRegisterRequest(
 
     public static SocialRegisterRequest create(String email, String providerId,
                                                String name, SocialProvider provider) {
+
         return new SocialRegisterRequest(email, providerId, name, provider);
     }
 }

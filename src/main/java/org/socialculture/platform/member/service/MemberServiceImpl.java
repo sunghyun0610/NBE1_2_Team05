@@ -1,141 +1,252 @@
 package org.socialculture.platform.member.service;
 
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.dto.request.LocalRegisterRequest;
+import org.socialculture.platform.member.dto.request.MemberCategoryRequest;
 import org.socialculture.platform.member.dto.request.SocialRegisterRequest;
-import org.socialculture.platform.member.dto.response.RegisterResponse;
+import org.socialculture.platform.member.dto.response.CategoryResponse;
+import org.socialculture.platform.member.entity.MemberCategoryEntity;
 import org.socialculture.platform.member.entity.MemberEntity;
+import org.socialculture.platform.member.entity.MemberRole;
 import org.socialculture.platform.member.entity.SocialProvider;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
+import org.socialculture.platform.member.oauth.common.dto.SocialMemberInfoDto;
+import org.socialculture.platform.member.repository.CategoryRepository;
+import org.socialculture.platform.member.repository.MemberCategoryRepository;
 import org.socialculture.platform.member.repository.MemberRepository;
-import org.socialculture.platform.member.validator.EmailValidator;
-import org.socialculture.platform.member.validator.NameValidator;
-import org.socialculture.platform.member.validator.PasswordValidator;
+import org.socialculture.platform.performance.entity.CategoryEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
 
     private final MemberRepository memberRepository;
-    private final EmailValidator emailValidator;
-    private final NameValidator nameValidator;
-    private final PasswordValidator passwordValidator;
-
-
-    public MemberServiceImpl(MemberRepository memberRepository, EmailValidator emailValidator,
-                             NameValidator nameValidator, PasswordValidator passwordValidator) {
-        this.memberRepository = memberRepository;
-        this.emailValidator = emailValidator;
-        this.nameValidator = nameValidator;
-        this.passwordValidator = passwordValidator;
-    }
+    private final MemberValidatorService memberValidatorService;
+    private final CategoryRepository categoryRepository;
+    private final MemberCategoryRepository memberCategoryRepository;
+    private final PasswordEncoder passwordEncoder;
 
 
     /**
      * 일반 사용자 회원가입
+     * 패스워드 암호화 하여 저장
      * @param localRegisterRequest
-     * @return JWT Token
      */
     @Override
-    public RegisterResponse registerBasicUser(LocalRegisterRequest localRegisterRequest) {
-        return registerUser(localRegisterRequest.toEntity());
-    }
-
-
-    /**
-     * 소셜 사용자 회원가입
-     * @param socialRegisterRequest
-     * @return JWT Token
-     */
-    @Override
-    public RegisterResponse registerSocialUser(SocialRegisterRequest socialRegisterRequest) {
-        return registerUser(socialRegisterRequest.toEntity());
-    }
-
-
-    /**
-     * 일반,소셜 사용자 모두 회원가입 진행
-     * @param member
-     * @return JwtToken
-     */
     @Transactional
-    protected RegisterResponse registerUser(MemberEntity member) {
-        if (isEmailInUse(member.getEmail())) {
-            throw new GeneralException(ErrorStatus.EMAIL_DUPLICATE);
-        }
-        if (isNameInUse(member.getName())) {
-            throw new GeneralException(ErrorStatus.NAME_DUPLICATE);
-        }
-        if (member.getProvider() == SocialProvider.LOCAL &&  // 일반 사용자 회원가입에서만 검증
-                !passwordValidator.isValidPassword(member.getPassword())) {
-            throw new GeneralException(ErrorStatus.PASSWORD_INVALID);
-        }
-        MemberEntity savedMember = memberRepository.save(member);
-        // JWT 토큰 발행 이후 수정
-        RegisterResponse registerResponse = new RegisterResponse("jwtToken");
-        return registerResponse;
+    public void registerBasicUser(LocalRegisterRequest localRegisterRequest) {
+        validateEmailAndCheckDuplicate(localRegisterRequest.email());
+        validateNameAndCheckDuplicate(localRegisterRequest.name());
+        memberValidatorService.validatePassword(localRegisterRequest.password());
+
+        String encodedPassword = passwordEncoder.encode(localRegisterRequest.password());
+        System.out.println(encodedPassword);
+        MemberEntity memberEntity = MemberEntity.builder()
+                .email(localRegisterRequest.email())
+                .password(encodedPassword)  // 암호화된 패스워드 저장
+                .name(localRegisterRequest.name())
+                .role(MemberRole.ROLE_USER)
+                .provider(SocialProvider.LOCAL)
+                .build();
+
+        memberRepository.save(memberEntity);
     }
 
 
     /**
-     * 소셜 사용자가 가입되어있는지 확인 없으면 회원가입 진행에 필요한 정보들 session에 저장
+     * 소셜 사용자가 가입되어있는지 확인
+     * 가입되어 있지 않으면 회원가입 진행에 필요한 정보들
+     * session에 저장
      * @param socialMemberCheckDto
      * @param session
      * @return true이면 가입되어있는 사용자, false면 가입되어있지 않는 사용자
      */
     @Override
     public boolean isSocialMemberRegistered(SocialMemberCheckDto socialMemberCheckDto,
-                                            HttpSession session) {
+                                            HttpSession session
+    ) {
+
         Optional<MemberEntity> findMember = memberRepository.findByEmail(socialMemberCheckDto.email());
 
         return findMember.map(member -> {
-            boolean matchesProviderId = member.getProviderId().equals(socialMemberCheckDto.providerId());
-            if (!matchesProviderId) {
+            boolean matchesProvider = member.getProviderId().equals(socialMemberCheckDto.providerId());
+            if (!matchesProvider) {
                 throw new GeneralException(ErrorStatus.SOCIAL_EMAIL_DUPLICATE);
             }
             return true;
         }).orElseGet(() -> {
             session.setAttribute("providerId", socialMemberCheckDto.providerId());
-            session.setAttribute("email", socialMemberCheckDto.email());
             session.setAttribute("provider", socialMemberCheckDto.provider());
+            session.setAttribute("email", socialMemberCheckDto.email());
             return false;
         });
     }
 
 
     /**
+     * 소셜 사용자의 닉네임 체크 후 회원가입
+     * @param memberInfoDto
+     * @param session
+     */
+    @Transactional
+    @Override
+    public void registerSocialUserFromSession(SocialMemberInfoDto memberInfoDto,
+                                              HttpSession session) {
+
+        validateNameAndCheckDuplicate(memberInfoDto.name());
+        String name = memberInfoDto.name();
+        String email = (String) session.getAttribute("email");
+        String providerId = (String) session.getAttribute("providerId");
+        String provider = (String) session.getAttribute("provider");
+
+        if (email == null || provider == null || providerId == null) {
+            throw new GeneralException(ErrorStatus.SOCIAL_INFO_INVALID);
+        }
+
+        SocialRegisterRequest socialRegisterRequest = SocialRegisterRequest.create(
+            email,
+            providerId,
+            name,
+            SocialProvider.valueOf(provider)
+        );
+
+        session.invalidate();
+        validateEmailAndCheckDuplicate(email);
+        MemberEntity memberEntity = socialRegisterRequest.toEntity();
+        memberRepository.save(memberEntity);
+    }
+
+
+    /**
      * 이메일 중복 확인(이메일 형식 검증도 같이확인)
      * @param email
-     * @return true면 이메일이 이미 사용중인것
      */
     @Override
-    public boolean isEmailInUse(String email) {
-        if (!emailValidator.isValidEmail(email)) {
-            throw new GeneralException(ErrorStatus.EMAIL_INVALID);
+    public void validateEmailAndCheckDuplicate(String email) {
+        memberValidatorService.validateEmail(email);
+        boolean emailExists = memberRepository.existsByEmail(email);
+        if (emailExists) {
+            throw new GeneralException(ErrorStatus.EMAIL_DUPLICATE);
         }
-        return memberRepository.existsByEmail(email);
     }
 
 
     /**
      * 닉네임 중복 확인 (닉네임 형식 검증도 같이확인)
      * @param name
-     * @return true면 닉네임이 이미 사용중인것
      */
     @Override
-    public boolean isNameInUse(String name) {
-        if (!nameValidator.isValidName(name)) {
+    public void validateNameAndCheckDuplicate(String name) {
+        memberValidatorService.validateName(name);
+        boolean nameExists = memberRepository.existsByName(name);
+        if (nameExists) {
             throw new GeneralException(ErrorStatus.NAME_DUPLICATE);
         }
-        return memberRepository.existsByName(name);
     }
+
+
+    /**
+     * 닉네임 변경
+     * @param email
+     * @param name
+     */
+    @Override
+    public void updateName(String email, String name) {
+        Optional<MemberEntity> byEmail = memberRepository.findByEmail(email);
+
+        byEmail.ifPresentOrElse(member -> {
+            validateNameAndCheckDuplicate(name);
+            member.changeName(name);
+            memberRepository.save(member);
+        }, () -> {
+            throw new GeneralException(ErrorStatus.MEMBER_NOT_FOUND);
+        });
+    }
+
+
+    /**
+     * 사용자 선호 카테고리 추가
+     * @param memberCategoryRequest
+     * @param email
+     */
+    @Override
+    @Transactional
+    public void memberAddCategory(MemberCategoryRequest memberCategoryRequest, String email) {
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        List<Long> categoryIds = memberCategoryRequest.categories();
+        for (Long categoryId : categoryIds) {
+            CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId).orElseThrow(() ->
+                    new GeneralException(ErrorStatus.CATEGORY_NOT_FOUND));
+
+            MemberCategoryEntity memberCategoryEntity = MemberCategoryEntity.builder()
+                    .category(categoryEntity)
+                    .member(memberEntity)
+                    .build();
+
+            memberCategoryRepository.save(memberCategoryEntity);
+        }
+    }
+
+    /**
+     * 카테고리 전체 목록 조회
+     * @return categoryId, categoryName
+     */
+    @Override
+    public List<CategoryResponse> getAllCategories() {
+        List<CategoryEntity> categoryEntityList = categoryRepository.findAll();
+
+        return categoryEntityList.stream().map(CategoryResponse::fromEntity).toList();
+    }
+
+
+    /**
+     * 사용자 선호 카테고리 조회
+     * @param email
+     * @return 선호하는 카테고리 목록
+     */
+    @Override
+    public List<CategoryResponse> getFavoriteCategories(String email) {
+        MemberEntity memberEntity = memberRepository.findByEmail(email).orElseThrow(() ->
+                new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        List<CategoryEntity> favoriteCategories = memberCategoryRepository
+                .findCategoriesByMemberId(memberEntity.getMemberId());
+
+        return favoriteCategories.stream().map(CategoryResponse::fromEntity).toList();
+    }
+
+
+    /**
+     * 선호 카테고리 수정
+     * @param memberCategoryRequest
+     * @param email
+     */
+    @Transactional
+    @Override
+    public void updateFavoriteCategories(MemberCategoryRequest memberCategoryRequest,
+                                         String email) {
+
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow((() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND)));
+
+        memberCategoryRepository.deleteByMemberMemberId(memberEntity.getMemberId());
+        memberAddCategory(memberCategoryRequest, email);
+    }
+
 
 
 

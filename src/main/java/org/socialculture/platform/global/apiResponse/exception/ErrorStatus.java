@@ -19,12 +19,19 @@ public enum ErrorStatus implements BaseErrorCode{
     NAME_DUPLICATE(HttpStatus.CONFLICT, "MEMBER4092", "이미 사용중인 닉네임 입니다."),
     NAME_INVALID(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임 형식이 올바르지 않습니다."),
     PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER4003", "비밀번호 형식이 맞지 않습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4041", "해당 유저가 존재하지 않습니다."),
 
 
     // 소셜 유저 관련 에러
     SOCIAL_EMAIL_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL4091", "이메일이 이미 다른 소셜 계정에서 사용중입니다."),
     SOCIAL_NAME_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL4002", "닉네임 형식이 올바르지 않습니다."),
     SOCIAL_NAME_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL4092", "닉네임이 이미 사용 중입니다."),
+    SOCIAL_NAME_REQUIRED(HttpStatus.FOUND, "SOCIAL3021", "회원가입을 위해 닉네임이 필요합니다."),
+    SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL4006", "사용자의 기본정보가 적절하지 않습니다."),
+
+
+    // 카테고리 관련
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY4045", "해당 카테고리가 존재하지 않습니다."),
 
 
     ;
