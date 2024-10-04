@@ -19,7 +19,7 @@ public enum ErrorStatus implements BaseErrorCode{
     _TICKET_INVALID_PAGINATION_PARAMETERS(HttpStatus.BAD_REQUEST, "TICKET400", "페이지나 크기 값이 유효하지 않습니다. 0 이상의 값을 입력해 주세요."),
 
     // 쿠폰
-    _COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "TICKET400", "해당 쿠폰을 찾을 수 없습니다."),
+    _COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "COUPON400", "해당 쿠폰을 찾을 수 없습니다."),
     _COUPON_ALREADY_USED(HttpStatus.BAD_REQUEST, "COUPON400", "이미 사용된 쿠폰입니다."),
     _COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "COUPON400", "만료된 쿠폰입니다."),
 
