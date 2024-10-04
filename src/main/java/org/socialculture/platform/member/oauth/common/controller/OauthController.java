@@ -15,12 +15,13 @@ import org.socialculture.platform.member.oauth.common.service.SocialClient;
 import org.socialculture.platform.member.oauth.kakao.service.KakaoClient;
 import org.socialculture.platform.member.oauth.naver.service.NaverClient;
 import org.socialculture.platform.member.service.MemberService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * author : 김예찬
  * 네이버,카카오 소셜 로그인 컨트롤러 통합
+ * @author 김예찬
  */
 @RestController
 @Slf4j
@@ -70,7 +71,12 @@ public class OauthController {
 
         session.setMaxInactiveInterval(600); // 임시 회원정보 세션 10분간 유지
 
-        throw new GeneralException(ErrorStatus.SOCIAL_NAME_REQUIRED);
+        // 리다이렉트를 사용하려면 ApiResponse를 못쓰는것인지 모르겠음
+//        throw new GeneralException(ErrorStatus.SOCIAL_NAME_REQUIRED);
+        // 추후 클라이언트 서버의 주소가 변경될 경우 이부분 변경 필요
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("Location", "http://localhost:3000/nickname").build();
+
     }
 
 

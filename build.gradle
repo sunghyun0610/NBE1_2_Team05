@@ -60,6 +60,13 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
+    // Mockito core library
+    testImplementation 'org.mockito:mockito-core:5.5.0'
+
+    // Mockito with JUnit 5 integration
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.5.0'
+
+
     // webflux 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 

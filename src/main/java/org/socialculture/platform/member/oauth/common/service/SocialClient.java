@@ -12,3 +12,4 @@ public interface SocialClient {
 
     SocialMemberCheckDto getMemberInfo(String accessToken) throws JsonProcessingException;
 }
+

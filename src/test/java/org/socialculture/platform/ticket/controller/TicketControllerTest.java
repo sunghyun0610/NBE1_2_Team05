@@ -1,8 +1,10 @@
 package org.socialculture.platform.ticket.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.socialculture.platform.ticket.dto.request.TicketRequestDto;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 /**
@@ -43,8 +47,8 @@ public class TicketControllerTest {
     void getTickets() throws Exception {
         // 테스트에 사용할 가짜 티켓 응답 데이터를 생성
         List<TicketResponseDto> mockTicketResponsDtos = List.of(
-                TicketResponseDto.of(1L, "꿈의 교향곡", LocalDateTime.now(), 2, 100, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)),
-                TicketResponseDto.of(2L, "영원의 메아리", LocalDateTime.now(), 3, 150, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2))
+                TicketResponseDto.create(1L, "꿈의 교향곡", LocalDateTime.now(), 2, 100, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)),
+                TicketResponseDto.create(2L, "영원의 메아리", LocalDateTime.now(), 3, 150, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2))
         );
 
         given(ticketService.getAllTicketsByEmailWithPageAndSortOption(anyInt(), anyInt(), isNull(), anyBoolean()))
@@ -65,7 +69,7 @@ public class TicketControllerTest {
     @WithMockUser(username = "user@example.com")
     void getTicketDetail() throws Exception {
         // 가짜 티켓 응답 DTO 생성
-        TicketResponseDto mockTicketResponse = TicketResponseDto.of(
+        TicketResponseDto mockTicketResponse = TicketResponseDto.create(
                 1L,
                 "꿈의 교향곡",
                 LocalDateTime.now(),
@@ -85,5 +89,49 @@ public class TicketControllerTest {
         );
 
         result.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("티켓 컨트롤러 발권 테스트")
+    @WithMockUser(username = "user@example.com", roles = "LOCAL")
+    void buyTicket() throws Exception {
+        // 가짜 티켓 요청 DTO 생성
+        TicketRequestDto mockTicketRequest = TicketRequestDto.create(
+                1L,
+                2,
+                1L
+        );
+        // 가짜 티켓 응답 DTO 생성
+        TicketResponseDto mockTicketResponse = TicketResponseDto.create(
+                1L,
+                "꿈의 교향곡",
+                LocalDateTime.now(),
+                2,
+                90000,
+                LocalDateTime.now().minusDays(1),
+                LocalDateTime.now().plusDays(1)
+        );
+
+        given(ticketService.registerTicket(mockTicketRequest))
+                .willReturn(mockTicketResponse);
+
+        // 실제 요청을 보내는 부분
+        ResultActions result = this.mockMvc.perform(
+                post("/api/v1/tickets")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(mockTicketRequest)) // content 로 JSON 요청 바디 추가
+        );
+
+        result.andExpect(status().isOk());
+    }
+
+    // 객체를 JSON 문자열로 변환하는 헬퍼 메서드
+    private String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
