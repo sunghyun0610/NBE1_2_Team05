@@ -7,8 +7,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
+import org.socialculture.platform.comment.dto.response.CommentCreateResponse;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
 import org.socialculture.platform.comment.entity.CommentEntity;
+import org.socialculture.platform.comment.entity.CommentStatus;
 import org.socialculture.platform.comment.repository.CommentRepository;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
@@ -20,9 +23,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -36,15 +41,24 @@ class CommentServiceImplTest {
     @Mock
     private PerformanceRepository performanceRepository;
 
-    @Mock
+    @Mock// 특정 계층을 태우는 척 한다.
     private MemberRepository memberRepository;
 
-    @InjectMocks
+    @InjectMocks//실제 로직을 탄다. 위에 3개의 Mock객체로 대체한다는 의미.
     private CommentServiceImpl commentService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // Mock save method to set an ID to the comment entity
+        when(commentRepository.save(any(CommentEntity.class)))
+                .thenAnswer(invocation -> {
+                    CommentEntity entity = invocation.getArgument(0);
+                    Field field = CommentEntity.class.getDeclaredField("commentId");
+                    field.setAccessible(true);
+                    field.set(entity, 1L);// 임의로 commentId 설정
+                    return entity;
+                });
     }
     //각 테스트가 실행되기 전에 MockitoAnnotations.openMocks(this)를 호출하여 @Mock으로 선언된 객체를 초기화합니다
 
@@ -144,6 +158,103 @@ class CommentServiceImplTest {
 
         // ErrorStatus는 GeneralException의 메시지로 비교
         assertEquals(ErrorStatus.COMMENT_NOT_FOUND.getMessage(), "댓글 정보가 없습니다.");
+    }
+
+
+    @Test
+    @DisplayName("댓글 생성 서비스 테스트")
+    void createComment() {
+        // Given
+        long performanceId = 1L;
+        CommentCreateRequest request = CommentCreateRequest.of("테스트 댓글",null);// 부모 ID 없음
+
+        PerformanceEntity performance = PerformanceEntity.builder()
+                .performanceId(performanceId)
+                .title("Amazing Performance")
+                .build();
+
+        MemberEntity member = MemberEntity.builder()
+                .memberId(1L)
+                .name("testUser")
+                .email("test@example.com")
+                .build();
+
+        CommentEntity commentEntity =CommentEntity.builder()
+                .commentId(1L)  // ID를 설정하여 반환
+                .member(member)
+                .content("테스트 댓글")
+                .performance(performance)
+                .commentStatus(CommentStatus.ACTIVE)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        // Save 호출 시 commentId 설정을 포함한 CommentEntity 빌더 사용
+        when(performanceRepository.findById(performanceId)).thenReturn(Optional.of(performance));
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+        when(commentRepository.save(any(CommentEntity.class))).thenReturn(commentEntity);
+
+        // When
+        CommentCreateResponse result = commentService.createComment(performanceId, request);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1L, result.commentId());
+        assertEquals("테스트 댓글", result.content());
+        assertEquals(performanceId, result.performanceId());
+
+        verify(commentRepository, times(1)).save(any(CommentEntity.class));
+    }
+
+
+
+    @Test
+    @DisplayName("댓글 생성 시 존재하지 않는 공연일 때 예외 처리")
+    void createCommentShouldThrowExceptionWhenPerformanceNotFound() {
+        // Given
+        long performanceId = 999L;
+        CommentCreateRequest commentCreateRequest = new CommentCreateRequest("This is a new comment.", null);
+
+        when(performanceRepository.findById(performanceId)).thenReturn(Optional.empty());
+
+        // When & Then
+        GeneralException exception = assertThrows(GeneralException.class,
+                () -> commentService.createComment(performanceId, commentCreateRequest));
+
+        assertEquals(ErrorStatus.PERFORMANCE_NOT_FOUND.getMessage(), "공연을 찾을 수 없습니다.");
+        verify(performanceRepository, times(1)).findById(performanceId);
+    }
+
+    @Test
+    @DisplayName("대댓글 생성 시 존재하지 않는 부모 댓글일 때 예외 처리")
+    void createCommentShouldThrowExceptionWhenParentCommentNotFound() {
+        // Given
+        long performanceId = 1L;
+        long parentCommentId = 999L;
+        CommentCreateRequest commentCreateRequest = new CommentCreateRequest("This is a reply comment.", parentCommentId);
+
+        PerformanceEntity performance = PerformanceEntity.builder()
+                .performanceId(performanceId)
+                .title("Amazing Performance")
+                .build();
+
+        MemberEntity member = MemberEntity.builder()
+                .memberId(1L)
+                .name("testUser")
+                .email("test@example.com")
+                .build();
+
+        when(performanceRepository.findById(performanceId)).thenReturn(Optional.of(performance));
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+        when(commentRepository.findById(parentCommentId)).thenReturn(Optional.empty());
+
+        // When & Then
+        GeneralException exception = assertThrows(GeneralException.class,
+                () -> commentService.createComment(performanceId, commentCreateRequest));
+
+        assertEquals(ErrorStatus.COMMENT_NOT_FOUND.getMessage(), "댓글 정보가 없습니다.");
+        verify(performanceRepository, times(1)).findById(performanceId);
+        verify(commentRepository, times(1)).findById(parentCommentId);
     }
 
 }

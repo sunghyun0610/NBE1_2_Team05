@@ -30,9 +30,9 @@ public class NaverClientService {
     private final RestTemplate restTemplate;
 
     public NaverClientService(
-            @Value("${naver.client_id}") String clientId,
-            @Value("${naver.redirect_uri}") String redirectURI,
-            @Value("${naver.client_secret}") String clientSecret,
+            @Value("${spring.naver.client_id}") String clientId,
+            @Value("${spring.naver.redirect_uri}") String redirectURI,
+            @Value("${spring.naver.client_secret}") String clientSecret,
             RestTemplate restTemplate) {
         this.clientId = clientId;
         this.redirectURI = redirectURI;

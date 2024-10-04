@@ -74,8 +74,6 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentCreateResponse createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
 
-
-
         PerformanceEntity performance = performanceRepository.findById(performanceId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));// performanceEntity객체를 저장하는 것이 아니라 performance 외래키 저장
 
@@ -90,8 +88,6 @@ public class CommentServiceImpl implements CommentService {
                     .orElseThrow(()->new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));
         }
 
-
-
         CommentEntity commentEntity = CommentEntity.builder()
                 .content(commentCreateRequest.content())
                 .parentId(parentId != null ? parentComment.getCommentId() : null) // 부모 댓글 ID 설정
@@ -99,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
                 .performance(performance)
                 .member(member)
                 .build();
-        commentRepository.save(commentEntity);
+        commentEntity=commentRepository.save(commentEntity);// trouble shooting
 
         CommentCreateResponse commentCreateResponse= CommentCreateResponse.of(commentEntity.getCommentId(),commentEntity.getContent(),commentEntity.getPerformance().getPerformanceId());
 
