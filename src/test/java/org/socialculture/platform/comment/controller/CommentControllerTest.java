@@ -5,10 +5,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.socialculture.platform.comment.controller.CommentController;
 
+import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
+import org.socialculture.platform.comment.dto.response.CommentCreateResponse;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
 import org.socialculture.platform.comment.service.CommentService;
 import org.socialculture.platform.comment.entity.CommentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -20,14 +23,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @WebMvcTest(CommentController.class)
+@AutoConfigureMockMvc(addFilters = false) // Spring Security 필터 비활성화 (CSRF 포함)
 public class CommentControllerTest {
 
     @Autowired
@@ -68,7 +72,7 @@ public class CommentControllerTest {
         List<CommentReadDto> commentList = List.of(comment1, comment2);
 
         Mockito.when(commentService.getAllComment(anyLong(), anyInt(), anyInt()))
-                .thenReturn(commentList);
+                .thenReturn(commentList);//실제 내가만든 서비스로직을 타는게 아님. 미리정의한 결과인 commentList 반환함.
 
         // when : 실제 테스트 동작
         ResultActions resultActions = mockMvc.perform(get("/api/v1/comments/1")
@@ -83,6 +87,37 @@ public class CommentControllerTest {
                 .andExpect(jsonPath("$.result[1].content").value("Amazing show!"))
                 .andExpect(jsonPath("$.result[0].memberId").value(1L))
                 .andExpect(jsonPath("$.result[1].memberId").value(1L))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("댓글 생성 테스트")
+    @WithMockUser
+    void testCreateComment() throws Exception{
+        //given
+        CommentCreateRequest commentCreateRequest= CommentCreateRequest.builder()
+                .content("댓글 생성 테스트코드입니다.")
+                .parentId(1L)
+                .build();
+
+        CommentCreateResponse commentCreateResponse=CommentCreateResponse.of(1L,
+                "댓글 생성 테스트코드입니다.",1L);
+
+        //아무 createComment호출될떄 commentCreateResponse반환하도록설정
+        Mockito.when(commentService.createComment(anyLong(),any(CommentCreateRequest.class)))
+                .thenReturn(commentCreateResponse);
+
+        //when
+        ResultActions resultActions = mockMvc.perform(post("/api/v1/comments/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commentCreateRequest)));
+        
+        //then
+        resultActions.andExpect(status().isCreated())
+                .andExpect(jsonPath("$.result.commentId").value(1L))
+                .andExpect(jsonPath("$.result.content").value("댓글 생성 테스트코드입니다."))
+                .andExpect(jsonPath("$.result.performanceId").value(1L))
                 .andDo(print());
 
     }
