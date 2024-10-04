@@ -1,6 +1,7 @@
 package org.socialculture.platform.performance.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
@@ -95,5 +96,10 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse<Void>> deletePerformance(@PathVariable("performanceId") Long performanceId) {
         performanceService.deletePerformance(performanceId);
         return ApiResponse.onSuccess();
+    }
+
+    @GetMapping("/admin/my")
+    public ResponseEntity<ApiResponse<List<PerformanceListResponse>>> getPerformanceListAdmin(@RequestParam(name = "page") Integer page, @RequestParam(name = "size") Integer size) {
+        return ApiResponse.onSuccess(performanceService.getMyPerformanceList("email", page, size));
     }
 }

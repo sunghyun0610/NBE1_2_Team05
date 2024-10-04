@@ -11,4 +11,6 @@ public interface PerformanceRepositoryCustom {
     List<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable);
 
     Optional<PerformanceDetail> getPerformanceDetail(Long performanceId);
+
+    List<PerformanceWithCategory> getMyPerformanceWithCategoryList(String email, Pageable pageable);
 }
