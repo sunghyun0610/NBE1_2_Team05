@@ -123,10 +123,11 @@ public class MemberServiceImpl implements MemberService{
             SocialProvider.valueOf(provider)
         );
 
-        session.invalidate();
         validateEmailAndCheckDuplicate(email);
         MemberEntity memberEntity = socialRegisterRequest.toEntity();
         memberRepository.save(memberEntity);
+
+        session.invalidate(); // 회원가입용 임시 회원 정보세션 종료
     }
 
 
