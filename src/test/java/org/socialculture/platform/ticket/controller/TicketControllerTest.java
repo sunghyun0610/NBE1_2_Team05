@@ -112,7 +112,7 @@ public class TicketControllerTest {
                 LocalDateTime.now().plusDays(1)
         );
 
-        given(ticketService.registerticket(mockTicketRequest))
+        given(ticketService.registerTicket(mockTicketRequest))
                 .willReturn(mockTicketResponse);
 
         // 실제 요청을 보내는 부분
