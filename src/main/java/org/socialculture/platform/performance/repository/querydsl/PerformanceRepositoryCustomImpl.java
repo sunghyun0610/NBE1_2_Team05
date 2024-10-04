@@ -52,6 +52,10 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         return nullSafeBuilder(() -> qPerformanceCategoryEntity.performance.performanceId.eq(performanceId));
     }
 
+    private BooleanBuilder memberEmailEq(String memberEmail) {
+        return nullSafeBuilder(() -> qMember.email.eq(memberEmail));
+    }
+
     /**
      * 공연 리스트 조회
      * @author Icecoff22
@@ -140,5 +144,28 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         }
 
         return Optional.ofNullable(performanceDetail);
+    }
+
+    @Override
+    public List<PerformanceWithCategory> getMyPerformanceWithCategoryList(String email, Pageable pageable) {
+        List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
+                        qMember.name.as("memberName"),
+                        qPerformanceEntity.performanceId.as("performanceId"),
+                        qPerformanceEntity.title.as("title"),
+                        qPerformanceEntity.dateStartTime.as("dateStartTime"),
+                        qPerformanceEntity.dateEndTime.as("dateEndTime"),
+                        qPerformanceEntity.address.as("address"),
+                        qPerformanceEntity.imageUrl.as("imageUrl"),
+                        qPerformanceEntity.price.as("price"),
+                        qPerformanceEntity.performanceStatus.as("status")
+                ))
+                .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .where(memberEmailEq(email))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return addCategoriesToPerformances(performances);
     }
 }
