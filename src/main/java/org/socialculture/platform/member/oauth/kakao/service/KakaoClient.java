@@ -100,7 +100,7 @@ public class KakaoClient {
         String email = jsonNode.get("kakao_account").get("email").asText();
         String providerId = jsonNode.get("id").asText();
 
-        return new SocialMemberCheckDto(email, providerId, SocialProvider.KAKAO);
+        return SocialMemberCheckDto.create(email, providerId, SocialProvider.KAKAO);
     }
 
 

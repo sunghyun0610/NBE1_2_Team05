@@ -66,7 +66,6 @@ public class KakaoLoginController {
 
         return ApiResponse.onSuccess();
 
-
     }
 
 

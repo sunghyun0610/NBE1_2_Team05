@@ -15,10 +15,10 @@ import org.socialculture.platform.member.entity.MemberRole;
 import org.socialculture.platform.member.entity.SocialProvider;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberInfoDto;
-import org.socialculture.platform.member.repository.CategoryRepository;
 import org.socialculture.platform.member.repository.MemberCategoryRepository;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.performance.entity.CategoryEntity;
+import org.socialculture.platform.performance.repository.CategoryRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,7 +109,8 @@ public class MemberServiceImpl implements MemberService{
         String name = memberInfoDto.name();
         String email = (String) session.getAttribute("email");
         String providerId = (String) session.getAttribute("providerId");
-        String provider = (String) session.getAttribute("provider");
+        SocialProvider sessionProvider = (SocialProvider) session.getAttribute("provider");
+        String provider = sessionProvider.name();
 
         if (email == null || provider == null || providerId == null) {
             throw new GeneralException(ErrorStatus.SOCIAL_INFO_INVALID);

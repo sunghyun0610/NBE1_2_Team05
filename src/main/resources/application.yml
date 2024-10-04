@@ -15,6 +15,14 @@ spring:
 #      ddl-auto: create
 
   kakao:
-    client_id: ${CLIENT_ID}
-    redirect_uri: ${REDIRECT_URI}
-    client_secret: ${CLIENT_SECRET}
+    client_id: ${KAKAO_CLIENT_ID}
+    redirect_uri: ${KAKAO_REDIRECT_URI}
+    client_secret: ${KAKAO_CLIENT_SECRET}
+
+  naver:
+    client_id: ${NAVER_CLIENT_ID}
+    redirect_uri: ${NAVER_REDIRECT_URI}
+    client_secret: ${NAVER_CLIENT_SECRET}
+
+
+

@@ -4,7 +4,8 @@ package org.socialculture.platform.member.oauth.naver.service;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
-import org.socialculture.platform.member.oauth.naver.dto.NaverUserInfoResponseDTO;
+import org.socialculture.platform.member.entity.SocialProvider;
+import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -30,9 +31,9 @@ public class NaverClientService {
     private final RestTemplate restTemplate;
 
     public NaverClientService(
-            @Value("${naver.client_id}") String clientId,
-            @Value("${naver.redirect_uri}") String redirectURI,
-            @Value("${naver.client_secret}") String clientSecret,
+            @Value("${spring.naver.client_id}") String clientId,
+            @Value("${spring.naver.redirect_uri}") String redirectURI,
+            @Value("${spring.naver.client_secret}") String clientSecret,
             RestTemplate restTemplate) {
         this.clientId = clientId;
         this.redirectURI = redirectURI;
@@ -88,7 +89,7 @@ public class NaverClientService {
      * @param accessToken
      * @return 이름, 이메일
      */
-    public NaverUserInfoResponseDTO getMemberInfo(String accessToken) {
+    public SocialMemberCheckDto getMemberInfo(String accessToken) {
         String reqUrl = "https://openapi.naver.com/v1/nid/me";
 
 //        RestTemplate restTemplate = new RestTemplate();
@@ -112,6 +113,6 @@ public class NaverClientService {
         String providerId = responseObject.get("id").getAsString();
 
         // NaverEntity 생성 후 반환
-        return NaverUserInfoResponseDTO.of(providerId, email);
+        return SocialMemberCheckDto.create(email,providerId, SocialProvider.NAVER);
     }
 }
