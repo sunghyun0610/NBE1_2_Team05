@@ -1,5 +1,6 @@
 package org.socialculture.platform.ticket.dto.request;
 
+import lombok.Builder;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.ticket.entity.TicketEntity;
@@ -9,14 +10,19 @@ import org.socialculture.platform.ticket.entity.TicketEntity;
  *
  * @author ycjung
  */
+@Builder
 public record TicketRequestDto(
         Long performanceId,
         int quantity,
         Long couponId
 ) {
-    // 정적 팩토리 메서드 of
-    public static TicketRequestDto of(Long performanceId, Integer quantity, Long couponId) {
-        return new TicketRequestDto(performanceId, quantity, couponId);
+    // 정적 팩토리 메서드 create
+    public static TicketRequestDto create(Long performanceId, Integer quantity, Long couponId) {
+        return TicketRequestDto.builder()
+                .performanceId(performanceId)
+                .quantity(quantity)
+                .couponId(couponId)
+                .build();
     }
 
     // DTO 로 부터 엔티티 생성하는 메서드 toEntity

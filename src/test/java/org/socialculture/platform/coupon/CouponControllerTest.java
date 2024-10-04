@@ -39,7 +39,7 @@ public class CouponControllerTest {
     void getAllCoupons() throws Exception {
         // given
         List<CouponResponseDto> couponList = List.of(
-                CouponResponseDto.of(
+                CouponResponseDto.create(
                         1L,
                         "Discount10",
                         10,
@@ -47,7 +47,7 @@ public class CouponControllerTest {
                         LocalDateTime.of(2024, 12, 31, 23, 59),
                         LocalDateTime.of(2024, 1, 1, 10, 0)
                 ),
-                CouponResponseDto.of(
+                CouponResponseDto.create(
                         2L,
                         "Discount20",
                         20,
