@@ -34,7 +34,7 @@ public record TicketResponseDto(
     }
 
     // 엔티티 로 부터 DTO 생성하는 메서드 from
-    public static TicketResponseDto from(TicketEntity ticketEntity) {
+    public static TicketResponseDto fromEntity(TicketEntity ticketEntity) {
         return new TicketResponseDto(
                 ticketEntity.getTicketId(),
                 ticketEntity.getPerformance().getTitle(),

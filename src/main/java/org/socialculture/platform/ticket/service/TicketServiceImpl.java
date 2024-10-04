@@ -64,7 +64,7 @@ public class TicketServiceImpl implements TicketService {
 
         return ticketRepository.getAllTicketsByEmailWithPageAndSortOption(MEMBER_EMAIL, pageable)
                 .stream()
-                .map(TicketResponseDto::from)
+                .map(TicketResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 
@@ -76,7 +76,7 @@ public class TicketServiceImpl implements TicketService {
         TicketEntity ticketEntity = ticketRepository.getTicketByEmailAndTicketId(MEMBER_EMAIL, ticketId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
-        return TicketResponseDto.from(ticketEntity);
+        return TicketResponseDto.fromEntity(ticketEntity);
     }
 
     /**
@@ -97,7 +97,7 @@ public class TicketServiceImpl implements TicketService {
         // 티켓 생성 및 저장
         TicketEntity ticketEntity = createAndSaveTicket(memberEntity, performanceEntity, ticketRequest.quantity(), finalPrice);
 
-        return TicketResponseDto.from(ticketEntity);
+        return TicketResponseDto.fromEntity(ticketEntity);
     }
 
     private int calculateFinalPrice(int performancePrice, int quantity, Long couponId) {

@@ -31,7 +31,7 @@ public record CouponResponseDto(
     }
 
     // 엔티티로부터 DTO를 생성하는 메서드 from
-    public static CouponResponseDto from(CouponEntity couponEntity) {
+    public static CouponResponseDto fromEntity(CouponEntity couponEntity) {
         return new CouponResponseDto(
                 couponEntity.getCouponId(),
                 couponEntity.getName(),

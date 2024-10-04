@@ -26,7 +26,7 @@ public class CouponServiceImpl implements CouponService {
 
         return couponRepository.getAllCouponsByMemberEmail(MEMBER_EMAIL)
                 .stream()
-                .map(CouponResponseDto::from)
+                .map(CouponResponseDto::fromEntity)
                 .collect(Collectors.toList());
     }
 }
