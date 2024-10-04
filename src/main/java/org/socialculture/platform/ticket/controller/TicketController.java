@@ -71,6 +71,6 @@ public class TicketController {
     public ResponseEntity<ApiResponse<TicketResponseDto>> buyTicket(@RequestBody TicketRequestDto ticketRequestDto) {
         log.info("Buy ticket: {}", ticketRequestDto);
 
-        return ApiResponse.onSuccess(ticketService.registerticket(ticketRequestDto));
+        return ApiResponse.onSuccess(ticketService.registerTicket(ticketRequestDto));
     }
 }

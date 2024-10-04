@@ -84,7 +84,7 @@ public class TicketServiceImpl implements TicketService {
      */
     @Override
     @Transactional
-    public TicketResponseDto registerticket(TicketRequestDto ticketRequest) {
+    public TicketResponseDto registerTicket(TicketRequestDto ticketRequest) {
         // 회원 검색
         MemberEntity memberEntity = findMemberByEmail(MEMBER_EMAIL);
 

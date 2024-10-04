@@ -17,7 +17,7 @@ public interface TicketService {
     // 상세 조회
     TicketResponseDto getTicketByEmailAndTicketId(Long ticketId);
 
-    TicketResponseDto registerticket(TicketRequestDto ticketRequest);
+    TicketResponseDto registerTicket(TicketRequestDto ticketRequest);
 
     // TicketResponse updateTicket(Long id, TicketRequest ticketRequest);
 
