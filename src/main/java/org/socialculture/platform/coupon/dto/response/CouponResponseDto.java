@@ -1,5 +1,6 @@
 package org.socialculture.platform.coupon.dto.response;
 
+import lombok.Builder;
 import org.socialculture.platform.coupon.entity.CouponEntity;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
  * 
  * @author ycjung
  */
+@Builder
 public record CouponResponseDto(
         Long couponId,
         String name,
@@ -17,17 +19,17 @@ public record CouponResponseDto(
         LocalDateTime expireTime,
         LocalDateTime createdAt
 ) {
-    // 정적 팩토리 메서드 of
-    public static CouponResponseDto of(Long couponId, String name, int percent, boolean isUsed,
-                                       LocalDateTime expireTime, LocalDateTime createdAt) {
-        return new CouponResponseDto(
-                couponId,
-                name,
-                percent,
-                isUsed,
-                expireTime,
-                createdAt
-        );
+    // 정적 팩토리 메서드 create
+    public static CouponResponseDto create(Long couponId, String name, int percent, boolean isUsed,
+                                           LocalDateTime expireTime, LocalDateTime createdAt) {
+        return CouponResponseDto.builder()
+                .couponId(couponId)
+                .name(name)
+                .percent(percent)
+                .isUsed(isUsed)
+                .expireTime(expireTime)
+                .createdAt(createdAt)
+                .build();
     }
 
     // 엔티티로부터 DTO를 생성하는 메서드 from

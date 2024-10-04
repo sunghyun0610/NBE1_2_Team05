@@ -47,8 +47,8 @@ public class TicketControllerTest {
     void getTickets() throws Exception {
         // 테스트에 사용할 가짜 티켓 응답 데이터를 생성
         List<TicketResponseDto> mockTicketResponsDtos = List.of(
-                TicketResponseDto.of(1L, "꿈의 교향곡", LocalDateTime.now(), 2, 100, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)),
-                TicketResponseDto.of(2L, "영원의 메아리", LocalDateTime.now(), 3, 150, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2))
+                TicketResponseDto.create(1L, "꿈의 교향곡", LocalDateTime.now(), 2, 100, LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(1)),
+                TicketResponseDto.create(2L, "영원의 메아리", LocalDateTime.now(), 3, 150, LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2))
         );
 
         given(ticketService.getAllTicketsByEmailWithPageAndSortOption(anyInt(), anyInt(), isNull(), anyBoolean()))
@@ -69,7 +69,7 @@ public class TicketControllerTest {
     @WithMockUser(username = "user@example.com")
     void getTicketDetail() throws Exception {
         // 가짜 티켓 응답 DTO 생성
-        TicketResponseDto mockTicketResponse = TicketResponseDto.of(
+        TicketResponseDto mockTicketResponse = TicketResponseDto.create(
                 1L,
                 "꿈의 교향곡",
                 LocalDateTime.now(),
@@ -96,13 +96,13 @@ public class TicketControllerTest {
     @WithMockUser(username = "user@example.com", roles = "LOCAL")
     void buyTicket() throws Exception {
         // 가짜 티켓 요청 DTO 생성
-        TicketRequestDto mockTicketRequest = TicketRequestDto.of(
+        TicketRequestDto mockTicketRequest = TicketRequestDto.create(
                 1L,
                 2,
                 1L
         );
         // 가짜 티켓 응답 DTO 생성
-        TicketResponseDto mockTicketResponse = TicketResponseDto.of(
+        TicketResponseDto mockTicketResponse = TicketResponseDto.create(
                 1L,
                 "꿈의 교향곡",
                 LocalDateTime.now(),
