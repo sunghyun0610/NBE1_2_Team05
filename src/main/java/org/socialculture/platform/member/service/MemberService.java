@@ -3,6 +3,7 @@ package org.socialculture.platform.member.service;
 import jakarta.servlet.http.HttpSession;
 import org.socialculture.platform.member.dto.request.LocalRegisterRequest;
 import org.socialculture.platform.member.dto.request.MemberCategoryRequest;
+import org.socialculture.platform.member.dto.request.SocialRegisterRequest;
 import org.socialculture.platform.member.dto.response.CategoryResponse;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberInfoDto;
@@ -15,13 +16,10 @@ public interface MemberService {
     void registerBasicUser(LocalRegisterRequest localRegisterRequest);
 
     // 소셜 사용자 가입여부 확인
-    boolean isSocialMemberRegistered(SocialMemberCheckDto socialMemberCheckDto,
-                                     HttpSession session
-    );
+    boolean isSocialMemberRegistered(SocialMemberCheckDto socialMemberCheckDto);
 
     // 소셜 사용자 닉네임 확인 후 회원가입
-    void registerSocialUserFromSession(SocialMemberInfoDto memberInfoDto,
-                                       HttpSession session);
+    void registerSocialMember(SocialRegisterRequest request, HttpSession session);
 
     // 이메일 검증과 중복 체크
     void validateEmailAndCheckDuplicate(String email);

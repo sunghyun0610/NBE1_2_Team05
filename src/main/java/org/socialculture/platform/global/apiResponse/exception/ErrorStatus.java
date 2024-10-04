@@ -19,26 +19,26 @@ public enum ErrorStatus implements BaseErrorCode{
     _TICKET_INVALID_PAGINATION_PARAMETERS(HttpStatus.BAD_REQUEST, "TICKET400", "페이지나 크기 값이 유효하지 않습니다. 0 이상의 값을 입력해 주세요."),
 
     // 유저 관련 에러
-    LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),
-    REGISTER_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4004", "회원가입에 실패했습니다."),
-    EMAIL_DUPLICATE(HttpStatus.CONFLICT, "MEMBER4091", "이미 사용중인 이메일 입니다."),
-    EMAIL_INVALID(HttpStatus.BAD_REQUEST, "MEMBER4002", "이메일 형식이 맞지 않습니다."),
-    NAME_DUPLICATE(HttpStatus.CONFLICT, "MEMBER4092", "이미 사용중인 닉네임 입니다."),
-    NAME_INVALID(HttpStatus.BAD_REQUEST, "MEMBER4002", "닉네임 형식이 올바르지 않습니다."),
-    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER4003", "비밀번호 형식이 맞지 않습니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER4041", "해당 유저가 존재하지 않습니다."),
+    LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER401", "로그인에 실패했습니다."),
+    REGISTER_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER401", "회원가입에 실패했습니다."),
+    EMAIL_DUPLICATE(HttpStatus.CONFLICT, "MEMBER409", "이미 사용중인 이메일 입니다."),
+    EMAIL_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "이메일 형식이 맞지 않습니다."),
+    NAME_DUPLICATE(HttpStatus.CONFLICT, "MEMBER409", "이미 사용중인 닉네임 입니다."),
+    NAME_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "닉네임 형식이 올바르지 않습니다."),
+    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호 형식이 맞지 않습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 유저가 존재하지 않습니다."),
 
 
     // 소셜 유저 관련 에러
-    SOCIAL_EMAIL_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL4091", "이메일이 이미 다른 소셜 계정에서 사용중입니다."),
-    SOCIAL_NAME_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL4002", "닉네임 형식이 올바르지 않습니다."),
-    SOCIAL_NAME_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL4092", "닉네임이 이미 사용 중입니다."),
-    SOCIAL_NAME_REQUIRED(HttpStatus.FOUND, "SOCIAL3021", "회원가입을 위해 닉네임이 필요합니다."),
-    SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL4006", "사용자의 기본정보가 적절하지 않습니다."),
+    SOCIAL_EMAIL_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL409", "이메일이 이미 다른 소셜 계정에서 사용중입니다."),
+    SOCIAL_NAME_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "닉네임 형식이 올바르지 않습니다."),
+    SOCIAL_NAME_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL409", "닉네임이 이미 사용 중입니다."),
+    SOCIAL_NAME_REQUIRED(HttpStatus.FOUND, "SOCIAL302", "회원가입을 위해 닉네임이 필요합니다."),
+    SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "사용자의 기본정보가 적절하지 않습니다."),
 
 
     // 멤버 카테고리 관련
-    MEMBER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY4045", "해당 카테고리가 존재하지 않습니다."),
+    MEMBER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY404", "해당 카테고리가 존재하지 않습니다."),
 
 
     //공연

@@ -14,7 +14,6 @@ import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.entity.MemberRole;
 import org.socialculture.platform.member.entity.SocialProvider;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
-import org.socialculture.platform.member.oauth.common.dto.SocialMemberInfoDto;
 import org.socialculture.platform.member.repository.MemberCategoryRepository;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.performance.entity.CategoryEntity;
@@ -74,9 +73,7 @@ public class MemberServiceImpl implements MemberService{
      * @return true이면 가입되어있는 사용자, false면 가입되어있지 않는 사용자
      */
     @Override
-    public boolean isSocialMemberRegistered(SocialMemberCheckDto socialMemberCheckDto,
-                                            HttpSession session
-    ) {
+    public boolean isSocialMemberRegistered(SocialMemberCheckDto socialMemberCheckDto) {
 
         Optional<MemberEntity> findMember = memberRepository.findByEmail(socialMemberCheckDto.email());
 
@@ -86,12 +83,7 @@ public class MemberServiceImpl implements MemberService{
                 throw new GeneralException(ErrorStatus.SOCIAL_EMAIL_DUPLICATE);
             }
             return true;
-        }).orElseGet(() -> {
-            session.setAttribute("providerId", socialMemberCheckDto.providerId());
-            session.setAttribute("provider", socialMemberCheckDto.provider());
-            session.setAttribute("email", socialMemberCheckDto.email());
-            return false;
-        });
+        }).orElse(false);
     }
 
 
@@ -102,29 +94,10 @@ public class MemberServiceImpl implements MemberService{
      */
     @Transactional
     @Override
-    public void registerSocialUserFromSession(SocialMemberInfoDto memberInfoDto,
-                                              HttpSession session) {
+    public void  registerSocialMember(SocialRegisterRequest request, HttpSession session) {
 
-        validateNameAndCheckDuplicate(memberInfoDto.name());
-        String name = memberInfoDto.name();
-        String email = (String) session.getAttribute("email");
-        String providerId = (String) session.getAttribute("providerId");
-        SocialProvider sessionProvider = (SocialProvider) session.getAttribute("provider");
-        String provider = sessionProvider.name();
-
-        if (email == null || provider == null || providerId == null) {
-            throw new GeneralException(ErrorStatus.SOCIAL_INFO_INVALID);
-        }
-
-        SocialRegisterRequest socialRegisterRequest = SocialRegisterRequest.create(
-            email,
-            providerId,
-            name,
-            SocialProvider.valueOf(provider)
-        );
-
-        validateEmailAndCheckDuplicate(email);
-        MemberEntity memberEntity = socialRegisterRequest.toEntity();
+        validateEmailAndCheckDuplicate(request.email());
+        MemberEntity memberEntity = request.toEntity();
         memberRepository.save(memberEntity);
 
         session.invalidate(); // 회원가입용 임시 회원 정보세션 종료
@@ -189,6 +162,32 @@ public class MemberServiceImpl implements MemberService{
         MemberEntity memberEntity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
+        addCategories(memberCategoryRequest, memberEntity);
+    }
+
+
+    /**
+     * 선호 카테고리 수정
+     * @param memberCategoryRequest
+     * @param email
+     */
+    @Transactional
+    @Override
+    public void updateFavoriteCategories(MemberCategoryRequest memberCategoryRequest,
+                                         String email) {
+
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow((() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND)));
+
+        memberCategoryRepository.deleteByMemberMemberId(memberEntity.getMemberId());
+        memberAddCategory(memberCategoryRequest, email);
+
+        addCategories(memberCategoryRequest, memberEntity);
+    }
+
+
+    // 받은 카테고리 목록을 추가
+    private void addCategories(MemberCategoryRequest memberCategoryRequest, MemberEntity memberEntity) {
         List<Long> categoryIds = memberCategoryRequest.categories();
         for (Long categoryId : categoryIds) {
             CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId).orElseThrow(() ->
@@ -202,6 +201,7 @@ public class MemberServiceImpl implements MemberService{
             memberCategoryRepository.save(memberCategoryEntity);
         }
     }
+
 
     /**
      * 카테고리 전체 목록 조회
@@ -232,22 +232,6 @@ public class MemberServiceImpl implements MemberService{
     }
 
 
-    /**
-     * 선호 카테고리 수정
-     * @param memberCategoryRequest
-     * @param email
-     */
-    @Transactional
-    @Override
-    public void updateFavoriteCategories(MemberCategoryRequest memberCategoryRequest,
-                                         String email) {
-
-        MemberEntity memberEntity = memberRepository.findByEmail(email)
-                .orElseThrow((() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND)));
-
-        memberCategoryRepository.deleteByMemberMemberId(memberEntity.getMemberId());
-        memberAddCategory(memberCategoryRequest, email);
-    }
 
 
 

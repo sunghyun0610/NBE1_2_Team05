@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.member.entity.SocialProvider;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
+import org.socialculture.platform.member.oauth.common.service.SocialClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -17,11 +18,16 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
-public class KakaoClient {
+public class KakaoClient implements SocialClient {
 
     private final String clientId;
     private final String redirectUri;
     private final String clientSecret;
+
+    @Override
+    public String getAccessToken(String code, String state) {
+        throw new UnsupportedOperationException("카카오에서는 지원하지 않습니다.");
+    }
 
     public KakaoClient(@Value("${spring.kakao.client_id}") String clientId,
                        @Value("${spring.kakao.redirect_uri}") String redirectUri,
@@ -39,6 +45,7 @@ public class KakaoClient {
      * @return access_token
      * @throws JsonProcessingException
      */
+    @Override
     public String getAccessToken(String code) throws JsonProcessingException {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kauth.kakao.com")
@@ -76,7 +83,8 @@ public class KakaoClient {
      * @return email, id
      * @throws JsonProcessingException
      */
-    public SocialMemberCheckDto getUserInfo(String accessToken) throws JsonProcessingException {
+    @Override
+    public SocialMemberCheckDto getMemberInfo(String accessToken) throws JsonProcessingException {
         WebClient webClient = WebClient.builder()
                 .baseUrl("https://kapi.kakao.com")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)

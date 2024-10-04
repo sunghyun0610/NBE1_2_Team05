@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.member.entity.SocialProvider;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
+import org.socialculture.platform.member.oauth.common.service.SocialClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -24,13 +25,13 @@ import java.util.Objects;
  */
 @Service
 @Slf4j
-public class NaverClientService {
+public class NaverClient implements SocialClient {
     private final String clientId;
     private final String redirectURI;
     private final String clientSecret;
     private final RestTemplate restTemplate;
 
-    public NaverClientService(
+    public NaverClient(
             @Value("${spring.naver.client_id}") String clientId,
             @Value("${spring.naver.redirect_uri}") String redirectURI,
             @Value("${spring.naver.client_secret}") String clientSecret,
@@ -41,16 +42,16 @@ public class NaverClientService {
         this.restTemplate = restTemplate;
     }
 
-    /**
-     * 네이버 인가코드 요청 URL을 생성해 제공 (테스트를 위한 코드로, 원래는 프론트 코드임)
-     * @return 인가코드 요청 URL
-     */
-    public String getLoginURL() {
-        return "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" +
-                clientId +
-                "&redirect_uri=" +
-                redirectURI;
-    }
+//    /**
+//     * 네이버 인가코드 요청 URL을 생성해 제공 (테스트를 위한 코드로, 원래는 프론트 코드임)
+//     * @return 인가코드 요청 URL
+//     */
+//    public String getLoginURL() {
+//        return "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" +
+//                clientId +
+//                "&redirect_uri=" +
+//                redirectURI;
+//    }
 
     /**
      * 인가코드로 네이버 API에 액세스 토큰 요청
@@ -58,6 +59,7 @@ public class NaverClientService {
      * @param state 상태코드
      * @return 액세스 토큰
      */
+    @Override
     public String getAccessToken(String code, String state) {
         String reqUrl = "https://nid.naver.com/oauth2.0/token";
 
@@ -89,6 +91,7 @@ public class NaverClientService {
      * @param accessToken
      * @return 이름, 이메일
      */
+    @Override
     public SocialMemberCheckDto getMemberInfo(String accessToken) {
         String reqUrl = "https://openapi.naver.com/v1/nid/me";
 
