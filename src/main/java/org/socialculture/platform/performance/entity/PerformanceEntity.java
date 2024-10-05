@@ -2,6 +2,7 @@ package org.socialculture.platform.performance.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -39,7 +40,7 @@ public class PerformanceEntity extends BaseEntity {
     private String description;
 
     @Column(name = "max_audience")
-    private int maxAudience;
+    private Integer maxAudience;
 
     @Column(name = "address")
     private String address;
@@ -48,7 +49,7 @@ public class PerformanceEntity extends BaseEntity {
     private String imageUrl;
 
     @Column(name = "price")
-    private int price;
+    private Integer price;
 
     @Column(name = "remaining_tickets")
     private int remainingTickets;
@@ -61,5 +62,33 @@ public class PerformanceEntity extends BaseEntity {
     private PerformanceStatus performanceStatus;
 
     @OneToMany(mappedBy = "performance", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<PerformanceCategoryEntity> performanceCategoryList = new ArrayList<>();
+
+    public void updatePerformance(PerformanceEntity performanceEntity) {
+        if (performanceEntity.getTitle() != null) {
+            this.title = performanceEntity.getTitle();
+        }
+        if (performanceEntity.getDateStartTime() != null) {
+            this.dateStartTime = performanceEntity.getDateStartTime();
+        }
+        if (performanceEntity.getDateEndTime() != null) {
+            this.dateEndTime = performanceEntity.getDateEndTime();
+        }
+        if (performanceEntity.getDescription() != null) {
+            this.description = performanceEntity.getDescription();
+        }
+        if (performanceEntity.getAddress() != null) {
+            this.address = performanceEntity.getAddress();
+        }
+        if (performanceEntity.getImageUrl() != null) {
+            this.imageUrl = performanceEntity.getImageUrl();
+        }
+        if (performanceEntity.getPrice() != null) {
+            this.price = performanceEntity.getPrice();
+        }
+        if (performanceEntity.getMaxAudience() != null) {
+            this.maxAudience = performanceEntity.getMaxAudience();
+        }
+    }
 }
