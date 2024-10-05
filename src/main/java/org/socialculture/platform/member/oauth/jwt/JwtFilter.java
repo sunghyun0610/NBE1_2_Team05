@@ -1,5 +1,8 @@
 package org.socialculture.platform.member.oauth.jwt;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -15,6 +18,7 @@ import java.io.IOException;
 
 /**
  * HTTP 요청에서 jwt를 추출하고 검증하여 인증 정보를 SecurityContext에 설정하는 필터
+ *
  * @author yeonsu
  */
 @Slf4j
@@ -29,17 +33,41 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        String jwt = resolveToken(httpServletRequest);
+
+        String accessToken = resolveToken(httpServletRequest); // 액세스 토큰, 리프레시 토큰 반환
+
         String requestURI = httpServletRequest.getRequestURI();
 
-        if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) { //token이 존재하고, 유효성 검사 통과하면
-            Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri :{}", authentication.getName(), requestURI);
-        }//token이 정상이면 SecurityContext에 저장
-        else {
-            log.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
+        //1. 액세스 토큰 유효성 검사
+        //1.1. 액세스 토큰 유효 -> 정상 처리
+        //1.2. 액세스 토큰 만료 -> 만료 응답
+        if (StringUtils.hasText(accessToken)) {
+            try {
+                jwtTokenProvider.validateToken(accessToken);
+
+                Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri :{}", authentication.getName(), requestURI);
+                log.info("Security Context에 '{}' 인증 정보를 저장했습니다, uri :{}", authentication.getName(), requestURI);
+
+            } catch (SecurityException | MalformedJwtException e) {
+                log.info("잘못된 JWT 서명입니다.");
+                httpServletRequest.setAttribute("message", "잘못된 JWT 서명입니다.");
+            } catch (ExpiredJwtException e) {
+                log.info("만료된 JWT 토큰입니다. ");
+                httpServletRequest.setAttribute("message", "만료된 액세스 토큰입니다.");
+            } catch (UnsupportedJwtException e) {
+                log.info("지원되지 않는 JWT 토큰입니다.");
+                httpServletRequest.setAttribute("message", "지원되지 않는 JWT 토큰입니다.");
+            } catch (IllegalArgumentException e) {
+                log.info("JWT 토큰이 잘못되었습니다.");
+                httpServletRequest.setAttribute("message", "JWT 토큰이 잘못되었습니다.");
+            }
+        } else {
+            log.debug("JWT 토큰이 없습니다., uri: {}", requestURI);
+            httpServletRequest.setAttribute("message", "액세스 토큰이 없습니다.");
         }
+
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
@@ -47,10 +75,11 @@ public class JwtFilter extends GenericFilterBean {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) { //Authorization 헤더에서 “Bearer”가 있는 경우 토큰 반환
-            return bearerToken.substring(7);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
+            return bearerToken.substring(7).trim(); // Bearer 다음의 토큰을 반환
         }
-        return null;
+
+        return null; // 토큰이 없을 경우 null 반환
     }
 }
 
