@@ -4,12 +4,13 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.socialculture.platform.member.entity.MemberEntity;
+import org.socialculture.platform.member.oauth.jwt.service.CustomUserDetailsService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -30,13 +31,16 @@ public class JwtTokenProvider implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth"; // 권한 키
 
+    private final CustomUserDetailsService customUserDetailsService;
+
     // 생성자
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
                             @Value("${jwt.access.token.expiration}") long accessTokenValidity,
-                            @Value("${jwt.refresh.token.expiration}") long refreshTokenValidity) {
+                            @Value("${jwt.refresh.token.expiration}") long refreshTokenValidity, CustomUserDetailsService customUserDetailsService) {
         this.secretKey = secretKey;
-        this.accessTokenValidity = accessTokenValidity * 1000;
-        this.refreshTokenValidity = refreshTokenValidity * 1000;
+        this.accessTokenValidity = accessTokenValidity;
+        this.refreshTokenValidity = refreshTokenValidity;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -67,19 +71,6 @@ public class JwtTokenProvider implements InitializingBean {
                 .compact();
     }
 
-    // 액세스 토큰 생성
-//    public String createAccessToken(String email) {
-//        Map<String, Object> claims = new HashMap<>();
-//        claims.put("email", email);
-//
-//        return Jwts.builder()
-//                .setClaims(claims)
-//                .setSubject(email)
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
-//                .signWith(key, SignatureAlgorithm.HS256)
-//                .compact();
-//    }
 
     // 리프레시 토큰 생성
     public String createRefreshToken(String email) {
@@ -92,20 +83,21 @@ public class JwtTokenProvider implements InitializingBean {
     }
 
     // 토큰 유효성 검사
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
-        } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
-        }
-        return false;
+    public void validateToken(String token) throws JwtException {
+        Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+//        try {
+//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+//            return true; // 유효한 토큰
+//        } catch (SecurityException | MalformedJwtException e) {
+//            log.info("잘못된 JWT 서명입니다.");
+//        } catch (ExpiredJwtException e) {
+//            log.info("만료된 JWT 토큰입니다.");
+//        } catch (UnsupportedJwtException e) {
+//            log.info("지원되지 않는 JWT 토큰입니다.");
+//        } catch (IllegalArgumentException e) {
+//            log.info("JWT 토큰이 잘못되었습니다.");
+//        }
+//        return false;
     }
 
     // 토큰으로 사용자 이메일 가져오기
@@ -123,24 +115,27 @@ public class JwtTokenProvider implements InitializingBean {
         }
     }
 
-    //token으로 사용자 정보 반환
-    public Authentication getAuthentication(String token) {
-        Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    //리프레시 토큰으로 Authentication 객체 얻기
+    public Authentication getAuthentication(String refreshToken) {
+        if (refreshToken != null) {
+            // 토큰에서 Claims 추출
+            Claims claims = Jwts
+                    .parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(refreshToken)
+                    .getBody();
 
-        String email = claims.getSubject();
+            // 이메일 추출
+            String email = claims.getSubject();
 
-        Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
+            // UserDetailsService를 통해 사용자 정보 가져오기
+            UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
-        MemberEntity member = MemberEntity.builder()
-                .email(email)
-                .build();
-
-        return new UsernamePasswordAuthenticationToken(member, token, authorities);
+            // Authentication 객체 생성
+            return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        }
+        return null; // 토큰이 유효하지 않은 경우 null 반환
     }
 }
 
