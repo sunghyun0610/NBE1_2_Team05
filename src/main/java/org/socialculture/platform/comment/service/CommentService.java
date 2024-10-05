@@ -13,7 +13,7 @@ import java.util.List;
 public interface CommentService {
     List<CommentReadDto> getAllComment(long performanceId, int page, int size);// 댓글 전체조회
 
-    CommentCreateResponse createComment(long performanceId, CommentCreateRequest commentCreateRequest);
+    CommentCreateResponse createComment(long performanceId, long memberId,CommentCreateRequest commentCreateRequest);
 
     CommentUpdateResponse updateComment(long commentId, CommentUpdateRequest commentUpdateRequest);
 

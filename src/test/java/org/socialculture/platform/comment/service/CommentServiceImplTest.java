@@ -166,6 +166,7 @@ class CommentServiceImplTest {
     void createComment() {
         // Given
         long performanceId = 1L;
+        long userId = 1L;
         CommentCreateRequest request = CommentCreateRequest.of("테스트 댓글",null);// 부모 ID 없음
 
         PerformanceEntity performance = PerformanceEntity.builder()
@@ -195,7 +196,7 @@ class CommentServiceImplTest {
         when(commentRepository.save(any(CommentEntity.class))).thenReturn(commentEntity);
 
         // When
-        CommentCreateResponse result = commentService.createComment(performanceId, request);
+        CommentCreateResponse result = commentService.createComment(performanceId, userId,request);
 
         // Then
         assertNotNull(result);
@@ -213,13 +214,14 @@ class CommentServiceImplTest {
     void createCommentShouldThrowExceptionWhenPerformanceNotFound() {
         // Given
         long performanceId = 999L;
+        long userid = 1L;
         CommentCreateRequest commentCreateRequest = new CommentCreateRequest("This is a new comment.", null);
 
         when(performanceRepository.findById(performanceId)).thenReturn(Optional.empty());
 
         // When & Then
         GeneralException exception = assertThrows(GeneralException.class,
-                () -> commentService.createComment(performanceId, commentCreateRequest));
+                () -> commentService.createComment(performanceId, userid,commentCreateRequest));
 
         assertEquals(ErrorStatus.PERFORMANCE_NOT_FOUND.getMessage(), "공연을 찾을 수 없습니다.");
         verify(performanceRepository, times(1)).findById(performanceId);
@@ -231,6 +233,7 @@ class CommentServiceImplTest {
         // Given
         long performanceId = 1L;
         long parentCommentId = 999L;
+        long userId = 1L;
         CommentCreateRequest commentCreateRequest = new CommentCreateRequest("This is a reply comment.", parentCommentId);
 
         PerformanceEntity performance = PerformanceEntity.builder()
@@ -250,7 +253,7 @@ class CommentServiceImplTest {
 
         // When & Then
         GeneralException exception = assertThrows(GeneralException.class,
-                () -> commentService.createComment(performanceId, commentCreateRequest));
+                () -> commentService.createComment(performanceId, userId,commentCreateRequest));
 
         assertEquals(ErrorStatus.COMMENT_NOT_FOUND.getMessage(), "댓글 정보가 없습니다.");
         verify(performanceRepository, times(1)).findById(performanceId);

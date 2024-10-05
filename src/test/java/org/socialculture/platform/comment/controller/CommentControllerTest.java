@@ -105,7 +105,7 @@ public class CommentControllerTest {
                 "댓글 생성 테스트코드입니다.",1L);
 
         //아무 createComment호출될떄 commentCreateResponse반환하도록설정
-        Mockito.when(commentService.createComment(anyLong(),any(CommentCreateRequest.class)))
+        Mockito.when(commentService.createComment(anyLong(),anyLong(),any(CommentCreateRequest.class)))
                 .thenReturn(commentCreateResponse);
 
         //when

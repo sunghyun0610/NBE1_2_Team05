@@ -72,7 +72,7 @@ public class CommentServiceImpl implements CommentService {
      *
      */
     @Override
-    public CommentCreateResponse createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
+    public CommentCreateResponse createComment(long performanceId, long memberId,CommentCreateRequest commentCreateRequest) {
 
         PerformanceEntity performance = performanceRepository.findById(performanceId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));// performanceEntity객체를 저장하는 것이 아니라 performance 외래키 저장
@@ -95,7 +95,7 @@ public class CommentServiceImpl implements CommentService {
                 .performance(performance)
                 .member(member)
                 .build();
-        commentEntity=commentRepository.save(commentEntity);// trouble shooting
+        commentEntity=commentRepository.save(commentEntity); // trouble shooting
 
         CommentCreateResponse commentCreateResponse= CommentCreateResponse.of(commentEntity.getCommentId(),commentEntity.getContent(),commentEntity.getPerformance().getPerformanceId());
 
