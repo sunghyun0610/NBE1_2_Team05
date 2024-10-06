@@ -2,7 +2,6 @@ package org.socialculture.platform.config;
 
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.member.auth.*;
-import org.socialculture.platform.member.oauth.jwt.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
