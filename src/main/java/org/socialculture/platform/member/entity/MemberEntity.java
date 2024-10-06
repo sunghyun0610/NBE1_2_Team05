@@ -3,6 +3,7 @@ package org.socialculture.platform.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.socialculture.platform.global.entity.BaseEntity;
 
 @Entity
 @Getter
@@ -10,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "member")
-public class MemberEntity {
+public class MemberEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
