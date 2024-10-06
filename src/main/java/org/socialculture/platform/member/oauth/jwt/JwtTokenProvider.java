@@ -5,7 +5,6 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.member.oauth.jwt.service.CustomUserDetailsService;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,9 +22,9 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
-public class JwtTokenProvider implements InitializingBean {
+public class JwtTokenProvider {
     private final String secretKey; // JWT 비밀키
-    private Key key; // JWT 서명에 사용할 키
+    private final Key key; // JWT 서명에 사용할 키
     private final long accessTokenValidity; // 액세스 토큰 유효 시간
     private final long refreshTokenValidity; // 리프레시 토큰 유효 시간
 
@@ -33,20 +32,20 @@ public class JwtTokenProvider implements InitializingBean {
 
     private final CustomUserDetailsService customUserDetailsService;
 
-    // 생성자
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
-                            @Value("${jwt.access.token.expiration}") long accessTokenValidity,
-                            @Value("${jwt.refresh.token.expiration}") long refreshTokenValidity, CustomUserDetailsService customUserDetailsService) {
+    // 생성자에서 초기화
+    public JwtTokenProvider(
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.access.token.expiration}") long accessTokenValidity,
+            @Value("${jwt.refresh.token.expiration}") long refreshTokenValidity,
+            CustomUserDetailsService customUserDetailsService) {
         this.secretKey = secretKey;
         this.accessTokenValidity = accessTokenValidity;
         this.refreshTokenValidity = refreshTokenValidity;
         this.customUserDetailsService = customUserDetailsService;
-    }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes); // Base64로 디코딩하여 안전한 키 생성
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+        log.info("JWT TokenProvider 초기화 완료");
     }
 
     //액세스 토큰 생성
