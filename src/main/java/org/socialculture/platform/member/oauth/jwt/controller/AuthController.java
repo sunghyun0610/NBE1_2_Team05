@@ -1,5 +1,6 @@
 package org.socialculture.platform.member.oauth.jwt.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.member.dto.LoginDTO;
 import org.socialculture.platform.member.oauth.jwt.dto.TokenRequestDTO;
 import org.socialculture.platform.member.oauth.jwt.dto.TokenResponseDTO;
@@ -16,17 +17,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/members")
 public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AuthService authService;
-
-    public AuthController(JwtTokenProvider jwtTokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, AuthService authService) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.authService = authService;
-    }
 
     /**
      * 로컬 로그인
