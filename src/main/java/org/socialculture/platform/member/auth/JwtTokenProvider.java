@@ -1,10 +1,10 @@
-package org.socialculture.platform.member.oauth.jwt;
+package org.socialculture.platform.member.auth;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import org.socialculture.platform.member.oauth.jwt.service.CustomUserDetailsService;
+import org.socialculture.platform.member.auth.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

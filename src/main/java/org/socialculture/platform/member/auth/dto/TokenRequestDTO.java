@@ -1,4 +1,4 @@
-package org.socialculture.platform.member.oauth.jwt.dto;
+package org.socialculture.platform.member.auth.dto;
 
 import lombok.Data;
 

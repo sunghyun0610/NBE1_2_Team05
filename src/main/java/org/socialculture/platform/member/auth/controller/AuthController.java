@@ -1,12 +1,12 @@
-package org.socialculture.platform.member.oauth.jwt.controller;
+package org.socialculture.platform.member.auth.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.member.dto.LoginDTO;
-import org.socialculture.platform.member.oauth.jwt.dto.TokenRequestDTO;
-import org.socialculture.platform.member.oauth.jwt.dto.TokenResponseDTO;
-import org.socialculture.platform.member.oauth.jwt.JwtFilter;
-import org.socialculture.platform.member.oauth.jwt.JwtTokenProvider;
-import org.socialculture.platform.member.oauth.jwt.service.AuthService;
+import org.socialculture.platform.member.auth.JwtTokenProvider;
+import org.socialculture.platform.member.auth.dto.TokenRequestDTO;
+import org.socialculture.platform.member.auth.dto.TokenResponseDTO;
+import org.socialculture.platform.member.auth.JwtFilter;
+import org.socialculture.platform.member.auth.service.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

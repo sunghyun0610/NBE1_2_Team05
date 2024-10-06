@@ -1,4 +1,4 @@
-package org.socialculture.platform.member.oauth.jwt.service;
+package org.socialculture.platform.member.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.member.entity.MemberEntity;

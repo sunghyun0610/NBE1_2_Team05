@@ -1,4 +1,4 @@
-package org.socialculture.platform.member.oauth.jwt;
+package org.socialculture.platform.member.auth;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;

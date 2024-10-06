@@ -1,4 +1,4 @@
-package org.socialculture.platform.member.oauth.jwt;
+package org.socialculture.platform.member.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

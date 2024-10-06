@@ -1,4 +1,4 @@
-package org.socialculture.platform.member.oauth.jwt;
+package org.socialculture.platform.member.auth;
 
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

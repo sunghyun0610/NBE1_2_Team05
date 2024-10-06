@@ -1,9 +1,9 @@
-package org.socialculture.platform.member.oauth.jwt.service;
+package org.socialculture.platform.member.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.entity.RefreshTokenEntity;
-import org.socialculture.platform.member.oauth.jwt.JwtTokenProvider;
+import org.socialculture.platform.member.auth.JwtTokenProvider;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.member.repository.RefreshTokenRepository;
 import org.springframework.security.core.Authentication;
