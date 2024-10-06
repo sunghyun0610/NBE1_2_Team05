@@ -56,9 +56,6 @@ public class JwtTokenProvider implements InitializingBean {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        long now = new Date().getTime();
-        Date validity = new Date(now + this.accessTokenValidity);
-
         // email을 직접 가져와서 claim에 추가
         String email = authentication.getName(); // 사용자 정보에서 email 가져오기
 
@@ -67,7 +64,7 @@ public class JwtTokenProvider implements InitializingBean {
                 .claim(AUTHORITIES_KEY, authorities) // 권한 정보 저장
                 .claim("email", email) // email 정보 추가
                 .signWith(key, SignatureAlgorithm.HS256) // 서명 설정
-                .setExpiration(validity) // 만료 시간 설정
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity)) // 만료 시간 설정
                 .compact();
     }
 
@@ -77,8 +74,8 @@ public class JwtTokenProvider implements InitializingBean {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity)) // 밀리초 단위
-                .signWith(key, SignatureAlgorithm.HS256) // 새로운 메서드 사용
+                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenValidity)) // 만료 시간 설정
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
