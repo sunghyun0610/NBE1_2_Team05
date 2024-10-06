@@ -1,5 +1,6 @@
 package org.socialculture.platform.member.oauth.jwt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,13 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
-
-    public CustomUserDetailsService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
-
 
     @Override
     @Transactional

@@ -1,5 +1,6 @@
 package org.socialculture.platform.member.oauth.jwt.service;
 
+import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.entity.RefreshTokenEntity;
 import org.socialculture.platform.member.oauth.jwt.JwtTokenProvider;
@@ -10,17 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-
-    public AuthService(JwtTokenProvider jwtTokenProvider, MemberRepository memberRepository, RefreshTokenRepository refreshTokenRepository) {
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.memberRepository = memberRepository;
-        this.refreshTokenRepository = refreshTokenRepository;
-    }
-
 
     /**
      * 리프레시 토큰 유효성 검사
