@@ -10,7 +10,7 @@ import org.socialculture.platform.member.auth.JwtTokenProvider;
 import org.socialculture.platform.member.auth.dto.TokenRequestDTO;
 import org.socialculture.platform.member.auth.dto.TokenResponseDTO;
 import org.socialculture.platform.member.auth.JwtFilter;
-import org.socialculture.platform.member.auth.service.AuthService;
+import org.socialculture.platform.member.auth.service.AuthServiceImpl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final AuthService authService;
+    private final AuthServiceImpl authServiceImpl;
 
     /**
      * 로컬 로그인
@@ -70,11 +70,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<TokenResponseDTO>> validateRefreshToken(@RequestBody TokenRequestDTO tokenRequestDTO) {
         String refreshToken = tokenRequestDTO.getRefreshToken();
 
-        if (!authService.validateRefreshToken(refreshToken)) { //리프레시 토큰 유효하지 않을 때
+        if (!authServiceImpl.validateRefreshToken(refreshToken)) { //리프레시 토큰 유효하지 않을 때
             throw new GeneralException(ErrorStatus.INVALID_REFRESH_TOKEN);
         }
 
-        String newAccessToken = authService.createNewAccessToken(refreshToken);
+        String newAccessToken = authServiceImpl.createNewAccessToken(refreshToken);
 
         TokenResponseDTO result = new TokenResponseDTO(newAccessToken, refreshToken);
         return ApiResponse.onSuccess(HttpStatus.CREATED, "COMMON200", SuccessStatus._CREATED.getMessage(), result);
