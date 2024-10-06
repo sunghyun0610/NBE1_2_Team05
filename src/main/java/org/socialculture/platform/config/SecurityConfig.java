@@ -49,7 +49,6 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .with(new JwtSecurityConfig(jwtTokenProvider), Customizer.withDefaults()) //jwt 보안 설정
-                .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), SecurityContextHolderFilter.class)
                 .build();
     }
