@@ -13,4 +13,9 @@ public class TokenResponseDTO {
     public TokenResponseDTO(String message) {
         this.message = message;
     }
+
+    public TokenResponseDTO(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }

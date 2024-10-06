@@ -1,6 +1,10 @@
 package org.socialculture.platform.member.auth.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
+import org.socialculture.platform.global.apiResponse.success.SuccessStatus;
 import org.socialculture.platform.member.dto.LoginDTO;
 import org.socialculture.platform.member.auth.JwtTokenProvider;
 import org.socialculture.platform.member.auth.dto.TokenRequestDTO;
@@ -60,25 +64,19 @@ public class AuthController {
     /**
      * 리프레시 토큰 유효성 검사
      * @param tokenRequestDTO
-     * @return accessToken, refreshToken, message
+     * @return accessToken, refreshToken
      */
     @GetMapping("/validate")
-    public ResponseEntity<TokenResponseDTO> validateRefreshToken(@RequestBody TokenRequestDTO tokenRequestDTO) {
+    public ResponseEntity<ApiResponse<TokenResponseDTO>> validateRefreshToken(@RequestBody TokenRequestDTO tokenRequestDTO) {
         String refreshToken = tokenRequestDTO.getRefreshToken();
-        System.out.println(authService.validateRefreshToken(refreshToken));
-        String message;
 
         if (!authService.validateRefreshToken(refreshToken)) { //리프레시 토큰 유효하지 않을 때
-            message = "리프레시 토큰이 유효하지 않습니다. 다시 로그인해주세요.";
-            return new ResponseEntity<>(new TokenResponseDTO(message), HttpStatus.OK);
+            throw new GeneralException(ErrorStatus.INVALID_REFRESH_TOKEN);
         }
 
         String newAccessToken = authService.createNewAccessToken(refreshToken);
-        System.out.println("newAccessToken >>>" + newAccessToken);
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer" + newAccessToken);
 
-        message = "새로운 액세스 토큰이 정상적으로 발급되었습니다.";
-        return new ResponseEntity<>(new TokenResponseDTO(newAccessToken, refreshToken, message), httpHeaders, HttpStatus.OK);
+        TokenResponseDTO result = new TokenResponseDTO(newAccessToken, refreshToken);
+        return ApiResponse.onSuccess(HttpStatus.CREATED, "COMMON200", SuccessStatus._CREATED.getMessage(), result);
     }
 }
