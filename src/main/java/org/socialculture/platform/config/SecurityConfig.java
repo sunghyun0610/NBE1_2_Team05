@@ -45,13 +45,8 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/members/naver").permitAll()
-                        .requestMatchers("/api/v1/members/kakao").permitAll()
-                        .requestMatchers("/api/v1/members/check").hasRole("USER") //2개 role 필요하면 hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/v1/members/authenticate").permitAll()
-                        .requestMatchers("/api/v1/members/validate").permitAll()
+                        .requestMatchers("/api/v1/members/**").permitAll()
                         .anyRequest().authenticated()
-                        .requestMatchers("/api/v1/members/oauth/**").permitAll()
                                 // 다른 모든 요청은 인증 필요 (개발 중에는 일단 모두 허용 가능)
                         //.anyRequest().permitAll()  // 추후 변경 가능
                 )
