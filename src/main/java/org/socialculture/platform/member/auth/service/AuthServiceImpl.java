@@ -52,9 +52,6 @@ public class AuthServiceImpl implements AuthService {
 
         Authentication authentication = jwtTokenProvider.getAuthentication(refreshToken);
 
-        // 인증 객체를 SecurityContext에 저장
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         // 새로운 액세스 토큰 생성
         return jwtTokenProvider.createAccessToken(authentication);
     }
