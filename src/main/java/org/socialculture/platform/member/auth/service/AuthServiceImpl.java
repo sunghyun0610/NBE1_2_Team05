@@ -1,6 +1,8 @@
 package org.socialculture.platform.member.auth.service;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.entity.RefreshTokenEntity;
 import org.socialculture.platform.member.auth.JwtTokenProvider;
@@ -11,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+
+import static org.socialculture.platform.global.apiResponse.exception.ErrorStatus.PERFORMANCE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -61,5 +65,29 @@ public class AuthServiceImpl implements AuthService {
 
         // 새로운 액세스 토큰 생성
         return jwtTokenProvider.createAccessToken(authentication);
+    }
+
+    /**
+     * 리프레시 토큰 저장
+     * @param refreshToken
+     */
+    @Override
+    public void insertRefreshToken(String refreshToken) {
+        String email = jwtTokenProvider.getMemberEmailFromToken(refreshToken);
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        //member에 해당하는 리프레시 토큰 삭제
+        refreshTokenRepository.deleteAllByMember(member);
+
+        LocalDateTime expiryDate = jwtTokenProvider.getExpiryDate(refreshToken);
+
+        RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+                .refreshToken(refreshToken)
+                .member(member)
+                .expiryDate(expiryDate)
+                .build();
+
+        refreshTokenRepository.save(refreshTokenEntity);
     }
 }

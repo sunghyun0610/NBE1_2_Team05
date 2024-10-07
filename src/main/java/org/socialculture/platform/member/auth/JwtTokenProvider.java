@@ -13,11 +13,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * JWT 토큰 관리 클래스
+ *
  * @author yeonsu
  */
 @Component
@@ -99,12 +102,23 @@ public class JwtTokenProvider {
     // 토큰으로 사용자 이메일 가져오기
     public String getMemberEmailFromToken(String token) {
         try {
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
+            Claims claims = getClaims(token);
             return claims.getSubject(); // 이메일은 subject로 설정
+        } catch (JwtException | IllegalArgumentException e) {
+            log.info("유효하지 않은 JWT 토큰입니다.");
+            return null;
+        }
+    }
+
+    //토큰에서 만료시간 가져오기
+    public LocalDateTime getExpiryDate(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims
+                    .getExpiration()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
         } catch (JwtException | IllegalArgumentException e) {
             log.info("유효하지 않은 JWT 토큰입니다.");
             return null;
@@ -115,12 +129,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String refreshToken) {
         if (refreshToken != null) {
             // 토큰에서 Claims 추출
-            Claims claims = Jwts
-                    .parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(refreshToken)
-                    .getBody();
+            Claims claims = getClaims(refreshToken);
 
             // 이메일 추출
             String email = claims.getSubject();
@@ -132,6 +141,15 @@ public class JwtTokenProvider {
             return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         }
         return null; // 토큰이 유효하지 않은 경우 null 반환
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
 

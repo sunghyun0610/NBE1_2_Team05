@@ -25,6 +25,7 @@ public enum ErrorStatus implements BaseErrorCode{
 
     // 유저 관련 에러
     LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 유저가 존재하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "MEMBER401", "유효하지 않은 리프레시 토큰입니다. 다시 로그인해주세요."),
 
     //공연

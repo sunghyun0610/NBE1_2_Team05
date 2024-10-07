@@ -48,6 +48,8 @@ public class AuthController {
 
         String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
+        authService.insertRefreshToken(refreshToken);
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer" + accessToken);
 
