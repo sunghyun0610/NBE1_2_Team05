@@ -93,6 +93,6 @@ public class PerformanceEntity extends BaseEntity {
     }
 
     public void updateDeleteAt() {
-        this.setDeletedAt(LocalDateTime.now());
+        this.recordDeletedAt(LocalDateTime.now());
     }
 }

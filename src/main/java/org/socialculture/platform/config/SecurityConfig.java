@@ -57,14 +57,6 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);  // InMemoryUserDetailsManager에 사용자 등록
-    }
 
     // CORS 설정을 위한 빈
     @Bean
