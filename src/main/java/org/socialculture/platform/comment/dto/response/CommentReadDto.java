@@ -18,6 +18,7 @@ public class CommentReadDto {
 
     private long commentId;
     private long memberId;
+    private String memberName;// 댓글에 사용자 이름을 표시하려면 name도 넘겨줘야하더라구요
     private String content; //엔티티 상에서는 comment
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

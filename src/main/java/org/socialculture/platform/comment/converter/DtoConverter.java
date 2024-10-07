@@ -15,6 +15,7 @@ public class DtoConverter{
                 .content(commentEntity.getContent())
                 .createdAt(commentEntity.getCreatedAt())
                 .updatedAt(commentEntity.getUpdatedAt())
+                .memberName(commentEntity.getMember().getName())
                 .parentId(commentEntity.getParentComment() != null ? commentEntity.getParentComment().getCommentId() : null) // 부모 댓글 ID 설정
                 .commentStatus(commentEntity.getCommentStatus())
                 .replies(commentEntity.getReplies().stream() // 대댓글 리스트 매핑

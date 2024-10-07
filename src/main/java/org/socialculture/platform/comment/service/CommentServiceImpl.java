@@ -53,28 +53,18 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public List<CommentReadDto> getAllComment(long performanceId, Pageable pageable) {
 
-        // 디버깅: 입력받은 performanceId 및 pageable 정보 출력
-        System.out.println("Performance ID: " + performanceId);
-        System.out.println("Pageable: page number = " + pageable.getPageNumber() + ", page size = " + pageable.getPageSize());
-
-        // 부모 댓글만 조회하도록 수정
+        // 부모 댓글만 조회하도록 수정 -> 즉 parentId == null인것들만 먼저 조회
         List<CommentEntity> commentEntityList = commentRepository.findParentCommentsByPerformanceId(performanceId, pageable);
 
-        // 디버깅: 쿼리 결과가 있는지 확인
-        System.out.println("Number of comments found: " + commentEntityList.size());
 
         if (commentEntityList.isEmpty()) {
-            System.out.println("No comments found for performanceId: " + performanceId);
+
             throw new GeneralException(ErrorStatus.COMMENT_NOT_FOUND);
         }
-
         // 부모 댓글과 대댓글을 계층 구조로 매핑
         List<CommentReadDto> commentReadDtos = commentEntityList.stream()
                 .map(DtoConverter::fromCommentEntity)
                 .collect(Collectors.toList());
-
-        // 디버깅: 매핑 결과 출력
-        System.out.println("Mapped CommentReadDto count: " + commentReadDtos.size());
 
         return commentReadDtos;
     }
