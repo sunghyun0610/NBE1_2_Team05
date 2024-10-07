@@ -10,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -37,6 +39,11 @@ public class AuthServiceImpl implements AuthService {
 
         RefreshTokenEntity storedRefreshToken = refreshTokenRepository.findByMember(member).orElse(null);
         if (storedRefreshToken == null) return false;
+
+        //현재 시간이랑 storedExpiryDate랑 비교
+        LocalDateTime storedExpiryDate = storedRefreshToken.getExpiryDate();
+        LocalDateTime now = LocalDateTime.now(); // 현재 시간 가져오기
+        if (now.isAfter(storedExpiryDate)) return false;
 
         return storedRefreshToken.getRefreshToken().equals(refreshToken);
     }
