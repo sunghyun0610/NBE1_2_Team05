@@ -44,7 +44,8 @@ public class AuthController {
 
         String accessToken = jwtTokenProvider.createAccessToken(authentication);
 
-        String email = jwtTokenProvider.getMemberEmailFromToken(accessToken);
+        String email = authentication.getName();
+
         String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
         HttpHeaders httpHeaders = new HttpHeaders();
