@@ -91,4 +91,8 @@ public class PerformanceEntity extends BaseEntity {
             this.maxAudience = performanceEntity.getMaxAudience();
         }
     }
+
+    public void updateDeleteAt() {
+        this.setDeletedAt(LocalDateTime.now());
+    }
 }

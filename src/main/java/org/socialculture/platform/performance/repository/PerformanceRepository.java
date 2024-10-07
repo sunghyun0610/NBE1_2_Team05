@@ -5,4 +5,5 @@ import org.socialculture.platform.performance.repository.querydsl.PerformanceRep
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PerformanceRepository extends JpaRepository<PerformanceEntity, Long>, PerformanceRepositoryCustom {
+
 }

@@ -17,4 +17,8 @@ public interface PerformanceService {
     PerformanceDetailResponse getPerformanceDetail(Long performanceId);
 
     PerformanceUpdateResponse updatePerformance(Long performanceId, PerformanceUpdateRequest performanceUpdateRequest);
+
+    void deletePerformance(Long performanceId);
+
+    List<PerformanceListResponse> getMyPerformanceList(String email, Integer page, Integer size);
 }

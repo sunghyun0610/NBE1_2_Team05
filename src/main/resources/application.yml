@@ -14,6 +14,14 @@ spring:
 #    hibernate:
 #      ddl-auto: create
 
+jwt:
+  secret: ${JWT_SECRET_KEY}  # JWT 비밀 키
+  access:
+    token:
+      expiration: 1800000  # 액세스 토큰 유효 시간 (30분)
+  refresh:
+    token:
+      expiration: 604800000  # 리프레시 토큰 유효 시간 (7일)
 
   kakao:
     client_id: ${KAKAO_CLIENT_ID}
@@ -22,5 +30,8 @@ spring:
 
   naver:
     client_id: ${NAVER_CLIENT_ID}
-    redirect_uri: ${NAVER_REDIRECT_URL}
+    redirect_uri: ${NAVER_REDIRECT_URI}
     client_secret: ${NAVER_CLIENT_SECRET}
+
+
+

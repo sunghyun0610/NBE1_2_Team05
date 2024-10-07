@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.socialculture.platform.member.entity.MemberCategoryEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,4 +26,8 @@ public class CategoryEntity {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PerformanceCategoryEntity> performanceCategoryList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberCategoryEntity> memberCategories = new ArrayList<>();
+
 }
