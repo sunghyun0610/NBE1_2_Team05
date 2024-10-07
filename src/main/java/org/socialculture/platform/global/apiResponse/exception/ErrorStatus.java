@@ -24,7 +24,8 @@ public enum ErrorStatus implements BaseErrorCode{
     _COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "COUPON400", "만료된 쿠폰입니다."),
 
     // 유저 관련 에러
-    LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER401", "로그인에 실패했습니다."),
+    LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "MEMBER401", "유효하지 않은 리프레시 토큰입니다. 다시 로그인해주세요."),
     REGISTER_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER401", "회원가입에 실패했습니다."),
     EMAIL_DUPLICATE(HttpStatus.CONFLICT, "MEMBER409", "이미 사용중인 이메일 입니다."),
     EMAIL_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "이메일 형식이 맞지 않습니다."),
