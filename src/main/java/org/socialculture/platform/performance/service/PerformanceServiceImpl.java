@@ -75,6 +75,15 @@ public class PerformanceServiceImpl implements PerformanceService {
         return PerformanceUpdateResponse.from(performanceEntity.getPerformanceId());
     }
 
+    @Override
+    @Transactional
+    public void deletePerformance(Long performanceId) {
+        PerformanceEntity performanceEntity = performanceRepository.findById(performanceId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+
+        performanceEntity.updateDeleteAt();
+    }
+
     private List<CategoryEntity> performanceCategorySave(PerformanceEntity performanceEntity, List<String> categories) {
         List<CategoryEntity> categoryEntities = categoryRepository.findAllByNameKrIn(categories); // 한 번에 조회
 
