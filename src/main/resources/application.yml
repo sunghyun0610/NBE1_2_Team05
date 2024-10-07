@@ -13,6 +13,16 @@ spring:
     database: mysql
 #    hibernate:
 #      ddl-auto: create
+  kakao:
+    client_id: ${KAKAO_CLIENT_ID}
+    redirect_uri: ${KAKAO_REDIRECT_URI}
+    client_secret: ${KAKAO_CLIENT_SECRET}
+
+  naver:
+    client_id: ${NAVER_CLIENT_ID}
+    redirect_uri: ${NAVER_REDIRECT_URI}
+    client_secret: ${NAVER_CLIENT_SECRET}
+
 
 jwt:
   secret: ${JWT_SECRET_KEY}  # JWT 비밀 키
@@ -23,15 +33,7 @@ jwt:
     token:
       expiration: 604800000  # 리프레시 토큰 유효 시간 (7일)
 
-  kakao:
-    client_id: ${KAKAO_CLIENT_ID}
-    redirect_uri: ${KAKAO_REDIRECT_URI}
-    client_secret: ${KAKAO_CLIENT_SECRET}
 
-  naver:
-    client_id: ${NAVER_CLIENT_ID}
-    redirect_uri: ${NAVER_REDIRECT_URI}
-    client_secret: ${NAVER_CLIENT_SECRET}
 
 
 
