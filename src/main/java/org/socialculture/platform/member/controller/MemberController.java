@@ -4,6 +4,8 @@ package org.socialculture.platform.member.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.dto.request.LocalRegisterRequest;
 import org.socialculture.platform.member.dto.request.MemberCategoryRequest;
 import org.socialculture.platform.member.dto.response.CategoryResponse;
@@ -84,6 +86,9 @@ public class MemberController {
 
 //        String jwt = token.substring(7); // Bearer 제거
 //        String email = jwtService.getUserIdFromToken(jwt);
+        if(memberCategoryRequest.categories().size() > 3){
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
 
         String email = "test@gmail.com";
         memberService.memberAddCategory(memberCategoryRequest, email);
@@ -126,6 +131,9 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateFavoriteCategories(
             @RequestBody MemberCategoryRequest memberCategoryRequest){
 
+        if(memberCategoryRequest.categories().size() > 3){
+            throw new GeneralException(ErrorStatus._BAD_REQUEST);
+        }
         String email = "test@gmail.com";
         memberService.updateFavoriteCategories(memberCategoryRequest, email);
 
