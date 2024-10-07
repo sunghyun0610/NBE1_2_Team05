@@ -29,6 +29,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.socialculture.platform.util.ApiDocumentUtils.getDocumentRequest;
 import static org.socialculture.platform.util.ApiDocumentUtils.getDocumentResponse;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -350,6 +351,33 @@ public class PerformanceControllerTest {
                                 fieldWithPath("message").description("응답 메시지"),
                                 fieldWithPath("httpStatus").description("HTTP 상태"),
                                 fieldWithPath("result.performanceId").type(JsonFieldType.NUMBER).description("공연 ID")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("공연 삭제 테스트")
+    @WithMockUser
+    void deletePerformanceTest() throws Exception {
+        //given
+        doNothing().when(performanceService).deletePerformance(anyLong());
+
+
+        ResultActions result = this.mockMvc.perform(
+                delete("/api/v1/performances/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        result.andExpect(status().isOk())
+                .andDo(document("performance-detail",
+                        getDocumentRequest(),
+                        getDocumentResponse(),
+                        responseFields(
+                                fieldWithPath("isSuccess").description("성공 여부"),
+                                fieldWithPath("code").description("응답 코드"),
+                                fieldWithPath("message").description("응답 메시지"),
+                                fieldWithPath("httpStatus").description("HTTP 상태")
                         )
                 ));
     }

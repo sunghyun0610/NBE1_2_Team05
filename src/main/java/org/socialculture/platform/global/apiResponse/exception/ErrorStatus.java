@@ -25,12 +25,31 @@ public enum ErrorStatus implements BaseErrorCode{
 
     // 유저 관련 에러
     LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),
-    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 유저가 존재하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "MEMBER401", "유효하지 않은 리프레시 토큰입니다. 다시 로그인해주세요."),
+    REGISTER_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER401", "회원가입에 실패했습니다."),
+    EMAIL_DUPLICATE(HttpStatus.CONFLICT, "MEMBER409", "이미 사용중인 이메일 입니다."),
+    EMAIL_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "이메일 형식이 맞지 않습니다."),
+    NAME_DUPLICATE(HttpStatus.CONFLICT, "MEMBER409", "이미 사용중인 닉네임 입니다."),
+    NAME_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "닉네임 형식이 올바르지 않습니다."),
+    PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호 형식이 맞지 않습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 유저가 존재하지 않습니다."),
+
+
+    // 소셜 유저 관련 에러
+    SOCIAL_EMAIL_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL409", "이메일이 이미 다른 소셜 계정에서 사용중입니다."),
+    SOCIAL_NAME_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "닉네임 형식이 올바르지 않습니다."),
+    SOCIAL_NAME_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL409", "닉네임이 이미 사용 중입니다."),
+    SOCIAL_NAME_REQUIRED(HttpStatus.FOUND, "SOCIAL302", "회원가입을 위해 닉네임이 필요합니다."),
+    SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "사용자의 기본정보가 적절하지 않습니다."),
+
+
+    // 멤버 카테고리 관련
+    MEMBER_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "CATEGORY404", "해당 카테고리가 존재하지 않습니다."),
+
 
     //공연
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연을 찾을 수 없습니다."),
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다.");
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다."),;
 
     private final HttpStatus httpStatus;
     private final String code;
