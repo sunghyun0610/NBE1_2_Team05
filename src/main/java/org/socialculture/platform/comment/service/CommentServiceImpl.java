@@ -16,8 +16,10 @@ import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.repository.PerformanceRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -49,20 +51,35 @@ public class CommentServiceImpl implements CommentService {
      */
 
     @Override
-    public List<CommentReadDto> getAllComment(long performanceId, int page, int size) {
+    public List<CommentReadDto> getAllComment(long performanceId, Pageable pageable) {
 
-        Pageable pageable= PageRequest.of(page, size);
+        // 디버깅: 입력받은 performanceId 및 pageable 정보 출력
+        System.out.println("Performance ID: " + performanceId);
+        System.out.println("Pageable: page number = " + pageable.getPageNumber() + ", page size = " + pageable.getPageSize());
 
-        // 주어진 id값으로 댓글 테이블 조회하믄댐
-        List<CommentEntity> commentEntityList = commentRepository.findAllByPerformance_PerformanceId(performanceId, pageable);
+        // 부모 댓글만 조회하도록 수정
+        List<CommentEntity> commentEntityList = commentRepository.findParentCommentsByPerformanceId(performanceId, pageable);
+
+        // 디버깅: 쿼리 결과가 있는지 확인
+        System.out.println("Number of comments found: " + commentEntityList.size());
 
         if (commentEntityList.isEmpty()) {
+            System.out.println("No comments found for performanceId: " + performanceId);
             throw new GeneralException(ErrorStatus.COMMENT_NOT_FOUND);
         }
-        return commentEntityList.stream()
-                .map(DtoConverter::fromCommentReadDto)
+
+        // 부모 댓글과 대댓글을 계층 구조로 매핑
+        List<CommentReadDto> commentReadDtos = commentEntityList.stream()
+                .map(DtoConverter::fromCommentEntity)
                 .collect(Collectors.toList());
+
+        // 디버깅: 매핑 결과 출력
+        System.out.println("Mapped CommentReadDto count: " + commentReadDtos.size());
+
+        return commentReadDtos;
     }
+
+
 
     /**
      * 댓글 생성 로직
@@ -90,7 +107,7 @@ public class CommentServiceImpl implements CommentService {
 
         CommentEntity commentEntity = CommentEntity.builder()
                 .content(commentCreateRequest.content())
-                .parentId(parentId != null ? parentComment.getCommentId() : null) // 부모 댓글 ID 설정
+                .parentComment(parentComment)
                 .commentStatus(CommentStatus.ACTIVE)
                 .performance(performance)
                 .member(member)

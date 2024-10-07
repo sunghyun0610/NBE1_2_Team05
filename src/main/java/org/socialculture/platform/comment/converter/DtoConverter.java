@@ -4,19 +4,25 @@ import lombok.Builder;
 import org.socialculture.platform.comment.dto.response.CommentReadDto;
 import org.socialculture.platform.comment.entity.CommentEntity;
 
+import java.util.stream.Collectors;
+
 
 public class DtoConverter{
-    public static CommentReadDto fromCommentReadDto(CommentEntity commentEntity){
-        CommentReadDto commentReadDto = CommentReadDto.builder()
+    public static CommentReadDto fromCommentEntity(CommentEntity commentEntity) {
+        return CommentReadDto.builder()
                 .commentId(commentEntity.getCommentId())
-                .memberId(1)//아직은 테스트
+                .memberId(commentEntity.getMember().getMemberId()) // 실제 멤버 ID로 수정
                 .content(commentEntity.getContent())
                 .createdAt(commentEntity.getCreatedAt())
                 .updatedAt(commentEntity.getUpdatedAt())
-                .parentId(commentEntity.getParentId())
+                .parentId(commentEntity.getParentComment() != null ? commentEntity.getParentComment().getCommentId() : null) // 부모 댓글 ID 설정
                 .commentStatus(commentEntity.getCommentStatus())
+                .replies(commentEntity.getReplies().stream() // 대댓글 리스트 매핑
+                        .map(DtoConverter::fromCommentEntity)
+                        .collect(Collectors.toList()))
                 .build();
-        return commentReadDto;
-    }//엔티티 -> CommentReadDto로 변환해주는 컨버터이다.
+    }
 
-}
+}//엔티티 -> CommentReadDto로 변환해주는 컨버터이다.
+
+

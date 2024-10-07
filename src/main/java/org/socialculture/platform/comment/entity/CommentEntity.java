@@ -2,12 +2,16 @@ package org.socialculture.platform.comment.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @SuperBuilder
@@ -23,8 +27,8 @@ public class CommentEntity extends BaseEntity {
     @Column(name = "comment", unique = true, nullable = false)
     private String content;
 
-    @Column(name = "parent_id", nullable = true)//default null
-    private Long parentId;
+//    @Column(name = "parent_id", nullable = true)//default null
+//    private Long parentId;
 
     @Column(name = "status", nullable = true)
     @Enumerated(EnumType.STRING)//Enum값을 문자열로 저장
@@ -39,6 +43,14 @@ public class CommentEntity extends BaseEntity {
     @JoinColumn(name = "member_id" ,nullable = false)
     private MemberEntity member;
 
+    @OneToMany(mappedBy = "parentComment")
+    @Builder.Default
+    private List<CommentEntity> replies = new ArrayList<>(); //부모댓글이 가진 대댓글 리스트 가져오기 ->이를 통해 부모댓글이 자식댓글들 가져올 수 있게함
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private CommentEntity parentComment;//부모 댓글참조, 대댓글이 어느 댓글의 자식인지 나타내는 필드
+
 
     // Update content and updatedAt fields
     public void updateContent(String newContent) {
@@ -48,5 +60,7 @@ public class CommentEntity extends BaseEntity {
     public void changeCommentStatus(CommentStatus commentStatus) {
         this.commentStatus = commentStatus;
     }
+
+
 }
 

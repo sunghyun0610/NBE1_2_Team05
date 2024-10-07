@@ -13,6 +13,9 @@ import org.socialculture.platform.comment.service.CommentServiceImpl;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +50,8 @@ public class CommentController {
     public ResponseEntity<ApiResponse<List<CommentReadDto>>> getComment(@PathVariable("performanceId") long performanceId,
                                                                         @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name = "size", defaultValue = "10") int size) {
         //page는 인덱스이기 때문에 0번부터 시작
-        List<CommentReadDto> commentReadDtos = commentService.getAllComment(performanceId, page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("commentId").ascending());
+        List<CommentReadDto> commentReadDtos = commentService.getAllComment(performanceId, pageable);
         return ApiResponse.onSuccess(commentReadDtos);
     }
 

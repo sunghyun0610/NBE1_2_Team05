@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
@@ -69,9 +71,16 @@ public class CommentControllerTest {
                 .commentStatus(CommentStatus.ACTIVE)
                 .build();//대댓긋
 
+        // 페이지 정보 설정
+        int page = 0; // 페이지 인덱스 (0부터 시작)
+        int size = 10; // 한 페이지에 들어갈 데이터 수
+
+// Pageable 객체 생성
+        Pageable pageable = PageRequest.of(page, size);
+
         List<CommentReadDto> commentList = List.of(comment1, comment2);
 
-        Mockito.when(commentService.getAllComment(anyLong(), anyInt(), anyInt()))
+        Mockito.when(commentService.getAllComment(anyLong(), any(Pageable.class)))
                 .thenReturn(commentList);//실제 내가만든 서비스로직을 타는게 아님. 미리정의한 결과인 commentList 반환함.
 
         // when : 실제 테스트 동작

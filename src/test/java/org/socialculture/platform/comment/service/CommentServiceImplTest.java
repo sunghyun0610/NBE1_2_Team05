@@ -118,11 +118,11 @@ class CommentServiceImplTest {
 
         List<CommentEntity> commentEntityList = List.of(comment1, comment2);
 
-        when(commentRepository.findAllByPerformance_PerformanceId(performanceId, pageable))
+        when(commentRepository.findParentCommentsByPerformanceId(performanceId, pageable))
                 .thenReturn(commentEntityList);
 
         //When
-        List<CommentReadDto> result = commentService.getAllComment(performanceId, page, size);
+        List<CommentReadDto> result = commentService.getAllComment(performanceId, pageable);
 
         //then
         assertNotNull(result);
@@ -130,7 +130,7 @@ class CommentServiceImplTest {
         assertEquals("Great performance!", result.get(0).getContent());
         assertEquals("Amazing show!", result.get(1).getContent());
 
-        verify(commentRepository, times(1)).findAllByPerformance_PerformanceId(performanceId, pageable);
+        verify(commentRepository, times(1)).findParentCommentsByPerformanceId(performanceId, pageable);
 
         /*
         *   반환된 결과가 null이 아님을 확인합니다 (assertNotNull(result)).
@@ -144,17 +144,19 @@ class CommentServiceImplTest {
     @Test
     @DisplayName("댓글이 없을 때. 실패 시 예외처리")
     void shouldThrowExceptionWhenCommentsNotFound() {
-        // given
-        long invalidPerformanceId = 999L; // Assume this ID does not exist
+        // Given
+        long invalidPerformanceId = 999L;
         int page = 0;
         int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
 
-        Mockito.when(commentRepository.findAllByPerformance_PerformanceId(anyLong(), any(Pageable.class)))
+
+        Mockito.when(commentRepository.findParentCommentsByPerformanceId(anyLong(), any(Pageable.class)))
                 .thenReturn(Collections.emptyList());//알부로 빈 리스트 반환시킴
 
         // when & then
         GeneralException exception = assertThrows(GeneralException.class,
-                () -> commentService.getAllComment(invalidPerformanceId, page, size));
+                () -> commentService.getAllComment(invalidPerformanceId, pageable));
 
         // ErrorStatus는 GeneralException의 메시지로 비교
         assertEquals(ErrorStatus.COMMENT_NOT_FOUND.getMessage(), "댓글 정보가 없습니다.");

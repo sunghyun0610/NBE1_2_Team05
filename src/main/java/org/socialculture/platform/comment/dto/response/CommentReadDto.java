@@ -6,6 +6,8 @@ import org.socialculture.platform.comment.entity.CommentEntity;
 import org.socialculture.platform.comment.entity.CommentStatus;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 * 댓글 전체 조회
@@ -22,6 +24,9 @@ public class CommentReadDto {
     private Long parentId;
     private CommentStatus commentStatus;
 
+    // 대댓글 리스트 추가
+    @Builder.Default
+    private List<CommentReadDto> replies = new ArrayList<>();
 
 
 }
