@@ -67,7 +67,7 @@ public class CommentController {
     public ResponseEntity<ApiResponse<CommentCreateResponse>> createComment(@PathVariable("performanceId") long performanceId, @RequestBody CommentCreateRequest commentCreateRequest) {
         logger.info("서비스 호출 전 : {}", performanceId);
         //jwt에서 userId를 가져와서 service단에 넘겨줘야함.
-        CommentCreateResponse commentCreateResponse = commentService.createComment(performanceId, 1L,commentCreateRequest);
+        CommentCreateResponse commentCreateResponse = commentService.createComment(performanceId, commentCreateRequest);
         logger.info("Successfully created a comment for performanceId: {}", performanceId);
 
         return ApiResponse.onSuccess(HttpStatus.CREATED, "COMMNET201", "댓글 작성 성공", commentCreateResponse);

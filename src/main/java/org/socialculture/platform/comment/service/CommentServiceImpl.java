@@ -20,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -79,12 +81,15 @@ public class CommentServiceImpl implements CommentService {
      *
      */
     @Override
-    public CommentCreateResponse createComment(long performanceId, long memberId,CommentCreateRequest commentCreateRequest) {
+    public CommentCreateResponse createComment(long performanceId, CommentCreateRequest commentCreateRequest) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email= authentication.getName();
 
         PerformanceEntity performance = performanceRepository.findById(performanceId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));// performanceEntity객체를 저장하는 것이 아니라 performance 외래키 저장
 
-        MemberEntity member= memberRepository.findById(1L)
+        MemberEntity member= memberRepository.findByEmail(email)
                 .orElseThrow(()->new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR));//임의로 넣었음 나중에 jwt에서 추출할 예정
 
         //대댓글 기능 로직
