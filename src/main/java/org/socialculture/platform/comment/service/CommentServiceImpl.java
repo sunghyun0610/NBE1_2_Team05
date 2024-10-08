@@ -1,5 +1,6 @@
 package org.socialculture.platform.comment.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.comment.converter.DtoConverter;
 import org.socialculture.platform.comment.dto.request.CommentCreateRequest;
 import org.socialculture.platform.comment.dto.request.CommentUpdateRequest;
@@ -31,6 +32,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
@@ -48,6 +50,7 @@ public class CommentServiceImpl implements CommentService {
      * 댓글 전체 조회 로직
      * @author sunghyun0610
      * @param performanceId
+     * @param pageable
      * @return 공통 Response사용하여 commentReadResponse list 반환
      *
      */
@@ -77,6 +80,7 @@ public class CommentServiceImpl implements CommentService {
      * 댓글 생성 로직
      * @author sunghyun0610
      * @param performanceId
+     * @param commentCreateRequest
      * @return 공통 Response사용하여 commentCreateResponse 반환
      *
      */
@@ -116,9 +120,10 @@ public class CommentServiceImpl implements CommentService {
 
 
     /**
-     * 댓글 전체 조회
+     * 댓글 수정
      * @author sunghyun0610
      * @param commentId
+     * @param commentUpdateRequest
      * @return 공통 Response사용하여 CommentUpdateResponse 반환
      *
      */
@@ -127,11 +132,24 @@ public class CommentServiceImpl implements CommentService {
         CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));//comment 객체찾아주고
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        // 이메일로 멤버 찾기
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        log.info("Authenticated user email {}",email);
+
+        // 로그로 멤버 정보 출력
+        log.info("Authenticated Member: id = {}, email = {}", member.getMemberId(), member.getEmail());
+        log.info("Comment Author Member: id = {}, email = {}", commentEntity.getMember().getMemberId(), commentEntity.getMember().getEmail());
+        if(!commentEntity.getMember().equals(member)){
+            throw new GeneralException(ErrorStatus._COMMENT_NOT_AUTHORIZED); // 예외 던짐
+        }
         commentEntity.updateContent(commentUpdateRequest.content());
 
         commentRepository.save(commentEntity);
 
-        System.out.println("수정성공?");
         CommentUpdateResponse commentUpdateResponse = CommentUpdateResponse.from(commentEntity.getPerformance().getPerformanceId());
 
         return commentUpdateResponse;
