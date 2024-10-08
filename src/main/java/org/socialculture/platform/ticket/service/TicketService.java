@@ -12,12 +12,12 @@ import java.util.List;
  */
 public interface TicketService {
     // 전체 조회
-    List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOption(int page, int size, String sortOption, boolean isAscending);
+    List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOption(String email, int page, int size, String sortOption, boolean isAscending);
 
     // 상세 조회
-    TicketResponseDto getTicketByEmailAndTicketId(Long ticketId);
+    TicketResponseDto getTicketByEmailAndTicketId(String email, Long ticketId);
 
-    TicketResponseDto registerTicket(TicketRequestDto ticketRequest);
+    TicketResponseDto registerTicket(String email, TicketRequestDto ticketRequest);
 
     // TicketResponse updateTicket(Long id, TicketRequest ticketRequest);
 
