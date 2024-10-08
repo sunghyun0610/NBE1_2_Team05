@@ -39,8 +39,6 @@ public class TicketServiceImpl implements TicketService {
 
     private final TicketRepository ticketRepository;
 
-    private static String MEMBER_EMAIL = "ello@test.com"; // 임시 메일 테스트 -> 토큰 발행되면 수정
-
     // 내부에서 사용 - 회원 정보 Entity 가져오기(by email)
     private MemberEntity findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
@@ -57,12 +55,12 @@ public class TicketServiceImpl implements TicketService {
      * 티켓 정보 전체 조회(회원 체크, 페이징, Sort-ASC|DESC)
      */
     @Override
-    public List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOption(int page, int size, String sortOption, boolean isAscending) {
+    public List<TicketResponseDto> getAllTicketsByEmailWithPageAndSortOption(String email, int page, int size, String sortOption, boolean isAscending) {
         // Pageable 객체 생성 (정렬은 sortOption과 isAscending에 기반하여 설정)
         Sort sort = isAscending ? Sort.by(sortOption).ascending() : Sort.by(sortOption).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return ticketRepository.getAllTicketsByEmailWithPageAndSortOption(MEMBER_EMAIL, pageable)
+        return ticketRepository.getAllTicketsByEmailWithPageAndSortOption(email, pageable)
                 .stream()
                 .map(TicketResponseDto::fromEntity)
                 .collect(Collectors.toList());
@@ -72,8 +70,8 @@ public class TicketServiceImpl implements TicketService {
      * 티켓 상세 조회
      */
     @Override
-    public TicketResponseDto getTicketByEmailAndTicketId(Long ticketId) {
-        TicketEntity ticketEntity = ticketRepository.getTicketByEmailAndTicketId(MEMBER_EMAIL, ticketId)
+    public TicketResponseDto getTicketByEmailAndTicketId(String email, Long ticketId) {
+        TicketEntity ticketEntity = ticketRepository.getTicketByEmailAndTicketId(email, ticketId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
         return TicketResponseDto.fromEntity(ticketEntity);
@@ -84,9 +82,9 @@ public class TicketServiceImpl implements TicketService {
      */
     @Override
     @Transactional
-    public TicketResponseDto registerTicket(TicketRequestDto ticketRequest) {
+    public TicketResponseDto registerTicket(String email, TicketRequestDto ticketRequest) {
         // 회원 검색
-        MemberEntity memberEntity = findMemberByEmail(MEMBER_EMAIL);
+        MemberEntity memberEntity = findMemberByEmail(email);
 
         // 공연 검색
         PerformanceEntity performanceEntity = findPerformanceById(ticketRequest.performanceId());
