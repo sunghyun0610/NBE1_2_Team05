@@ -29,7 +29,7 @@ public class BaseEntity {
     @Column(name = "deleted_at")//null 가능
     private LocalDateTime deletedAt;
 
-    public void setDeletedAt(LocalDateTime deletedAt) {
+    public void recordDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
     }
 }
