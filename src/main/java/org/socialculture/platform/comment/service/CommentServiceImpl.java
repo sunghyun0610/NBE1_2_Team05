@@ -137,6 +137,7 @@ public class CommentServiceImpl implements CommentService {
         // 이메일로 멤버 찾기
         MemberEntity member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+        //rElseThrow() 메서드는 Optional 안에 값이 있으면 그 값을 반환하고, 값이 없으면 지정된 예외를 던진다. 그래서 Optional객체가 벗겨져서 나오는 것
 
         log.info("Authenticated user email {}",email);
 
@@ -156,18 +157,27 @@ public class CommentServiceImpl implements CommentService {
     }
 
     /**
-     * 댓글 전체 조회
+     * 댓글 삭제
      * @author sunghyun0610
      * @param commentId
      * @return 공통 Response사용하여 deleteComment반환
      *
      */
-
     @Override
     public CommentDeleteResponse deleteComment(long commentId) {
         // 댓글이 존재하지 않을 경우 예외를 던지고, 존재할 경우 바로 삭제
         CommentEntity commentEntity = commentRepository.findById(commentId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.COMMENT_NOT_FOUND));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(()-> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        if(!member.equals(commentEntity.getMember())){
+            throw new GeneralException(ErrorStatus._COMMENT_NOT_AUTHORIZED);
+        }
 
         CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.from(commentEntity.getPerformance().getPerformanceId());
         commentEntity.recordDeletedAt(LocalDateTime.now());
