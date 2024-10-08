@@ -11,5 +11,5 @@ import java.util.List;
  */
 public interface CouponService {
 
-    List<CouponResponseDto> getAllCouponsByMemberEmail();
+    List<CouponResponseDto> getAllCouponsByMemberEmail(String email);
 }
