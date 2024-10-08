@@ -57,6 +57,7 @@ public class AuthController {
         return new ResponseEntity<>(new TokenResponseDTO(accessToken, refreshToken, message), httpHeaders, HttpStatus.OK);
     }
 
+
     //토큰 유효성 검사 테스트용
     @PostMapping("/check")
     public void checkToken() {
@@ -69,7 +70,7 @@ public class AuthController {
      * @param tokenRequestDTO
      * @return accessToken, refreshToken
      */
-    @GetMapping("/validate")
+    @PostMapping("/validate")
     public ResponseEntity<ApiResponse<TokenResponseDTO>> validateRefreshToken(@RequestBody TokenRequestDTO tokenRequestDTO) {
         String refreshToken = tokenRequestDTO.getRefreshToken();
 

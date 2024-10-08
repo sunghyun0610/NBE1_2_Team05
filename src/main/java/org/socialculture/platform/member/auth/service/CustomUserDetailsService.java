@@ -28,14 +28,5 @@ public class CustomUserDetailsService implements UserDetailsService {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole().name());
 
         return new User(member.getEmail(), member.getPassword(), List.of(grantedAuthority));
-//        return memberRepository.findOneWithAuthoritiesByName(email)
-//                .map(this::createUser)
-//                .orElseThrow(() -> new UsernameNotFoundException(email + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
-
-//    private User createUser(MemberEntity member) {
-//        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getRole().name());
-//
-//        return new User(member.getEmail(), member.getPassword(), List.of(grantedAuthority));
-//    }
 }

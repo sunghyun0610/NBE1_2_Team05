@@ -11,10 +11,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -45,7 +41,10 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/members/**").permitAll()
+                        .requestMatchers("/api/v1/members/authenticate").permitAll()
+                        .requestMatchers("/api/v1/members/register").permitAll()
+                        .requestMatchers("/api/v1/members/validate").permitAll()
+//                        .requestMatchers("/api/v1/members").permitAll()
                         .anyRequest().authenticated()
                                 // 다른 모든 요청은 인증 필요 (개발 중에는 일단 모두 허용 가능)
                         //.anyRequest().permitAll()  // 추후 변경 가능
@@ -55,15 +54,6 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password(passwordEncoder().encode("password"))
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);  // InMemoryUserDetailsManager에 사용자 등록
     }
 
     // CORS 설정을 위한 빈
