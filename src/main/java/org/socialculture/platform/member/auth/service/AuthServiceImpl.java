@@ -3,6 +3,7 @@ package org.socialculture.platform.member.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
+import org.socialculture.platform.member.auth.dto.TokenResponseDTO;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.entity.RefreshTokenEntity;
 import org.socialculture.platform.member.auth.JwtTokenProvider;
@@ -10,11 +11,11 @@ import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.member.repository.RefreshTokenRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-
-import static org.socialculture.platform.global.apiResponse.exception.ErrorStatus.PERFORMANCE_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final CustomUserDetailsService customUserDetailsService;
 
     /**
      * 리프레시 토큰 유효성 검사
@@ -90,4 +92,32 @@ public class AuthServiceImpl implements AuthService {
 
         refreshTokenRepository.save(refreshTokenEntity);
     }
+
+    /**
+     * 소셜 사용자의 토큰발행을 위해 사용
+     * @param email
+     * @return
+     */
+    @Override
+    public TokenResponseDTO createTokenResponseForSocialMember(String email) {
+        memberRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
+        PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(
+                userDetails, null, userDetails.getAuthorities()
+        );
+
+        String accessToken = jwtTokenProvider.createAccessToken(authentication);
+        String refreshToken = jwtTokenProvider.createRefreshToken(email);
+
+        insertRefreshToken(refreshToken);
+
+        String message = "액세스 토큰과 리프레시 토큰이 정상적으로 발급되었습니다.";
+        return new TokenResponseDTO(accessToken, refreshToken, message);
+    }
+
+
+
 }

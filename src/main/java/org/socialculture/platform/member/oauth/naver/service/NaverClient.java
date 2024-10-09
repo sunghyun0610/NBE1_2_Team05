@@ -42,17 +42,6 @@ public class NaverClient implements SocialClient {
         this.restTemplate = restTemplate;
     }
 
-//    /**
-//     * 네이버 인가코드 요청 URL을 생성해 제공 (테스트를 위한 코드로, 원래는 프론트 코드임)
-//     * @return 인가코드 요청 URL
-//     */
-//    public String getLoginURL() {
-//        return "https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=" +
-//                clientId +
-//                "&redirect_uri=" +
-//                redirectURI;
-//    }
-
     /**
      * 인가코드로 네이버 API에 액세스 토큰 요청
      * @param code 인가코드

@@ -11,6 +11,8 @@ import org.socialculture.platform.member.dto.request.MemberCategoryRequest;
 import org.socialculture.platform.member.dto.response.CategoryResponse;
 import org.socialculture.platform.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -66,12 +68,10 @@ public class MemberController {
      * @return 성공 200, 닉네임중복409 , 닉네임 형식안맞음400
      */
     @PatchMapping("/name/{name}")
-    public ResponseEntity<ApiResponse<Void>> updateNickName(@PathVariable String name){
-//        String jwt = token.substring(7); // Bearer 제거
-//        String email = jwtService.getUserIdFromToken(jwt);
-        String email = "test@gmail.com";
+    public ResponseEntity<ApiResponse<Void>> updateNickName(
+            @PathVariable String name, @AuthenticationPrincipal UserDetails userDetails){
 
-        memberService.updateName(email, name);
+        memberService.updateName(userDetails.getUsername(), name);
         return ApiResponse.onSuccess();
     }
 
@@ -82,16 +82,14 @@ public class MemberController {
      */
     @PostMapping("/categories")
     public ResponseEntity<ApiResponse<Void>> addFavoriteCategories(
-            @RequestBody MemberCategoryRequest memberCategoryRequest) {
+            @RequestBody MemberCategoryRequest memberCategoryRequest,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-//        String jwt = token.substring(7); // Bearer 제거
-//        String email = jwtService.getUserIdFromToken(jwt);
         if(memberCategoryRequest.categories().size() > 3){
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
 
-        String email = "test@gmail.com";
-        memberService.memberAddCategory(memberCategoryRequest, email);
+        memberService.memberAddCategory(memberCategoryRequest, userDetails.getUsername());
         return ApiResponse.onSuccess();
     }
 
@@ -113,10 +111,9 @@ public class MemberController {
      * @return
      */
     @GetMapping("/categories/favorites")
-    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getFavoriteCategories() {
-
-        // 임시로 토큰 처리
-        String email = "test@gmail.com";
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getFavoriteCategories(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
         List<CategoryResponse> favoriteCategories = memberService.getFavoriteCategories(email);
         return ApiResponse.onSuccess(favoriteCategories);
     }
@@ -129,13 +126,14 @@ public class MemberController {
      */
     @PutMapping("/categories/favorites")
     public ResponseEntity<ApiResponse<Void>> updateFavoriteCategories(
-            @RequestBody MemberCategoryRequest memberCategoryRequest){
+            @RequestBody MemberCategoryRequest memberCategoryRequest,
+            @AuthenticationPrincipal UserDetails userDetails
+    ){
 
         if(memberCategoryRequest.categories().size() > 3){
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
-        String email = "test@gmail.com";
-        memberService.updateFavoriteCategories(memberCategoryRequest, email);
+        memberService.updateFavoriteCategories(memberCategoryRequest, userDetails.getUsername());
 
         return ApiResponse.onSuccess();
     }
@@ -143,6 +141,7 @@ public class MemberController {
 
 
     // 회원권한 수정
+
 
 
 }
