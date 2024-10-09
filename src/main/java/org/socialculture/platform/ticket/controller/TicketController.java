@@ -71,11 +71,35 @@ public class TicketController {
         return ApiResponse.onSuccess(ticketService.getTicketByEmailAndTicketId(userDetails.getUsername(), ticketId));
     }
 
+    /**
+     * 티켓 발권
+     * 
+     * @param userDetails
+     * @param ticketRequestDto
+     * @return
+     */
     @PostMapping
     public ResponseEntity<ApiResponse<TicketResponseDto>> buyTicket(
             @AuthenticationPrincipal UserDetails userDetails, @RequestBody TicketRequestDto ticketRequestDto) {
         log.info("Buy ticket: {}", ticketRequestDto);
 
         return ApiResponse.onSuccess(ticketService.registerTicket(userDetails.getUsername(), ticketRequestDto));
+    }
+
+    /**
+     * 티켓 취소
+     * 
+     * @param userDetails
+     * @param ticketId
+     * @return
+     */
+    @DeleteMapping("/{ticketId}")
+    public ResponseEntity<ApiResponse<Void>> cancelTicket(
+            @AuthenticationPrincipal UserDetails userDetails, @PathVariable("ticketId") Long ticketId) {
+        log.info("Cancel ticket by id: {}", ticketId);
+
+        ticketService.deleteTicket(userDetails.getUsername(), ticketId);
+
+        return ApiResponse.onSuccess();
     }
 }

@@ -98,6 +98,27 @@ public class TicketServiceImpl implements TicketService {
         return TicketResponseDto.fromEntity(ticketEntity);
     }
 
+    /**
+     * 티켓 취소
+     */
+    @Override
+    public void deleteTicket(String email, Long ticketId) {
+        TicketEntity ticketEntity = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
+
+        // 이메일이 티켓 소유자인지 확인
+        if (!ticketEntity.getMember().getEmail().equals(email)) {
+            throw new GeneralException(ErrorStatus._FORBIDDEN); // 권한 없음 예외
+        }
+
+        // 티켓 삭제
+        ticketRepository.deleteById(ticketId);
+
+        /**
+         * TODO : 티켓 취소 시에 환불 절차 필요.
+         */
+    }
+
     private int calculateFinalPrice(int performancePrice, int quantity, Long couponId) {
         int discountPercent = 0;
         int finalPrice = performancePrice * quantity;
