@@ -9,6 +9,8 @@ import org.socialculture.platform.ticket.dto.request.TicketRequestDto;
 import org.socialculture.platform.ticket.dto.response.TicketResponseDto;
 import org.socialculture.platform.ticket.service.TicketService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +38,8 @@ public class TicketController {
      * @return
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<TicketResponseDto>>> getAllTicketsByMemberIdWithPageAndSortOptionDesc(
+    public ResponseEntity<ApiResponse<List<TicketResponseDto>>> getAllTicketsByEmailWithPageAndSortOption(
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam("page") int page,
             @RequestParam("size") int size,
             @RequestParam(value = "option", defaultValue = "ticketId") String option,
@@ -48,7 +51,7 @@ public class TicketController {
             throw new GeneralException(ErrorStatus._TICKET_INVALID_PAGINATION_PARAMETERS);
         }
 
-        return ApiResponse.onSuccess(ticketService.getAllTicketsByEmailWithPageAndSortOption(page, size, option, isAscending));
+        return ApiResponse.onSuccess(ticketService.getAllTicketsByEmailWithPageAndSortOption(userDetails.getUsername(), page, size, option, isAscending));
     }
 
     /**
@@ -58,19 +61,21 @@ public class TicketController {
      * @return
      */
     @GetMapping("/{ticketId}")
-    public ResponseEntity<ApiResponse<TicketResponseDto>> getTicketById(@PathVariable("ticketId") Long ticketId) {
+    public ResponseEntity<ApiResponse<TicketResponseDto>> getTicketById(
+            @AuthenticationPrincipal UserDetails userDetails, @PathVariable("ticketId") Long ticketId) {
         log.info("Get ticket detail by id: {}", ticketId);
 
         if (Objects.isNull(ticketId)) {
             throw new GeneralException(ErrorStatus._TICKET_ID_MISSING);
         }
-        return ApiResponse.onSuccess(ticketService.getTicketByEmailAndTicketId(ticketId));
+        return ApiResponse.onSuccess(ticketService.getTicketByEmailAndTicketId(userDetails.getUsername(), ticketId));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TicketResponseDto>> buyTicket(@RequestBody TicketRequestDto ticketRequestDto) {
+    public ResponseEntity<ApiResponse<TicketResponseDto>> buyTicket(
+            @AuthenticationPrincipal UserDetails userDetails, @RequestBody TicketRequestDto ticketRequestDto) {
         log.info("Buy ticket: {}", ticketRequestDto);
 
-        return ApiResponse.onSuccess(ticketService.registerTicket(ticketRequestDto));
+        return ApiResponse.onSuccess(ticketService.registerTicket(userDetails.getUsername(), ticketRequestDto));
     }
 }

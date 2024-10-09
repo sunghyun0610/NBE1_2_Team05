@@ -48,7 +48,7 @@ public class SecurityConfig {
 //                        .requestMatchers("/api/v1/members/validate").permitAll()
 //                        .requestMatchers("/api/v1/members/oauth/**").permitAll()
 //                        .requestMatchers("/api/v1/members").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                                 // 다른 모든 요청은 인증 필요 (개발 중에는 일단 모두 허용 가능)
                         //.anyRequest().permitAll()  // 추후 변경 가능
                 )
@@ -64,7 +64,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));  // 허용할 프론트엔드 도메인
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));  // 허용할 HTTP 메서드
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE","PATCH"));  // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(List.of("*"));  // 모든 헤더 허용
         configuration.setAllowCredentials(true);  // 자격 증명 허용 (세션 관리에 필요)
 

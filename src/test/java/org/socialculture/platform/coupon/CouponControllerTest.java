@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,8 +36,9 @@ public class CouponControllerTest {
 
     @Test
     @DisplayName("티켓 전체 조회 테스트")
-    @WithMockUser
+    @WithMockUser(username = "user@example.com", roles = "LOCAL")
     void getAllCoupons() throws Exception {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
         // given
         List<CouponResponseDto> couponList = List.of(
                 CouponResponseDto.create(
@@ -57,7 +59,7 @@ public class CouponControllerTest {
                 )
         );
 
-        given(couponService.getAllCouponsByMemberEmail())
+        given(couponService.getAllCouponsByMemberEmail(username))
                 .willReturn(couponList);
 
         ResultActions result = this.mockMvc.perform(

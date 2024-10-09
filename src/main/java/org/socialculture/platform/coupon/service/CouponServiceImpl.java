@@ -19,12 +19,10 @@ public class CouponServiceImpl implements CouponService {
 
     private final CouponRepository couponRepository;
 
-    private static String MEMBER_EMAIL = "ello@test.com"; // 임시 메일 테스트 -> 토큰 발행되면 수정
-
     @Override
-    public List<CouponResponseDto> getAllCouponsByMemberEmail() {
+    public List<CouponResponseDto> getAllCouponsByMemberEmail(String email) {
 
-        return couponRepository.getAllCouponsByMemberEmail(MEMBER_EMAIL)
+        return couponRepository.getAllCouponsByMemberEmail(email)
                 .stream()
                 .map(CouponResponseDto::fromEntity)
                 .collect(Collectors.toList());
