@@ -5,10 +5,13 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.member.auth.service.CustomUserDetailsService;
+import org.socialculture.platform.member.entity.MemberEntity;
+import org.socialculture.platform.member.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -34,13 +37,14 @@ public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "auth"; // 권한 키
 
     private final CustomUserDetailsService customUserDetailsService;
+    private final MemberRepository memberRepository;
 
     // 생성자에서 초기화
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secretKey,
             @Value("${jwt.access.token.expiration}") long accessTokenValidity,
             @Value("${jwt.refresh.token.expiration}") long refreshTokenValidity,
-            CustomUserDetailsService customUserDetailsService) {
+            CustomUserDetailsService customUserDetailsService, MemberRepository memberRepository) {
         this.secretKey = secretKey;
         this.accessTokenValidity = accessTokenValidity;
         this.refreshTokenValidity = refreshTokenValidity;
@@ -49,26 +53,45 @@ public class JwtTokenProvider {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         log.info("JWT TokenProvider 초기화 완료");
+        this.memberRepository = memberRepository;
     }
 
-    //액세스 토큰 생성
-    public String createAccessToken(Authentication authentication) {
-        // 권한 값을 받아 하나의 문자열로 합침
-        String authorities = authentication.getAuthorities().stream()
+// 액세스 토큰 생성(role 권한 부여 설정)
+public String createAccessToken(Authentication authentication) {
+    Object principal = authentication.getPrincipal();
+
+    // UserDetails에서 권한 정보 가져오기
+    String authority;
+    String email;
+
+    // 소셜 로그인 사용자인 경우와 일반 사용자 구분
+    if (principal instanceof UserDetails) {
+        UserDetails userDetails = (UserDetails) principal;
+        authority = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
-        // email을 직접 가져와서 claim에 추가
-        String email = authentication.getName(); // 사용자 정보에서 email 가져오기
-
-        return Jwts.builder()
-                .setSubject(authentication.getName()) // 페이로드 주제 정보
-                .claim(AUTHORITIES_KEY, authorities) // 권한 정보 저장
-                .claim("email", email) // email 정보 추가
-                .signWith(key, SignatureAlgorithm.HS256) // 서명 설정
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity)) // 만료 시간 설정
-                .compact();
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("User has no roles assigned"));
+        email = userDetails.getUsername();
+    } else {
+        // 소셜 로그인 사용자의 경우 principal은 email 문자열이므로, 이메일을 직접 사용
+        email = (String) principal;
+        authority = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Social user has no roles assigned"));
     }
+
+    // JWT 생성
+    return Jwts.builder()
+            .setSubject(email) // 페이로드 주제 정보
+            .claim(AUTHORITIES_KEY, authority) // 권한 정보 저장
+            .claim("email", email) // 이메일 정보 추가
+            .signWith(key, SignatureAlgorithm.HS256) // 서명 설정
+            .setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity)) // 만료 시간 설정
+            .compact();
+}
+
+
 
 
     // 리프레시 토큰 생성
@@ -84,19 +107,6 @@ public class JwtTokenProvider {
     // 토큰 유효성 검사
     public void validateToken(String token) throws JwtException {
         Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-//        try {
-//            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-//            return true; // 유효한 토큰
-//        } catch (SecurityException | MalformedJwtException e) {
-//            log.info("잘못된 JWT 서명입니다.");
-//        } catch (ExpiredJwtException e) {
-//            log.info("만료된 JWT 토큰입니다.");
-//        } catch (UnsupportedJwtException e) {
-//            log.info("지원되지 않는 JWT 토큰입니다.");
-//        } catch (IllegalArgumentException e) {
-//            log.info("JWT 토큰이 잘못되었습니다.");
-//        }
-//        return false;
     }
 
     // 토큰으로 사용자 이메일 가져오기
