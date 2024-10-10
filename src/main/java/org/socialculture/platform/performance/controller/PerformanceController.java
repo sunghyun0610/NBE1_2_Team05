@@ -112,7 +112,11 @@ public class PerformanceController {
     }
 
     @GetMapping("/admin/my")
-    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListAdmin(@RequestParam(name = "page") Integer page, @RequestParam(name = "size") Integer size) {
-        return ApiResponse.onSuccess(performanceService.getMyPerformanceList("email", page, size));
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListAdmin(
+            @RequestParam(name = "page") Integer page,
+            @RequestParam(name = "size") Integer size,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ApiResponse.onSuccess(performanceService.getMyPerformanceList(userDetails.getUsername(), page, size));
     }
 }
