@@ -59,9 +59,13 @@ public class PerformanceController {
             @RequestParam(name = "page") Integer page,
             @RequestParam(name = "size") Integer size,
             @RequestParam(name = "category", required = false) Long categoryId,
-            @RequestParam(name = "search", required = false) String search
+            @RequestParam(name = "search", required = false) String search,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ApiResponse.onSuccess(performanceService.getPerformanceList(page, size, categoryId, search));
+        if (userDetails == null) {
+            return ApiResponse.onSuccess(performanceService.getPerformanceList(page, size, categoryId, search, null));
+        }
+        return ApiResponse.onSuccess(performanceService.getPerformanceList(page, size, categoryId, search, userDetails.getUsername()));
     }
 
     /**

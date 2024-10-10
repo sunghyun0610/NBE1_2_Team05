@@ -12,7 +12,7 @@ import java.util.List;
 public interface PerformanceService {
     PerformanceRegisterResponse registerPerformance(String email, PerformanceRegisterRequest performanceRegisterRequest);
 
-    PerformanceListResponse getPerformanceList(Integer page, Integer size, Long categoryId, String search);
+    PerformanceListResponse getPerformanceList(Integer page, Integer size, Long categoryId, String search, String email);
 
     PerformanceDetailResponse getPerformanceDetail(String email, Long performanceId);
 

@@ -56,10 +56,10 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     @Override
-    public PerformanceListResponse getPerformanceList(Integer page, Integer size, Long categoryId, String search) {
+    public PerformanceListResponse getPerformanceList(Integer page, Integer size, Long categoryId, String search, String email) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<PerformanceWithCategory> performanceList =
-                performanceRepository.getPerformanceWithCategoryList(pageRequest, categoryId, search);
+                performanceRepository.getPerformanceWithCategoryList(pageRequest, categoryId, search, email);
 
         return PerformanceListResponse.from(performanceList.getTotalElements(), performanceList.getContent());
     }
