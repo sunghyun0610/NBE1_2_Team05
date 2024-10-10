@@ -21,6 +21,7 @@ public class DtoConverter{
                 .replies(commentEntity.getReplies().stream() // 대댓글 리스트 매핑
                         .map(DtoConverter::fromCommentEntity)
                         .collect(Collectors.toList()))
+                .email(commentEntity.getMember().getEmail())
                 .build();
     }
 

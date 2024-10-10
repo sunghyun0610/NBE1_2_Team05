@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static org.socialculture.platform.performance.entity.PerformanceStatus.CONFIRMED;
 import static org.socialculture.platform.performance.entity.PerformanceStatus.NOT_CONFIRMED;
 
 public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCustom {
@@ -44,7 +45,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         }
     }
 
-    private BooleanBuilder performanceStatusNe(PerformanceStatus status) {
+    private BooleanBuilder performanceStatusEq(PerformanceStatus status) {
         return nullSafeBuilder(() -> qPerformanceEntity.performanceStatus.eq(status));
     }
 
@@ -71,11 +72,25 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         return new BooleanBuilder(qPerformanceEntity.title.contains(search));
     }
 
-    private BooleanBuilder categoryListWhereClause(PerformanceStatus status, Long categoryId, String search) {
+    private BooleanBuilder categoryListWhereClause(Long categoryId, String search, String email) {
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(performanceStatusNe(status));
-        builder.and(categoryIdEq(categoryId));
-        builder.and(performanceTitleLike(search));
+
+        // 첫 번째 조건: 카테고리 ID와 공연 제목이 같고 상태가 CONFIRMED
+        BooleanBuilder confirmedCondition = new BooleanBuilder();
+        confirmedCondition.and(categoryIdEq(categoryId))
+                .and(performanceTitleLike(search))
+                .and(performanceStatusEq(CONFIRMED));
+
+        // 두 번째 조건: 카테고리 ID와 공연 제목이 같고 이메일이 같고 상태가 NOT_CONFIRMED
+        BooleanBuilder notConfirmedCondition = new BooleanBuilder();
+        notConfirmedCondition.and(categoryIdEq(categoryId))
+                .and(performanceTitleLike(search))
+                .and(memberEmailEq(email))
+                .and(performanceStatusEq(NOT_CONFIRMED));
+
+        // 두 조건을 or로 결합
+        builder.or(confirmedCondition).or(notConfirmedCondition);
+
         return builder;
     }
 
@@ -87,9 +102,9 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
      *
      */
     @Override
-    public Page<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable, Long categoryId, String search) {
+    public Page<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable, Long categoryId, String search, String email) {
 
-        List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
+        List<PerformanceWithCategory> performances = jpaQueryFactory.selectDistinct(Projections.constructor(PerformanceWithCategory.class,
                         qMember.name.as("memberName"),
                         qPerformanceEntity.performanceId.as("performanceId"),
                         qPerformanceEntity.title.as("title"),
@@ -103,7 +118,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
-                .where(categoryListWhereClause(NOT_CONFIRMED, categoryId, search))
+                .where(categoryListWhereClause(categoryId, search, email))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -112,12 +127,17 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
             return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
         }
 
-        long totalCount = jpaQueryFactory
+        Long totalCount = jpaQueryFactory
                 .select(qPerformanceEntity.count())
                 .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
-                .where(categoryListWhereClause(NOT_CONFIRMED, categoryId, search))
-                .fetch().size();
+                .where(categoryListWhereClause(categoryId, search, email))
+                .fetchOne();
+
+        if (totalCount == null) {
+            totalCount = 0L;
+        }
 
         return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
     }
@@ -205,12 +225,16 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
             return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
         }
 
-        long totalCount = jpaQueryFactory
+        Long totalCount = jpaQueryFactory
                 .select(qPerformanceEntity.count())
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .where(memberEmailEq(email))
-                .fetch().size();
+                .fetchOne();
+
+        if (totalCount == null) {
+            totalCount = 0L;
+        }
 
         return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
     }

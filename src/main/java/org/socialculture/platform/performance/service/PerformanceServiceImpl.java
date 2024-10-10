@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.socialculture.platform.global.apiResponse.exception.ErrorStatus.*;
@@ -55,10 +56,10 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     @Override
-    public PerformanceListResponse getPerformanceList(Integer page, Integer size, Long categoryId, String search) {
+    public PerformanceListResponse getPerformanceList(Integer page, Integer size, Long categoryId, String search, String email) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<PerformanceWithCategory> performanceList =
-                performanceRepository.getPerformanceWithCategoryList(pageRequest, categoryId, search);
+                performanceRepository.getPerformanceWithCategoryList(pageRequest, categoryId, search, email);
 
         return PerformanceListResponse.from(performanceList.getTotalElements(), performanceList.getContent());
     }
@@ -80,7 +81,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     @Override
     @Transactional
     public PerformanceUpdateResponse updatePerformance(String email, Long performanceId, PerformanceUpdateRequest performanceUpdateRequest) {
-        if (isAccessPerformance(email, performanceId)) {
+        if (!isAccessPerformance(email, performanceId)) {
             throw new GeneralException(PERFORMANCE_NOT_ACCESSIBLE);
         }
 
@@ -109,7 +110,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         List<CategoryEntity> categoryEntities = categoryRepository.findAllByNameKrIn(categories); // 한 번에 조회
 
         if (categoryEntities.isEmpty()) {
-            throw new GeneralException(ErrorStatus.CATEGORY_NOT_FOUND);
+            return new ArrayList<>();
         }
 
         categoryEntities.forEach(e ->
@@ -128,6 +129,13 @@ public class PerformanceServiceImpl implements PerformanceService {
         }
 
         return PerformanceListResponse.from(performanceList.getTotalElements(), performanceList.getContent());
+    }
+
+    @Override
+    public List<CategoryDto> getCategoryList() {
+        List<CategoryEntity> categoryEntities = categoryRepository.findAll();
+        return categoryEntities.stream()
+                .map(CategoryDto::toDto).toList();
     }
 
     private boolean isAccessPerformance(String email, Long performanceId) {

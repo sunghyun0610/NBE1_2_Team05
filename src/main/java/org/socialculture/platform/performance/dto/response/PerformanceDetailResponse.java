@@ -23,6 +23,7 @@ public record PerformanceDetailResponse(
     int remainingTickets,
     LocalDateTime startDate,
     PerformanceStatus status,
+    boolean isUpdatable,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
     List<CategoryDto>categories
@@ -45,6 +46,7 @@ public record PerformanceDetailResponse(
                 .remainingTickets(performanceDetail.getRemainingTickets())
                 .startDate(performanceDetail.getStartDate())
                 .status(performanceDetail.getStatus())
+                .isUpdatable(updatable)
                 .createdAt(performanceDetail.getCreatedAt())
                 .updatedAt(performanceDetail.getUpdatedAt())
                 .categories(categoryDtos)

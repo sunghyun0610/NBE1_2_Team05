@@ -90,6 +90,9 @@ public class PerformanceEntity extends BaseEntity {
         if (performanceEntity.getMaxAudience() != null) {
             this.maxAudience = performanceEntity.getMaxAudience();
         }
+        if (performanceEntity.getPerformanceStatus() != null) {
+            this.performanceStatus = performanceEntity.getPerformanceStatus();
+        }
     }
 
     public void updateMember(MemberEntity memberEntity) {
