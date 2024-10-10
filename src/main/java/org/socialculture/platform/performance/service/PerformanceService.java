@@ -10,15 +10,15 @@ import org.socialculture.platform.performance.dto.response.PerformanceUpdateResp
 import java.util.List;
 
 public interface PerformanceService {
-    PerformanceRegisterResponse registerPerformance(PerformanceRegisterRequest performanceRegisterRequest);
+    PerformanceRegisterResponse registerPerformance(String email, PerformanceRegisterRequest performanceRegisterRequest);
 
-    List<PerformanceListResponse> getPerformanceList(Integer page, Integer size);
+    PerformanceListResponse getPerformanceList(Integer page, Integer size, Long categoryId, String search);
 
-    PerformanceDetailResponse getPerformanceDetail(Long performanceId);
+    PerformanceDetailResponse getPerformanceDetail(String email, Long performanceId);
 
-    PerformanceUpdateResponse updatePerformance(Long performanceId, PerformanceUpdateRequest performanceUpdateRequest);
+    PerformanceUpdateResponse updatePerformance(String email, Long performanceId, PerformanceUpdateRequest performanceUpdateRequest);
 
-    void deletePerformance(Long performanceId);
+    void deletePerformance(String email, Long performanceId);
 
-    List<PerformanceListResponse> getMyPerformanceList(String email, Integer page, Integer size);
+    PerformanceListResponse getMyPerformanceList(String email, Integer page, Integer size);
 }

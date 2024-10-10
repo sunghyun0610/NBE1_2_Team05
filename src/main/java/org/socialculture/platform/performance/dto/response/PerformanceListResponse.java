@@ -1,6 +1,7 @@
 package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 
@@ -8,34 +9,54 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
-public record PerformanceListResponse(
-        String memberName,
-        Long performanceId,
-        String title,
-        LocalDateTime dateStartTime,
-        LocalDateTime dateEndTime,
-        String address,
-        String imageUrl,
-        int price,
-        String status,
-        List<CategoryDto> categories
-) {
+@Getter
+public class PerformanceListResponse {
 
-    public static PerformanceListResponse from(PerformanceWithCategory performanceWithCategory) {
-        List<CategoryDto> categoryDtos = performanceWithCategory.getCategories().stream()
-                .map(CategoryDto::toDto).toList();
+    private long totalElements;
+    private List<PerformanceList> performanceList;
+
+    @Getter
+    @Builder
+    public static class PerformanceList {
+        private String memberName;
+        private Long performanceId;
+        private String title;
+        private LocalDateTime dateStartTime;
+        private LocalDateTime dateEndTime;
+        private String address;
+        private String imageUrl;
+        private int price;
+        private String status;
+        private List<CategoryDto> categories;
+
+        public static PerformanceList from(PerformanceWithCategory performanceWithCategory) {
+            List<CategoryDto> categoryDtos = performanceWithCategory.getCategories().stream()
+                    .map(CategoryDto::toDto).toList();
+
+            return PerformanceList.builder()
+                    .memberName(performanceWithCategory.getMemberName())
+                    .performanceId(performanceWithCategory.getPerformanceId())
+                    .title(performanceWithCategory.getTitle())
+                    .dateStartTime(performanceWithCategory.getDateStartTime())
+                    .dateEndTime(performanceWithCategory.getDateEndTime())
+                    .address(performanceWithCategory.getAddress())
+                    .imageUrl(performanceWithCategory.getImageUrl())
+                    .price(performanceWithCategory.getPrice())
+                    .status(String.valueOf(performanceWithCategory.getStatus()))
+                    .categories(categoryDtos)
+                    .build();
+        }
+    }
+
+    public static PerformanceListResponse from(long totalElements, List<PerformanceWithCategory> performanceWithCategory) {
+        List<PerformanceList> performanceList = performanceWithCategory.stream()
+                .map(PerformanceList::from)
+                .toList();
 
         return PerformanceListResponse.builder()
-                .memberName(performanceWithCategory.getMemberName())
-                .performanceId(performanceWithCategory.getPerformanceId())
-                .title(performanceWithCategory.getTitle())
-                .dateStartTime(performanceWithCategory.getDateStartTime())
-                .dateEndTime(performanceWithCategory.getDateEndTime())
-                .address(performanceWithCategory.getAddress())
-                .imageUrl(performanceWithCategory.getImageUrl())
-                .price(performanceWithCategory.getPrice())
-                .status(String.valueOf(performanceWithCategory.getStatus()))
-                .categories(categoryDtos)
+                .totalElements(totalElements)
+                .performanceList(performanceList)
                 .build();
     }
+
 }
