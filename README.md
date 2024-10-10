@@ -28,13 +28,13 @@
 <details>
 <summary>📦 ERD </summary>
 
-![ERD](https://prod-files-secure.s3.us-west-2.amazonaws.com/bd96b46c-359f-495d-8a5b-33df5e09796a/392b92bc-988e-495e-aff3-561135a8a8ba/14b3a7a8-02c6-48c1-bb68-b8a54afe6d9a.png)
+<img width="1289" alt="erd" src="https://github.com/user-attachments/assets/fcf1e0f8-1429-4333-8cca-d5f3efa48957">
 </details>
 
 <details>
 <summary>📦 시스템 구성도 </summary>
 
-![시스템 구성도](https://prod-files-secure.s3.us-west-2.amazonaws.com/bd96b46c-359f-495d-8a5b-33df5e09796a/e6f1710e-6928-46b9-805d-e14a5a45c0a3/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA_2024-09-24_%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE_4.45.04.png)
+<img width="698" alt="아키텍처" src="https://github.com/user-attachments/assets/6c9ad89e-061a-4e6c-8568-7323a3438713">
 </details>
 
 <details>
@@ -74,6 +74,48 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ SocialCultureApplicationTests.java<br>
 </details>
 
+## 💡 컨벤션
+<details>
+<summary>📦 깃 컨벤션 </summary>
+
+| **커밋 유형**       | **의미**                                                    |
+|---------------------|-------------------------------------------------------------|
+| `Feat`              | 새로운 기능 추가                                             |
+| `Fix`               | 버그 수정                                                    |
+| `Docs`              | 문서 수정                                                    |
+| `Style`             | 코드 formatting, 세미콜론 누락, 코드 자체의 변경이 없는 경우 |
+| `Refactor`          | 코드 리팩토링                                                |
+| `Test`              | 테스트 코드, 리팩토링 테스트 코드 추가                       |
+| `Chore`             | 패키지 매니저 수정, 그 외 기타 수정 (ex: `.gitignore`)       |
+| `Design`            | CSS 등 사용자 UI 디자인 변경                                 |
+| `Comment`           | 필요한 주석 추가 및 변경                                     |
+| `Rename`            | 파일 또는 폴더 명을 수정하거나 옮기는 작업만인 경우           |
+| `Remove`            | 파일을 삭제하는 작업만 수행한 경우                           |
+| `!BREAKING CHANGE`  | 커다란 API 변경의 경우                                       |
+| `!HOTFIX`           | 급하게 치명적인 버그를 고쳐야 하는 경우                      |
+</details>
+
+<details>
+<summary>📦 코드 컨벤션 </summary>
+
+| **규칙** | **설명** |
+|------------------------|------------------------------------------------------------|
+| **문자열 처리**        | 문자열을 처리할 때는 쌍따옴표를 사용합니다.                |
+| **함수명, 변수명**      | 카멜케이스로 작성하며, 의미와 의도를 가진 이름을 사용합니다.  |
+| **클래스 명**           | UpperCamelCase로 작성합니다.                               |
+| **상수 명**             | CONSTANT_CASE로 작성합니다.                                |
+| **연산자와 공백**       | 연산자 사이, 소괄호와 중괄호 사이에는 공백을 넣습니다.      |
+| **else, catch 등**      | 닫는 중괄호와 같은 줄에 else, catch, finally, while을 선언합니다. |
+| **주석 달기**           | 클래스 및 메서드마다 주석을 달아줍니다. Javadoc보다는 이해를 돕기 위한 설명 위주로 작성합니다. |
+| **한 줄 최대 길이**     | 한 문장은 최대 100글자로 제한합니다. 예외적으로 패키지 및 import 문, 주석 내 URL 등은 제외됩니다. |
+| **줄 바꿈**             | 가독성을 위해 열 제한을 넘지 않아도 줄 바꿈을 할 수 있으며, "." 앞에서 끊습니다. |
+| **중괄호 사용**         | 코드가 한 줄일 때에도 중괄호를 사용합니다.                 |
+| **정적 팩터리 메서드**  | 객체 생성 시 정적 팩터리 메서드를 사용합니다. 매개변수가 4개 이상일 때는 빌더 패턴을 사용합니다. |
+| **record 사용**         | 불변성을 유지하기 위해 DTO 또는 응답 데이터 객체로 `record` 문법을 사용합니다. |
+| **인터페이스 사용 범위** | `ServiceImpl` 클래스를 작성하는 것으로 합니다.            |
+| **의존성 주입**         | 생성자 주입을 사용하며, final 키워드를 붙입니다.           |
+
+</details>
 
 ## 🧑🏻‍ 팀원 소개 및 역할
 
