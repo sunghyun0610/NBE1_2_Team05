@@ -179,11 +179,12 @@ public class CommentServiceImpl implements CommentService {
             throw new GeneralException(ErrorStatus._COMMENT_NOT_AUTHORIZED);
         }
 
-        CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.of(commentEntity.getPerformance().getPerformanceId(), commentEntity.getCommentStatus());
+
         commentEntity.recordDeletedAt(LocalDateTime.now());
         commentEntity.changeCommentStatus(CommentStatus.DELETED);
 
         commentRepository.save(commentEntity);
+        CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.of(commentEntity.getPerformance().getPerformanceId(), commentEntity.getCommentStatus());
         return  commentDeleteResponse;
     }
     //DB에서 삭제하는 것이 아닌 상태만 Deleted로 바꿔주는 것
