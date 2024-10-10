@@ -22,7 +22,7 @@
 <details>
 <summary>📦 요구사항 명세서 </summary>
 
-[노션 이동 > 요구 사항 정리](https://www.notion.so/5-923d79a0f3fa46ff931b2c8648cc49c0?p=0f541c2270bc48d5923b6934645f35e4&pm=s)
+[5팀 노션 이동 > 요구 사항 명세서](https://www.notion.so/5-923d79a0f3fa46ff931b2c8648cc49c0?p=0f541c2270bc48d5923b6934645f35e4&pm=s)
 </details>
 
 <details>
@@ -209,6 +209,12 @@ CREATE TABLE performance_categories (
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ ticket<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ util<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ SocialCultureApplicationTests.java<br>
+</details>
+
+<details>
+<summary>📦 API 명세서 </summary>
+
+[5팀 노션 이동 > API 명세서](https://www.notion.so/5-923d79a0f3fa46ff931b2c8648cc49c0?p=03230dc989784ce7b47e21d5cec919e2&pm=s)
 </details>
 
 ## 💡 컨벤션
