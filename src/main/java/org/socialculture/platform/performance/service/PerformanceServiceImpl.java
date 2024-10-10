@@ -106,8 +106,8 @@ public class PerformanceServiceImpl implements PerformanceService {
         performanceEntity.updateDeleteAt();
     }
 
-    private List<CategoryEntity> performanceCategorySave(PerformanceEntity performanceEntity, List<String> categories) {
-        List<CategoryEntity> categoryEntities = categoryRepository.findAllByNameKrIn(categories); // 한 번에 조회
+    private List<CategoryEntity> performanceCategorySave(PerformanceEntity performanceEntity, List<Long> categories) {
+        List<CategoryEntity> categoryEntities = categoryRepository.findAllById(categories); // 한 번에 조회
 
         if (categoryEntities.isEmpty()) {
             return new ArrayList<>();
