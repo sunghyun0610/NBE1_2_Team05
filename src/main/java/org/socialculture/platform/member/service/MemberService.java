@@ -5,6 +5,7 @@ import org.socialculture.platform.member.dto.request.LocalRegisterRequest;
 import org.socialculture.platform.member.dto.request.MemberCategoryRequest;
 import org.socialculture.platform.member.dto.request.SocialRegisterRequest;
 import org.socialculture.platform.member.dto.response.CategoryResponse;
+import org.socialculture.platform.member.dto.response.MemberInfoResponse;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberCheckDto;
 import org.socialculture.platform.member.oauth.common.dto.SocialMemberInfoDto;
 
@@ -42,4 +43,7 @@ public interface MemberService {
     // 선호 카테고리 수정
     void updateFavoriteCategories(MemberCategoryRequest memberCategoryRequest,
                                   String email);
+
+    // 사용자 정보 조회 - 마이페이지
+    MemberInfoResponse getMemberInfoByEmail(String email);
 }

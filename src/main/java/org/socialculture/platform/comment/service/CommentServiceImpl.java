@@ -179,7 +179,7 @@ public class CommentServiceImpl implements CommentService {
             throw new GeneralException(ErrorStatus._COMMENT_NOT_AUTHORIZED);
         }
 
-        CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.from(commentEntity.getPerformance().getPerformanceId());
+        CommentDeleteResponse commentDeleteResponse = CommentDeleteResponse.of(commentEntity.getPerformance().getPerformanceId(), commentEntity.getCommentStatus());
         commentEntity.recordDeletedAt(LocalDateTime.now());
         commentEntity.changeCommentStatus(CommentStatus.DELETED);
 
