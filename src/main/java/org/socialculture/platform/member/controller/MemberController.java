@@ -9,6 +9,7 @@ import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.dto.request.LocalRegisterRequest;
 import org.socialculture.platform.member.dto.request.MemberCategoryRequest;
 import org.socialculture.platform.member.dto.response.CategoryResponse;
+import org.socialculture.platform.member.dto.response.MemberInfoResponse;
 import org.socialculture.platform.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -144,4 +145,14 @@ public class MemberController {
 
 
 
+    /**
+     * 사용자 정보 조회
+     * @param userDetails
+     * @return email, name, role
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<MemberInfoResponse>> getMemberInfoByEmail(@AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        return ApiResponse.onSuccess(memberService.getMemberInfoByEmail(email));
+    }
 }
