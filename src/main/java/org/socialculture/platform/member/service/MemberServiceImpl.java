@@ -9,6 +9,7 @@ import org.socialculture.platform.member.dto.request.LocalRegisterRequest;
 import org.socialculture.platform.member.dto.request.MemberCategoryRequest;
 import org.socialculture.platform.member.dto.request.SocialRegisterRequest;
 import org.socialculture.platform.member.dto.response.CategoryResponse;
+import org.socialculture.platform.member.dto.response.MemberInfoResponse;
 import org.socialculture.platform.member.entity.MemberCategoryEntity;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.entity.MemberRole;
@@ -232,8 +233,15 @@ public class MemberServiceImpl implements MemberService{
     }
 
 
-
-
-
-
+    /**
+     * 사용자 정보 조회
+     * @param email
+     * @return email, name, role
+     */
+    @Override
+    public MemberInfoResponse getMemberInfoByEmail(String email) {
+        MemberEntity memberEntity = memberRepository.findByEmail(email).orElseThrow(() ->
+                new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+        return MemberInfoResponse.fromEntity(memberEntity);
+    }
 }
