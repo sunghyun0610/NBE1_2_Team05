@@ -3,6 +3,7 @@ package org.socialculture.platform.performance.controller;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
@@ -122,5 +123,10 @@ public class PerformanceController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ApiResponse.onSuccess(performanceService.getMyPerformanceList(userDetails.getUsername(), page, size));
+    }
+    
+    @GetMapping("/categories")
+    public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategories() {
+        return ApiResponse.onSuccess(performanceService.getCategoryList());
     }
 }

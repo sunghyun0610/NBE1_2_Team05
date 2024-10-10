@@ -1,5 +1,6 @@
 package org.socialculture.platform.performance.service;
 
+import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
@@ -21,4 +22,6 @@ public interface PerformanceService {
     void deletePerformance(String email, Long performanceId);
 
     PerformanceListResponse getMyPerformanceList(String email, Integer page, Integer size);
+
+    List<CategoryDto> getCategoryList();
 }

@@ -131,6 +131,13 @@ public class PerformanceServiceImpl implements PerformanceService {
         return PerformanceListResponse.from(performanceList.getTotalElements(), performanceList.getContent());
     }
 
+    @Override
+    public List<CategoryDto> getCategoryList() {
+        List<CategoryEntity> categoryEntities = categoryRepository.findAll();
+        return categoryEntities.stream()
+                .map(CategoryDto::toDto).toList();
+    }
+
     private boolean isAccessPerformance(String email, Long performanceId) {
         if (email == null) {
             return false;
