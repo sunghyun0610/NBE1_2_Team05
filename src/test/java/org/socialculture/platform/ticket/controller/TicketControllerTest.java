@@ -22,9 +22,11 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 /**
  * Ticket 컨트롤러 테스트
@@ -128,6 +130,27 @@ public class TicketControllerTest {
                         .content(asJsonString(mockTicketRequest)) // content 로 JSON 요청 바디 추가
         );
 
+        result.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("티켓 컨트롤러 티켓 취소 테스트")
+    @WithMockUser(username = "user@example.com", roles = "LOCAL")
+    void cancelTicket() throws Exception {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long ticketId = 1L; // 가짜 티켓 ID
+
+        // 티켓 취소 서비스 호출 가짜 응답 설정
+        willDoNothing().given(ticketService).deleteTicket(username, ticketId);
+
+        // 실제 요청을 보내는 부분
+        ResultActions result = this.mockMvc.perform(
+                delete("/api/v1/tickets/{ticketId}", ticketId)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+        );
+
+        // 응답 상태 코드가 200 OK 인지 확인
         result.andExpect(status().isOk());
     }
 

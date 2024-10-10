@@ -17,9 +17,9 @@ public interface TicketService {
     // 상세 조회
     TicketResponseDto getTicketByEmailAndTicketId(String email, Long ticketId);
 
+    // 등록
     TicketResponseDto registerTicket(String email, TicketRequestDto ticketRequest);
 
-    // TicketResponse updateTicket(Long id, TicketRequest ticketRequest);
-
-    // void deleteTicket(Long id);
+    // 삭제
+    void deleteTicket(String email, Long ticketId);
 }
