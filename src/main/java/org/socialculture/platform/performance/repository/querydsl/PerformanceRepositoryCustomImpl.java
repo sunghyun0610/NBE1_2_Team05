@@ -90,7 +90,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
     @Override
     public Page<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable, Long categoryId, String search) {
 
-        List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
+        List<PerformanceWithCategory> performances = jpaQueryFactory.selectDistinct(Projections.constructor(PerformanceWithCategory.class,
                         qMember.name.as("memberName"),
                         qPerformanceEntity.performanceId.as("performanceId"),
                         qPerformanceEntity.title.as("title"),
@@ -103,6 +103,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
                 .where(categoryListWhereClause(CONFIRMED, categoryId, search))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -115,6 +116,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         Long totalCount = jpaQueryFactory
                 .select(qPerformanceEntity.count())
                 .from(qPerformanceEntity)
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
                 .where(categoryListWhereClause(CONFIRMED, categoryId, search))
                 .fetchOne();
 
