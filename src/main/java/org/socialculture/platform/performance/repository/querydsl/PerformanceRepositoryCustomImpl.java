@@ -3,6 +3,7 @@ package org.socialculture.platform.performance.repository.querydsl;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.socialculture.platform.member.entity.QMemberEntity;
 import org.socialculture.platform.performance.dto.domain.CategoryContent;
@@ -12,7 +13,10 @@ import org.socialculture.platform.performance.entity.PerformanceStatus;
 import org.socialculture.platform.performance.entity.QCategoryEntity;
 import org.socialculture.platform.performance.entity.QPerformanceCategoryEntity;
 import org.socialculture.platform.performance.entity.QPerformanceEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -56,6 +60,25 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         return nullSafeBuilder(() -> qMember.email.eq(memberEmail));
     }
 
+    private BooleanBuilder categoryIdEq(Long categoryId) {
+        return nullSafeBuilder(() -> qPerformanceCategoryEntity.category.categoryId.eq(categoryId));
+    }
+
+    private BooleanBuilder performanceTitleLike(String search) {
+        if (search == null || search.trim().isEmpty()) {
+            return new BooleanBuilder();
+        }
+        return new BooleanBuilder(qPerformanceEntity.title.contains(search));
+    }
+
+    private BooleanBuilder categoryListWhereClause(PerformanceStatus status, Long categoryId, String search) {
+        BooleanBuilder builder = new BooleanBuilder();
+        builder.and(performanceStatusNe(status));
+        builder.and(categoryIdEq(categoryId));
+        builder.and(performanceTitleLike(search));
+        return builder;
+    }
+
     /**
      * 공연 리스트 조회
      * @author Icecoff22
@@ -64,7 +87,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
      *
      */
     @Override
-    public List<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable) {
+    public Page<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable, Long categoryId, String search) {
 
         List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
                         qMember.name.as("memberName"),
@@ -79,12 +102,24 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
-                .where(performanceStatusNe(NOT_CONFIRMED))
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .where(categoryListWhereClause(NOT_CONFIRMED, categoryId, search))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return addCategoriesToPerformances(performances);
+        if (performances.isEmpty()) {
+            return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
+        }
+
+        long totalCount = jpaQueryFactory
+                .select(qPerformanceEntity.count())
+                .from(qPerformanceEntity)
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .where(categoryListWhereClause(NOT_CONFIRMED, categoryId, search))
+                .fetch().size();
+
+        return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
     }
 
     private List<PerformanceWithCategory> addCategoriesToPerformances(List<PerformanceWithCategory> performances) {
@@ -147,7 +182,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
     }
 
     @Override
-    public List<PerformanceWithCategory> getMyPerformanceWithCategoryList(String email, Pageable pageable) {
+    public Page<PerformanceWithCategory> getMyPerformanceWithCategoryList(String email, Pageable pageable) {
         List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
                         qMember.name.as("memberName"),
                         qPerformanceEntity.performanceId.as("performanceId"),
@@ -166,6 +201,17 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        return addCategoriesToPerformances(performances);
+        if (performances.isEmpty()) {
+            return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
+        }
+
+        long totalCount = jpaQueryFactory
+                .select(qPerformanceEntity.count())
+                .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .where(memberEmailEq(email))
+                .fetch().size();
+
+        return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
     }
 }

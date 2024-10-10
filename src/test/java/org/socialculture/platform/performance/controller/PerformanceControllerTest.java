@@ -54,6 +54,8 @@ public class PerformanceControllerTest {
     @MockBean
     private PerformanceService performanceService;
 
+    private final String email = "test@test.com";
+
     @Test
     @DisplayName("공연 등록 조회 테스트")
     @WithMockUser
@@ -98,7 +100,7 @@ public class PerformanceControllerTest {
                         )
                         .build();
 
-        given(performanceService.registerPerformance(performanceRegisterRequest))
+        given(performanceService.registerPerformance(email, performanceRegisterRequest))
                 .willReturn(performanceRegisterResponse);
 
         ResultActions result = this.mockMvc.perform(
@@ -195,7 +197,7 @@ public class PerformanceControllerTest {
                         .build()
         );
 
-        given(performanceService.getPerformanceList(anyInt(), anyInt()))
+        given(performanceService.getPerformanceList(anyInt(), anyInt(), anyLong(), anyString()))
                 .willReturn(performanceList);
 
         ResultActions result = this.mockMvc.perform(
@@ -265,7 +267,7 @@ public class PerformanceControllerTest {
                         )
                         .build();
 
-        given(performanceService.getPerformanceDetail(anyLong()))
+        given(performanceService.getPerformanceDetail(email, anyLong()))
                 .willReturn(performanceDetailResponse);
 
         ResultActions result = this.mockMvc.perform(
@@ -321,7 +323,7 @@ public class PerformanceControllerTest {
                         .build();
         PerformanceUpdateResponse performanceUpdateResponse = PerformanceUpdateResponse.from(1L);
 
-        given(performanceService.updatePerformance(anyLong(), any()))
+        given(performanceService.updatePerformance(anyString(), anyLong(), any()))
                 .willReturn(performanceUpdateResponse);
 
         ResultActions result = this.mockMvc.perform(
@@ -360,7 +362,7 @@ public class PerformanceControllerTest {
     @WithMockUser
     void deletePerformanceTest() throws Exception {
         //given
-        doNothing().when(performanceService).deletePerformance(anyLong());
+        doNothing().when(performanceService).deletePerformance(anyString(), anyLong());
 
 
         ResultActions result = this.mockMvc.perform(

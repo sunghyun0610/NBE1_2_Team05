@@ -12,6 +12,8 @@ import org.socialculture.platform.performance.dto.response.PerformanceUpdateResp
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,9 +32,11 @@ public class PerformanceController {
      */
     @PostMapping
     public ResponseEntity<ApiResponse<PerformanceRegisterResponse>> registerPerformance(
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody PerformanceRegisterRequest registerPerformanceRequest
     ) {
-        PerformanceRegisterResponse performanceRegisterResponse = performanceService.registerPerformance(registerPerformanceRequest);
+        PerformanceRegisterResponse performanceRegisterResponse =
+                performanceService.registerPerformance(userDetails.getUsername(), registerPerformanceRequest);
 
         return ApiResponse.onSuccess(
                 HttpStatus.CREATED,
@@ -51,11 +55,13 @@ public class PerformanceController {
      * @return 200, 공연응답 리스트
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PerformanceListResponse>>> getPerformanceList(
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceList(
             @RequestParam(name = "page") Integer page,
-            @RequestParam(name = "size") Integer size
+            @RequestParam(name = "size") Integer size,
+            @RequestParam(name = "category", required = false) Long categoryId,
+            @RequestParam(name = "search", required = false) String search
     ) {
-        return ApiResponse.onSuccess(performanceService.getPerformanceList(page, size));
+        return ApiResponse.onSuccess(performanceService.getPerformanceList(page, size, categoryId, search));
     }
 
     /**
@@ -65,8 +71,11 @@ public class PerformanceController {
      * @return 200, 공연응답 리스트
      */
     @GetMapping("/{performanceId}")
-    public ResponseEntity<ApiResponse<PerformanceDetailResponse>> getPerformanceById(@PathVariable("performanceId") Long performanceId) {
-        return ApiResponse.onSuccess(performanceService.getPerformanceDetail(performanceId));
+    public ResponseEntity<ApiResponse<PerformanceDetailResponse>> getPerformanceById(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("performanceId") Long performanceId
+    ) {
+        return ApiResponse.onSuccess(performanceService.getPerformanceDetail(userDetails.getUsername(), performanceId));
     }
 
     /**
@@ -79,9 +88,10 @@ public class PerformanceController {
     @PatchMapping("/{performanceId}")
     public ResponseEntity<ApiResponse<PerformanceUpdateResponse>> updatePerformance(
             @PathVariable("performanceId") Long performanceId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody PerformanceUpdateRequest performanceUpdateRequest
     ) {
-        return ApiResponse.onSuccess(performanceService.updatePerformance(performanceId, performanceUpdateRequest));
+        return ApiResponse.onSuccess(performanceService.updatePerformance(userDetails.getUsername(), performanceId, performanceUpdateRequest));
     }
 
     /**
@@ -93,13 +103,16 @@ public class PerformanceController {
      * @return 200
      */
     @DeleteMapping("/{performanceId}")
-    public ResponseEntity<ApiResponse<Void>> deletePerformance(@PathVariable("performanceId") Long performanceId) {
-        performanceService.deletePerformance(performanceId);
+    public ResponseEntity<ApiResponse<Void>> deletePerformance(
+            @PathVariable("performanceId") Long performanceId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        performanceService.deletePerformance(userDetails.getUsername(), performanceId);
         return ApiResponse.onSuccess();
     }
 
     @GetMapping("/admin/my")
-    public ResponseEntity<ApiResponse<List<PerformanceListResponse>>> getPerformanceListAdmin(@RequestParam(name = "page") Integer page, @RequestParam(name = "size") Integer size) {
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListAdmin(@RequestParam(name = "page") Integer page, @RequestParam(name = "size") Integer size) {
         return ApiResponse.onSuccess(performanceService.getMyPerformanceList("email", page, size));
     }
 }

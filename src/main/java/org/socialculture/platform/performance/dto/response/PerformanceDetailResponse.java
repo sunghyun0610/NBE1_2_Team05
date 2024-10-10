@@ -27,7 +27,7 @@ public record PerformanceDetailResponse(
     LocalDateTime updatedAt,
     List<CategoryDto>categories
 ) {
-    public static PerformanceDetailResponse from(PerformanceDetail performanceDetail) {
+    public static PerformanceDetailResponse from(boolean updatable, PerformanceDetail performanceDetail) {
         List<CategoryDto> categoryDtos = performanceDetail.getCategories().stream()
                 .map(CategoryDto::toDto).toList();
 
