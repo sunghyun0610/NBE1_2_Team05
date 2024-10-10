@@ -9,6 +9,7 @@ public class TokenResponseDTO {
     private String accessToken;
     private String refreshToken;
     private String message;
+    private String userName;
 
     public TokenResponseDTO(String message) {
         this.message = message;
