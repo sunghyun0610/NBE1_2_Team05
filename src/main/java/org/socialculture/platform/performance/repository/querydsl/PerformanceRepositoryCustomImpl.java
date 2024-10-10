@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import static org.socialculture.platform.performance.entity.PerformanceStatus.CONFIRMED;
 import static org.socialculture.platform.performance.entity.PerformanceStatus.NOT_CONFIRMED;
 
 public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCustom {
@@ -44,7 +45,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         }
     }
 
-    private BooleanBuilder performanceStatusNe(PerformanceStatus status) {
+    private BooleanBuilder performanceStatusEq(PerformanceStatus status) {
         return nullSafeBuilder(() -> qPerformanceEntity.performanceStatus.eq(status));
     }
 
@@ -73,7 +74,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
     private BooleanBuilder categoryListWhereClause(PerformanceStatus status, Long categoryId, String search) {
         BooleanBuilder builder = new BooleanBuilder();
-        builder.and(performanceStatusNe(status));
+        builder.and(performanceStatusEq(status));
         builder.and(categoryIdEq(categoryId));
         builder.and(performanceTitleLike(search));
         return builder;
@@ -102,8 +103,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
-                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
-                .where(categoryListWhereClause(NOT_CONFIRMED, categoryId, search))
+                .where(categoryListWhereClause(CONFIRMED, categoryId, search))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -112,12 +112,15 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
             return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
         }
 
-        long totalCount = jpaQueryFactory
+        Long totalCount = jpaQueryFactory
                 .select(qPerformanceEntity.count())
                 .from(qPerformanceEntity)
-                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
-                .where(categoryListWhereClause(NOT_CONFIRMED, categoryId, search))
-                .fetch().size();
+                .where(categoryListWhereClause(CONFIRMED, categoryId, search))
+                .fetchOne();
+
+        if (totalCount == null) {
+            totalCount = 0L;
+        }
 
         return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
     }
@@ -205,12 +208,16 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
             return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
         }
 
-        long totalCount = jpaQueryFactory
+        Long totalCount = jpaQueryFactory
                 .select(qPerformanceEntity.count())
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .where(memberEmailEq(email))
-                .fetch().size();
+                .fetchOne();
+
+        if (totalCount == null) {
+            totalCount = 0L;
+        }
 
         return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
     }
