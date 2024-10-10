@@ -2,6 +2,7 @@ package org.socialculture.platform.performance.dto.request;
 
 import lombok.Builder;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
+import org.socialculture.platform.performance.entity.PerformanceStatus;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +15,8 @@ public record PerformanceUpdateRequest(
         String imageUrl,
         Integer price,
         String description,
-        Integer maxAudience
+        Integer maxAudience,
+        PerformanceStatus status
 ) {
     public static PerformanceEntity toEntity(PerformanceUpdateRequest performanceUpdateRequest) {
         return PerformanceEntity.builder()
@@ -26,6 +28,7 @@ public record PerformanceUpdateRequest(
                 .price(performanceUpdateRequest.price())
                 .description(performanceUpdateRequest.description())
                 .maxAudience(performanceUpdateRequest.maxAudience())
+                .performanceStatus(performanceUpdateRequest.status())
                 .build();
 
     }

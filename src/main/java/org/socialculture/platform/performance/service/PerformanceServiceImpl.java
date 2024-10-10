@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.socialculture.platform.global.apiResponse.exception.ErrorStatus.*;
@@ -80,7 +81,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     @Override
     @Transactional
     public PerformanceUpdateResponse updatePerformance(String email, Long performanceId, PerformanceUpdateRequest performanceUpdateRequest) {
-        if (isAccessPerformance(email, performanceId)) {
+        if (!isAccessPerformance(email, performanceId)) {
             throw new GeneralException(PERFORMANCE_NOT_ACCESSIBLE);
         }
 
@@ -109,7 +110,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         List<CategoryEntity> categoryEntities = categoryRepository.findAllByNameKrIn(categories); // 한 번에 조회
 
         if (categoryEntities.isEmpty()) {
-            throw new GeneralException(ErrorStatus.CATEGORY_NOT_FOUND);
+            return new ArrayList<>();
         }
 
         categoryEntities.forEach(e ->
