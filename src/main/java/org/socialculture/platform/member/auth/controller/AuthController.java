@@ -11,6 +11,8 @@ import org.socialculture.platform.member.auth.JwtTokenProvider;
 import org.socialculture.platform.member.auth.dto.TokenRequestDTO;
 import org.socialculture.platform.member.auth.dto.TokenResponseDTO;
 import org.socialculture.platform.member.auth.JwtFilter;
+import org.socialculture.platform.member.entity.MemberEntity;
+import org.socialculture.platform.member.repository.MemberRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,7 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AuthService authService;
+    private final MemberRepository memberRepository;
 
     /**
      * 로컬 로그인
@@ -37,6 +40,9 @@ public class AuthController {
     public ResponseEntity<TokenResponseDTO> authorize(@RequestBody LoginDTO loginDTO) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
+
+        MemberEntity memberEntity = memberRepository.findByEmail(loginDTO.getEmail())
+                .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
@@ -54,7 +60,8 @@ public class AuthController {
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer" + accessToken);
 
         String message = "액세스 토큰과 리프레시 토큰이 정상적으로 발급되었습니다.";
-        return new ResponseEntity<>(new TokenResponseDTO(accessToken, refreshToken, message), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new TokenResponseDTO(accessToken, refreshToken, message,
+                memberEntity.getName()), httpHeaders, HttpStatus.OK);
     }
 
 

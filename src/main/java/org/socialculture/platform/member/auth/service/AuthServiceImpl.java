@@ -100,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public TokenResponseDTO createTokenResponseForSocialMember(String email) {
-        memberRepository.findByEmail(email)
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자가 존재하지 않습니다."));
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
         insertRefreshToken(refreshToken);
 
         String message = "액세스 토큰과 리프레시 토큰이 정상적으로 발급되었습니다.";
-        return new TokenResponseDTO(accessToken, refreshToken, message);
+        return new TokenResponseDTO(accessToken, refreshToken, message, memberEntity.getName());
     }
 
 
