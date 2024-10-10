@@ -32,6 +32,143 @@
 </details>
 
 <details>
+<summary>📦 스키마 </summary>
+
+## 🗃️ 스키마 설명
+
+| **Table Name**             | **Description**                                                                                         |
+|----------------------------|---------------------------------------------------------------------------------------------------------|
+| **member**                 | 회원 정보를 저장하는 테이블. 이메일, 패스워드, 프로바이더, 역할 등의 정보를 관리합니다.                     |
+| **refresh_tokens**          | 리프레시 토큰을 저장하는 테이블. 회원과 연관된 리프레시 토큰과 만료 시간을 관리합니다.                       |
+| **performance**             | 공연 정보를 저장하는 테이블. 공연 제목, 설명, 일정, 장소, 가격, 남은 티켓 수 등을 관리합니다.                |
+| **comment**                 | 공연에 대한 댓글을 저장하는 테이블. 회원이 남긴 댓글과 상태 정보를 관리합니다.                             |
+| **ticket**                  | 회원이 예매한 티켓 정보를 저장하는 테이블. 공연, 회원, 예매 시간, 예매 인원 등을 관리합니다.                 |
+| **coupon**                  | 회원이 소유한 쿠폰 정보를 저장하는 테이블. 쿠폰 이름, 할인율, 사용 여부, 만료 시간 등을 관리합니다.            |
+| **category**                | 공연 및 회원과 연관된 카테고리 정보를 저장하는 테이블. 카테고리 이름(한글/영문)을 관리합니다.                |
+| **member_categories**       | 회원과 카테고리의 연관 관계를 저장하는 테이블. 특정 회원이 관심있는 카테고리를 관리합니다.                  |
+| **performance_categories**  | 공연과 카테고리의 연관 관계를 저장하는 테이블. 특정 공연이 속한 카테고리를 관리합니다.                     |
+
+## 🗃️ DDL
+
+```sql
+CREATE TABLE member (
+    member_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255),
+    provider ENUM('LOCAL', 'NAVER', 'KAKAO') NOT NULL,
+    provider_id VARCHAR(255),
+    name VARCHAR(100) UNIQUE NOT NULL,
+    role ENUM('ROLE_USER','ROLE_PADMIN','ROLE_ADMIN') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP
+);
+
+
+CREATE TABLE refresh_tokens (
+    token_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    member_id BIGINT,
+    refresh_token VARCHAR(255) NOT NULL,
+    expiry_date TIMESTAMP NOT NULL,
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+CREATE TABLE `performance` (
+    id BIGINT NOT NULL AUTO_INCREMENT COMMENT '공연 고유 ID',
+    member_id BIGINT NOT NULL COMMENT '회원 ID',
+    title VARCHAR(50) NOT NULL COMMENT '공연 제목',
+    date_st_time DATETIME NOT NULL COMMENT '공연 시작 일자 및 시간',
+    date_end_time DATETIME NOT NULL COMMENT '공연 종료 일자 및 시간',
+    description TEXT NOT NULL COMMENT '공연 설명',
+    max_audience BIGINT NULL COMMENT '최대 관객 수 (NULL이면 제한 없음)',
+    address VARCHAR(100) NOT NULL COMMENT '공연 장소',
+    image_url VARCHAR(100) NULL COMMENT '공연 이미지 URL',
+    price BIGINT NOT NULL DEFAULT 0 COMMENT '공연 가격',
+    remaining_tickets BIGINT NULL COMMENT '남은 티켓 수',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '업데이트 시간',
+    deleted_at DATETIME NULL COMMENT '삭제 시간',
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+CREATE TABLE comment (
+    id BIGINT NOT NULL AUTO_INCREMENT COMMENT '댓글 고유 ID',
+    performance_id BIGINT NOT NULL COMMENT '공연 ID',
+    user_id BIGINT NOT NULL COMMENT '회원 ID',
+    comment TEXT NOT NULL COMMENT '댓글 내용',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '업데이트 시간',
+    parent_id BIGINT NULL DEFAULT NULL COMMENT '부모 댓글 ID',
+    status ENUM('ACTIVE', 'DELETED') NOT NULL DEFAULT 'ACTIVE' COMMENT '댓글 상태',
+    PRIMARY KEY (id),
+    FOREIGN KEY (performance_id) REFERENCES performance(id),
+    FOREIGN KEY (user_id) REFERENCES member(member_id)
+);
+
+CREATE TABLE ticket (
+    id BIGINT NOT NULL AUTO_INCREMENT COMMENT '티켓 고유 ID',
+    performance_id BIGINT NOT NULL COMMENT '공연 ID',
+    member_id BIGINT NOT NULL COMMENT '회원 ID',
+    date_time DATETIME(6) NOT NULL COMMENT '티켓 예매 시간',
+    quantity INT NOT NULL COMMENT '예매 인원',
+    price INT NOT NULL DEFAULT 0 COMMENT '티켓 가격',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '업데이트 시간',
+    deleted_at TIMESTAMP NULL COMMENT '삭제 시간',
+    PRIMARY KEY (id),
+    FOREIGN KEY (performance_id) REFERENCES performance(id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+CREATE TABLE coupon (
+    id BIGINT NOT NULL AUTO_INCREMENT COMMENT '쿠폰 고유 ID',
+    member_id BIGINT NOT NULL COMMENT '회원 ID',
+    name VARCHAR(30) NOT NULL COMMENT '쿠폰 이름',
+    percent INT NOT NULL COMMENT '할인율',
+    is_used BOOLEAN NOT NULL DEFAULT false COMMENT '쿠폰 사용 여부',
+    expire_time TIMESTAMP NOT NULL COMMENT '쿠폰 만료 시간',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '쿠폰 발급 시간',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '쿠폰 수정 시간',
+    deleted_at TIMESTAMP NULL COMMENT '쿠폰 삭제 시간',
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+CREATE TABLE category (
+    category_id BIGINT NOT NULL AUTO_INCREMENT COMMENT '카테고리 고유 ID',
+    name_kr VARCHAR(30) COMMENT '카테고리 이름 (한글)',
+    name_en VARCHAR(30) COMMENT '카테고리 이름 (영문)', // 'MUSIC', 'THEATER', 'DANCE', 'COMEDY', 'CIRCUS', 'MAGIC', 'VARIETY', 'EXHIBITION', 'FESTIVAL', 'OPERA', 'PUPPETRY', 'STANDUP', 'ETC') NOT NULL COMMENT '카테고리 이름'
+	PRIMARY KEY (`category_id`)
+);
+
+CREATE TABLE member_categories (
+    id BIGINT NOT NULL AUTO_INCREMENT COMMENT '회원 카테고리 연결 고유 ID',
+    category_id BIGINT NOT NULL COMMENT '카테고리 ID',
+    member_id BIGINT NOT NULL COMMENT '회원 ID',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '업데이트 시간',
+    PRIMARY KEY (id),
+    FOREIGN KEY (category_id) REFERENCES category(id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id)
+);
+
+CREATE TABLE performance_categories (
+    id BIGINT NOT NULL AUTO_INCREMENT COMMENT '공연 카테고리 연결 고유 ID',
+    performance_id BIGINT NOT NULL COMMENT '공연 ID',
+    category_id BIGINT NOT NULL COMMENT '카테고리 ID',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '업데이트 시간',
+    PRIMARY KEY (id),
+    FOREIGN KEY (performance_id) REFERENCES performance(id),
+    FOREIGN KEY (category_id) REFERENCES category(id)
+);
+
+```
+
+</details>
+
+<details>
 <summary>📦 시스템 구성도 </summary>
 
 <img width="698" alt="아키텍처" src="https://github.com/user-attachments/assets/6c9ad89e-061a-4e6c-8568-7323a3438713">
