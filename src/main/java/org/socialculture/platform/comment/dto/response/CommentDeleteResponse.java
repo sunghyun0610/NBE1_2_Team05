@@ -1,7 +1,9 @@
 package org.socialculture.platform.comment.dto.response;
 
-public record CommentDeleteResponse(long performanceId) {
-    public static CommentDeleteResponse from(long performanceId){
-        return new CommentDeleteResponse(performanceId);
+import org.socialculture.platform.comment.entity.CommentStatus;
+
+public record CommentDeleteResponse(long performanceId, CommentStatus commentStatus) {
+    public static CommentDeleteResponse of(long performanceId,CommentStatus commentStatus){
+        return new CommentDeleteResponse(performanceId, commentStatus);
     }
 }
