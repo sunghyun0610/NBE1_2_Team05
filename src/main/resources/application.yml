@@ -6,10 +6,10 @@ spring:
     password: ${HOME_PASSWORD}
 
   jpa:
-    show-sql: true
+#    show-sql: true
     properties:
       hibernate:
-        format_sql: true
+#        format_sql: true
     database: mysql
 #    hibernate:
 #      ddl-auto: create
@@ -29,6 +29,7 @@ jwt:
   access:
     token:
       expiration: 1800000  # 액세스 토큰 유효 시간 (30분)
+#      expiration: 10000  # 액세스 토큰 유효 시간 (10초)
   refresh:
     token:
       expiration: 604800000  # 리프레시 토큰 유효 시간 (7일)
