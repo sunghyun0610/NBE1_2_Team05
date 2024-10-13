@@ -246,7 +246,10 @@ public class MemberServiceImpl implements MemberService{
     }
 
 
-    // 공연관리자로 권한 변경
+    /**
+     * 공연관리자로 권한 변경
+     * @param email
+     */
     @Override
     @Transactional
     public void changeRoleToPadmin(String email) {

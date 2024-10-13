@@ -86,7 +86,6 @@ public class EmailVerificationController {
             return ApiResponse.onSuccess();
         };
 
-        session.invalidate();
         throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
     }
 
