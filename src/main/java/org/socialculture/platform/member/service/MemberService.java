@@ -46,4 +46,7 @@ public interface MemberService {
 
     // 사용자 정보 조회 - 마이페이지
     MemberInfoResponse getMemberInfoByEmail(String email);
+
+    // 공연관리자로 권한 변경
+    void changeRoleToPadmin(String email);
 }

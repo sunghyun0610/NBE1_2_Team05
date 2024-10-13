@@ -140,18 +140,14 @@ public class MemberController {
     }
 
 
-
-    // 회원권한 수정
-
-
-
     /**
      * 사용자 정보 조회
      * @param userDetails
      * @return email, name, role
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<MemberInfoResponse>> getMemberInfoByEmail(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<MemberInfoResponse>> getMemberInfoByEmail(
+            @AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         return ApiResponse.onSuccess(memberService.getMemberInfoByEmail(email));
     }
