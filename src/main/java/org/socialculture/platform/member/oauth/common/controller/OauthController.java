@@ -7,10 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.auth.JwtFilter;
-import org.socialculture.platform.member.auth.JwtTokenProvider;
 import org.socialculture.platform.member.auth.dto.TokenResponseDTO;
 import org.socialculture.platform.member.auth.service.AuthService;
-import org.socialculture.platform.member.auth.service.CustomUserDetailsService;
 import org.socialculture.platform.member.dto.request.SocialRegisterRequest;
 import org.socialculture.platform.member.entity.SocialProvider;
 import org.socialculture.platform.member.oauth.common.dto.SocialLoginRequest;
@@ -19,14 +17,12 @@ import org.socialculture.platform.member.oauth.common.dto.SocialMemberInfoDto;
 import org.socialculture.platform.member.oauth.common.service.SocialClient;
 import org.socialculture.platform.member.oauth.kakao.service.KakaoClient;
 import org.socialculture.platform.member.oauth.naver.service.NaverClient;
-import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.member.service.MemberService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * 네이버,카카오 소셜 로그인 컨트롤러 통합
@@ -42,9 +38,6 @@ public class OauthController {
     private final KakaoClient kakaoClient;
     private final NaverClient naverClient;
     private final AuthService authService;
-    private final MemberRepository memberRepository;
-    private final CustomUserDetailsService customUserDetailsService;
-    private final JwtTokenProvider jwtTokenProvider;
 
 
     /**

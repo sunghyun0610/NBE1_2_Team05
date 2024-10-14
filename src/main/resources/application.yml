@@ -23,6 +23,23 @@ spring:
     redirect_uri: ${NAVER_REDIRECT_URI}
     client_secret: ${NAVER_CLIENT_SECRET}
 
+  mail: # 이메일 인증을 위한 smtp 서버 설정
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL}
+    password: ${EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+#    auth-code-expiration-millis: 1800000
+
 
 jwt:
   secret: ${JWT_SECRET_KEY}  # JWT 비밀 키
@@ -33,6 +50,7 @@ jwt:
   refresh:
     token:
       expiration: 604800000  # 리프레시 토큰 유효 시간 (7일)
+
 
 
 

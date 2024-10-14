@@ -244,4 +244,19 @@ public class MemberServiceImpl implements MemberService{
                 new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
         return MemberInfoResponse.fromEntity(memberEntity);
     }
+
+
+    /**
+     * 공연관리자로 권한 변경
+     * @param email
+     */
+    @Override
+    @Transactional
+    public void changeRoleToPadmin(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.changeRole(MemberRole.ROLE_PADMIN);
+        memberRepository.save(member);
+    }
 }

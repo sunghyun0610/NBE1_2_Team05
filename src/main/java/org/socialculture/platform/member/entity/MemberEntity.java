@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
+import org.socialculture.platform.member.auth.entity.MemberVerificationEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,15 @@ public class MemberEntity extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberCategoryEntity> memberCategoryList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private MemberVerificationEntity memberVerification;
+
     public void changeName(String newName) {
         this.name = newName;
+    }
+
+    public void changeRole(MemberRole newRole) {
+        this.role = newRole;
     }
 
 }
