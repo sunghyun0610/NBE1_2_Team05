@@ -204,8 +204,8 @@ public class MemberServiceImpl implements MemberService {
     private void addCategories(MemberCategoryRequest memberCategoryRequest, MemberEntity memberEntity) {
         List<Long> categoryIds = memberCategoryRequest.categories();
         for (Long categoryId : categoryIds) {
-            CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId).orElseThrow(() ->
-                    new GeneralException(ErrorStatus.MEMBER_CATEGORY_NOT_FOUND));
+            CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_CATEGORY_NOT_FOUND));
 
             MemberCategoryEntity memberCategoryEntity = MemberCategoryEntity.builder()
                     .category(categoryEntity)
@@ -238,8 +238,8 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public List<CategoryResponse> getFavoriteCategories(String email) {
-        MemberEntity memberEntity = memberRepository.findByEmail(email).orElseThrow(() ->
-                new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
         List<CategoryEntity> favoriteCategories = memberCategoryRepository
                 .findCategoriesByMemberId(memberEntity.getMemberId());
@@ -256,8 +256,8 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public MemberInfoResponse getMemberInfoByEmail(String email) {
-        MemberEntity memberEntity = memberRepository.findByEmail(email).orElseThrow(() ->
-                new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
         return MemberInfoResponse.fromEntity(memberEntity);
     }
 
@@ -274,6 +274,21 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
         member.changeRole(MemberRole.ROLE_PADMIN);
+        memberRepository.save(member);
+    }
+
+
+    /**
+     * 사용자 첫 로그인 후 첫 로그인 여부 변경
+     *
+     * @param email
+     */
+    @Override
+    public void changeFirstLogin(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.markFirstLoginComplete();
         memberRepository.save(member);
     }
 }

@@ -115,7 +115,8 @@ public class AuthServiceImpl implements AuthService {
         insertRefreshToken(refreshToken);
 
         String message = "액세스 토큰과 리프레시 토큰이 정상적으로 발급되었습니다.";
-        return new TokenResponseDTO(accessToken, refreshToken, message, memberEntity.getName());
+        return new TokenResponseDTO(
+                accessToken, refreshToken, message, memberEntity.getName(),memberEntity.isFirstLogin());
     }
 
 

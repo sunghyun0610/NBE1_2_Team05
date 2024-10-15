@@ -38,6 +38,9 @@ public class MemberEntity extends BaseEntity {
     @Column(name = "name", unique = true, nullable = false)
     private String name;
 
+    @Column(name = "first_login", nullable = false)
+    private boolean isFirstLogin = true;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private MemberRole role;
@@ -55,6 +58,10 @@ public class MemberEntity extends BaseEntity {
 
     public void changeRole(MemberRole newRole) {
         this.role = newRole;
+    }
+
+    public void markFirstLoginComplete() {
+        this.isFirstLogin = false;
     }
 
 }

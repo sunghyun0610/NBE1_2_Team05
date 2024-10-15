@@ -61,7 +61,7 @@ public class AuthController {
 
         String message = "액세스 토큰과 리프레시 토큰이 정상적으로 발급되었습니다.";
         return new ResponseEntity<>(new TokenResponseDTO(accessToken, refreshToken, message,
-                memberEntity.getName()), httpHeaders, HttpStatus.OK);
+                memberEntity.getName(), memberEntity.isFirstLogin()), httpHeaders, HttpStatus.OK);
     }
 
 
