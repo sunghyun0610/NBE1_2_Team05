@@ -49,4 +49,7 @@ public interface MemberService {
 
     // 공연관리자로 권한 변경
     void changeRoleToPadmin(String email);
+
+    // 첫로그인 여부 변경
+    void changeFirstLogin(String email);
 }

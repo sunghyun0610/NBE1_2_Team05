@@ -29,6 +29,7 @@ public class MemberController {
 
     /**
      * 이메일 중복 체크
+     *
      * @return true면 중복x
      */
     @GetMapping("/validation/email/{email}")
@@ -39,6 +40,7 @@ public class MemberController {
 
     /**
      * 닉네임 중복 체크
+     *
      * @param name
      * @return true면 중복x
      */
@@ -51,6 +53,7 @@ public class MemberController {
 
     /**
      * 일반사용자 회원가입
+     *
      * @param localRegisterRequest
      * @return 성공 200ok
      */
@@ -64,13 +67,14 @@ public class MemberController {
 
     /**
      * 닉네임 변경
+     *
      * @param name
      * @param token
      * @return 성공 200, 닉네임중복409 , 닉네임 형식안맞음400
      */
     @PatchMapping("/name/{name}")
     public ResponseEntity<ApiResponse<Void>> updateNickName(
-            @PathVariable String name, @AuthenticationPrincipal UserDetails userDetails){
+            @PathVariable String name, @AuthenticationPrincipal UserDetails userDetails) {
 
         memberService.updateName(userDetails.getUsername(), name);
         return ApiResponse.onSuccess();
@@ -78,6 +82,7 @@ public class MemberController {
 
     /**
      * 사용자 선호 카테고리 등록
+     *
      * @param memberCategoryRequest
      * @return 성공 200, 카테고리 및 회원 못찾음 404
      */
@@ -86,7 +91,7 @@ public class MemberController {
             @RequestBody MemberCategoryRequest memberCategoryRequest,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        if(memberCategoryRequest.categories().size() > 3){
+        if (memberCategoryRequest.categories().size() > 3) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
 
@@ -97,6 +102,7 @@ public class MemberController {
 
     /**
      * 카테고리 전체 목록 조회
+     *
      * @return categoryId, nameKr, nameEn
      */
     @GetMapping("/categories")
@@ -108,6 +114,7 @@ public class MemberController {
 
     /**
      * 사용자 선호 카테고리 조회
+     *
      * @param token
      * @return
      */
@@ -122,6 +129,7 @@ public class MemberController {
 
     /**
      * 사용자 선호 카테고리 수정
+     *
      * @param memberCategoryRequest
      * @return
      */
@@ -129,9 +137,9 @@ public class MemberController {
     public ResponseEntity<ApiResponse<Void>> updateFavoriteCategories(
             @RequestBody MemberCategoryRequest memberCategoryRequest,
             @AuthenticationPrincipal UserDetails userDetails
-    ){
+    ) {
 
-        if(memberCategoryRequest.categories().size() > 3){
+        if (memberCategoryRequest.categories().size() > 3) {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
         memberService.updateFavoriteCategories(memberCategoryRequest, userDetails.getUsername());
@@ -142,6 +150,7 @@ public class MemberController {
 
     /**
      * 사용자 정보 조회
+     *
      * @param userDetails
      * @return email, name, role
      */
@@ -150,5 +159,21 @@ public class MemberController {
             @AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         return ApiResponse.onSuccess(memberService.getMemberInfoByEmail(email));
+    }
+
+
+    /**
+     * 첫 로그인 시 첫 로그인 여부 변경
+     *
+     * @param userDetails
+     * @return
+     */
+    @PatchMapping("/first-login")
+    public ResponseEntity<ApiResponse<Void>> changeFirstLogin(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String email = userDetails.getUsername();
+        memberService.changeFirstLogin(email);
+        return ApiResponse.onSuccess();
     }
 }
