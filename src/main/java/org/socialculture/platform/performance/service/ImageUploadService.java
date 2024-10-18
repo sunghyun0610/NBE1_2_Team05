@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -38,6 +39,7 @@ public class ImageUploadService {
     private String nginxBaseUrl;
 
     public String uploadFileToFTP(MultipartFile imageFile) {
+        if(Objects.isNull(imageFile)) return null;
 
         FTPClient ftpClient = null;
         try {

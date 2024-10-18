@@ -38,7 +38,7 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse<PerformanceRegisterResponse>> registerPerformance(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestPart("performanceData") PerformanceRegisterRequest registerPerformanceRequest,
-            @RequestPart("imageFile") MultipartFile imageFile
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile
     ) {
         PerformanceRegisterResponse performanceRegisterResponse =
                 performanceService.registerPerformance(userDetails.getUsername(), registerPerformanceRequest, imageFile);
