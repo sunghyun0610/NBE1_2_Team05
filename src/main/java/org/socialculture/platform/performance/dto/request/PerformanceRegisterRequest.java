@@ -15,23 +15,12 @@ public record PerformanceRegisterRequest(
         LocalDateTime dateEndTime,
         String address,
         String imageUrl,
-        Integer price,
+        int price,
         String description,
-        Integer maxAudience,
+        int maxAudience,
         LocalDateTime startDate,
         List<String> categories
 ) {
-    public PerformanceRegisterRequest {
-        // price가 null이면 기본값으로 0을 설정
-        if (price == null) {
-            price = 0;
-        }
-        // maxAudience가 null이면 기본값으로 0을 설정
-        if (maxAudience == null) {
-            maxAudience = 0;
-        }
-    }
-
     public PerformanceEntity toEntity(PerformanceRegisterRequest performanceRegisterRequest) {
         return PerformanceEntity.builder()
                 .title(performanceRegisterRequest.title)
@@ -46,20 +35,5 @@ public record PerformanceRegisterRequest(
                 .startDate(performanceRegisterRequest.startDate)
                 .performanceStatus(PerformanceStatus.NOT_CONFIRMED)
                 .build();
-    }
-
-    public PerformanceRegisterRequest withImageUrl(String imageUrl) {
-        return new PerformanceRegisterRequest(
-                this.title,
-                this.dateStartTime,
-                this.dateEndTime,
-                this.address,
-                imageUrl, // 새로운 imageUrl 값
-                this.price,
-                this.description,
-                this.maxAudience,
-                this.startDate,
-                this.categories
-        );
     }
 }
