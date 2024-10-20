@@ -295,7 +295,8 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.address.as("address"),
                         qPerformanceEntity.imageUrl.as("imageUrl"),
                         qPerformanceEntity.price.as("price"),
-                        qPerformanceEntity.performanceStatus.as("status")
+                        qPerformanceEntity.performanceStatus.as("status"),
+                        qPerformanceEntity.remainingTickets.as("remainingTicket")
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
