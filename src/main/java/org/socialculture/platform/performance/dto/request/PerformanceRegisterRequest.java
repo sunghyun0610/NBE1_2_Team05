@@ -18,7 +18,7 @@ public record PerformanceRegisterRequest(
         String description,
         int maxAudience,
         LocalDateTime startDate,
-        List<String> categories
+        List<Long> categories
 ) {
     public PerformanceEntity toEntity(PerformanceRegisterRequest performanceRegisterRequest) {
         return PerformanceEntity.builder()

@@ -52,4 +52,6 @@ public interface MemberService {
 
     // 첫로그인 여부 변경
     void changeFirstLogin(String email);
+
+    Long getMemberIdByEmail(String email);
 }

@@ -1,7 +1,6 @@
 package org.socialculture.platform.performance.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
@@ -115,6 +114,25 @@ public class PerformanceController {
         performanceService.deletePerformance(userDetails.getUsername(), performanceId);
         return ApiResponse.onSuccess();
     }
+
+
+    /**
+     * 사용자 선호 카테고리 기반 공연 리스트 조회
+     * 최대 10개의 공연 리스트 조회
+     * @param userDetails
+     * @return
+     */
+    @GetMapping("/favorites")
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListByUserCategories(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String email = userDetails.getUsername();
+        PerformanceListResponse performanceListByUserCategories = performanceService
+                .getPerformanceListByUserCategories(email);
+
+        return ApiResponse.onSuccess(performanceListByUserCategories);
+    }
+
 
     @GetMapping("/admin/my")
     public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListAdmin(

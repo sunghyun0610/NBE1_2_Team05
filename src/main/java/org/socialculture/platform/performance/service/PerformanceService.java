@@ -24,4 +24,6 @@ public interface PerformanceService {
     PerformanceListResponse getMyPerformanceList(String email, Integer page, Integer size);
 
     List<CategoryDto> getCategoryList();
+
+    PerformanceListResponse getPerformanceListByUserCategories(String email);
 }

@@ -5,6 +5,7 @@ import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
+import org.socialculture.platform.member.service.MemberService;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
@@ -37,6 +38,8 @@ public class PerformanceServiceImpl implements PerformanceService {
     private final PerformanceCategoryRepository performanceCategoryRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
+
 
     //TODO : 사용자 넣기
     @Transactional
@@ -106,8 +109,8 @@ public class PerformanceServiceImpl implements PerformanceService {
         performanceEntity.updateDeleteAt();
     }
 
-    private List<CategoryEntity> performanceCategorySave(PerformanceEntity performanceEntity, List<String> categories) {
-        List<CategoryEntity> categoryEntities = categoryRepository.findAllByNameKrIn(categories); // 한 번에 조회
+    private List<CategoryEntity> performanceCategorySave(PerformanceEntity performanceEntity, List<Long> categories) {
+        List<CategoryEntity> categoryEntities = categoryRepository.findAllById(categories); // 한 번에 조회
 
         if (categoryEntities.isEmpty()) {
             return new ArrayList<>();
@@ -137,6 +140,22 @@ public class PerformanceServiceImpl implements PerformanceService {
         return categoryEntities.stream()
                 .map(CategoryDto::toDto).toList();
     }
+
+
+    // 사용자 선호 카테고리 기반 추천 공연 조회
+    @Override
+    public PerformanceListResponse getPerformanceListByUserCategories(String email) {
+        Long memberId = memberService.getMemberIdByEmail(email);
+        List<PerformanceWithCategory> recommendedPerformancesByMember = performanceRepository
+                .getRecommendedPerformancesByMember(memberId);
+
+        return PerformanceListResponse.from(recommendedPerformancesByMember.size(),
+                recommendedPerformancesByMember);
+    }
+
+
+
+
 
     private boolean isAccessPerformance(String email, Long performanceId) {
         if (email == null) {
