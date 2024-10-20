@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -114,9 +115,23 @@ public class ImageUploadService {
         return String.format("%s%s", ftpPosterPath, fileName); // /upload/pfmPoster/UUID.확장자 형식으로 경로 반환
     }
 
-    // 파일 확장자 추출
+    // 파일 확장자 추출 - 개선(확장자 필수, 이미지 필수)
     private String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
-        return (dotIndex == -1) ? "" : fileName.substring(dotIndex);
+        if (dotIndex == -1) {
+            throw new GeneralException(ErrorStatus.INVALID_IMAGE_FORMAT);
+        }
+
+        String extension = fileName.substring(dotIndex + 1).toLowerCase(); // 소문자로 변환
+
+        // 허용되는 이미지 확장자 목록
+        List<String> allowedExtensions = List.of("jpg", "jpeg", "png", "gif", "bmp");
+
+        // 이미지 파일이 아닌 경우 예외 던지기
+        if (!allowedExtensions.contains(extension)) {
+            throw new GeneralException(ErrorStatus.INVALID_IMAGE_FORMAT);
+        }
+
+        return "." + extension;
     }
 }
