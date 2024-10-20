@@ -114,7 +114,8 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.address.as("address"),
                         qPerformanceEntity.imageUrl.as("imageUrl"),
                         qPerformanceEntity.price.as("price"),
-                        qPerformanceEntity.performanceStatus.as("status")
+                        qPerformanceEntity.performanceStatus.as("status"),
+                        qPerformanceEntity.remainingTickets.as("remainingTicket")
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
@@ -191,6 +192,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.imageUrl,
                         qPerformanceEntity.price,
                         qPerformanceEntity.performanceStatus,
+                        qPerformanceEntity.remainingTickets,
                         qCategoryEntity.categoryId,
                         qCategoryEntity.nameKr,
                         qCategoryEntity.nameEn,
@@ -220,7 +222,9 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                     tuple.get(qPerformanceEntity.address),
                     tuple.get(qPerformanceEntity.imageUrl),
                     tuple.get(qPerformanceEntity.price),
-                    tuple.get(qPerformanceEntity.performanceStatus)
+                    tuple.get(qPerformanceEntity.performanceStatus),
+                    tuple.get(qPerformanceEntity.remainingTickets)
+
             ));
 
             // 카테고리 리스트에 카테고리 추가
