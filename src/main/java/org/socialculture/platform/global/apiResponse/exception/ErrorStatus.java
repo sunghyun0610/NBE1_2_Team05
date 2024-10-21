@@ -54,6 +54,10 @@ public enum ErrorStatus implements BaseErrorCode{
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다."),
     PERFORMANCE_NOT_ACCESSIBLE(HttpStatus.FORBIDDEN, "PERFORMANCE403", "권한이 없습니다."),
 
+    // 공연 이미지 등록 관련
+    INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, "IMAGE400", "지원하지 않는 이미지 파일 형식입니다"),
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "IMAGE404", "이미지를 찾을 수 없습니다."),
+
     //댓글
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT404","댓글을 찾을 수 없습니다."),
     _COMMENT_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "COMMENT403", "댓글 수정 권한이 없습니다. 본인이 작성한 댓글만 수정할 수 있습니다.");
