@@ -4,7 +4,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.socialculture.platform.member.entity.QMemberCategoryEntity;
 import org.socialculture.platform.member.entity.QMemberEntity;
@@ -175,13 +174,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
     @Override
     public List<PerformanceWithCategory> getRecommendedPerformancesByMember(Long memberId) {
 
-        // 서브쿼리 - 사용자 선호 카테고리 가져오기
-        JPAQuery<Long> userCategoryIds = jpaQueryFactory
-                .select(qMemberCategoryEntity.category.categoryId)
-                .from(qMemberCategoryEntity)
-                .where(qMemberCategoryEntity.member.memberId.eq(memberId));
-
-        // 메인 쿼리 - 사용자 선호 카테고리와 매칭된 순 공연 내림차순 정렬 (카테고리와 함께 페치 조인)
+        // 메인 쿼리 - 사용자 선호 카테고리와 매칭된 공연 조회
         List<Tuple> results = jpaQueryFactory
                 .select(qMember.name,
                         qPerformanceEntity.performanceId,
@@ -195,15 +188,16 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.remainingTickets,
                         qCategoryEntity.categoryId,
                         qCategoryEntity.nameKr,
-                        qCategoryEntity.nameEn,
-                        qPerformanceCategoryEntity.category.count().as("matchCount"))
+                        qCategoryEntity.nameEn)
                 .from(qPerformanceCategoryEntity)
                 .join(qPerformanceEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
                 .join(qMember).on(qPerformanceEntity.member.eq(qMember))
-                .fetchJoin() // 카테고리를 페치 조인으로 한번에 가져오기
                 .join(qCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
-                .where(qPerformanceCategoryEntity.category.categoryId.in(userCategoryIds))
-                .groupBy(qPerformanceEntity.performanceId, qCategoryEntity.categoryId, qCategoryEntity.nameKr, qCategoryEntity.nameEn)
+                .join(qMemberCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qMemberCategoryEntity.category))
+                .where(qMemberCategoryEntity.member.memberId.eq(memberId))
+                .groupBy(qPerformanceEntity.performanceId,
+                        qCategoryEntity.categoryId)
+                .limit(10)
                 .fetch();
 
         // PerformanceWithCategory 객체로 매핑
@@ -224,7 +218,6 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                     tuple.get(qPerformanceEntity.price),
                     tuple.get(qPerformanceEntity.performanceStatus),
                     tuple.get(qPerformanceEntity.remainingTickets)
-
             ));
 
             // 카테고리 리스트에 카테고리 추가
@@ -243,6 +236,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
         return sortedPerformances;
     }
+
 
 
     /**
