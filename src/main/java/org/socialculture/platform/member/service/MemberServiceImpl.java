@@ -196,7 +196,6 @@ public class MemberServiceImpl implements MemberService {
         memberCategoryRepository.deleteByMemberMemberId(memberEntity.getMemberId());
         memberAddCategory(memberCategoryRequest, email);
 
-        addCategories(memberCategoryRequest, memberEntity);
     }
 
 
@@ -291,4 +290,20 @@ public class MemberServiceImpl implements MemberService {
         member.markFirstLoginComplete();
         memberRepository.save(member);
     }
+
+    /**
+     * 사용자의 이메일을 가지고 memberId를 조회
+     *
+     * @param email
+     * @return
+     */
+    @Override
+    public Long getMemberIdByEmail(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        return member.getMemberId();
+    }
+
+
 }

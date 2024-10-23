@@ -27,6 +27,7 @@ public class PerformanceListResponse {
         private String imageUrl;
         private int price;
         private String status;
+        private int remainingTicket;
         private List<CategoryDto> categories;
 
         public static PerformanceList from(PerformanceWithCategory performanceWithCategory) {
@@ -43,6 +44,7 @@ public class PerformanceListResponse {
                     .imageUrl(performanceWithCategory.getImageUrl())
                     .price(performanceWithCategory.getPrice())
                     .status(String.valueOf(performanceWithCategory.getStatus()))
+                    .remainingTicket(performanceWithCategory.getRemainingTicket())
                     .categories(categoryDtos)
                     .build();
         }

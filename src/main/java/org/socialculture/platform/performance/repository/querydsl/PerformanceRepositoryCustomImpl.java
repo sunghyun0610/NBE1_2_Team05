@@ -1,10 +1,11 @@
 package org.socialculture.platform.performance.repository.querydsl;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.socialculture.platform.member.entity.QMemberCategoryEntity;
 import org.socialculture.platform.member.entity.QMemberEntity;
 import org.socialculture.platform.performance.dto.domain.CategoryContent;
 import org.socialculture.platform.performance.dto.domain.PerformanceDetail;
@@ -16,10 +17,8 @@ import org.socialculture.platform.performance.entity.QPerformanceEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.support.PageableExecutionUtils;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static org.socialculture.platform.performance.entity.PerformanceStatus.CONFIRMED;
@@ -36,6 +35,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
     QPerformanceCategoryEntity qPerformanceCategoryEntity = QPerformanceCategoryEntity.performanceCategoryEntity;
     QMemberEntity qMember = QMemberEntity.memberEntity;
     QCategoryEntity qCategoryEntity = QCategoryEntity.categoryEntity;
+    QMemberCategoryEntity qMemberCategoryEntity = QMemberCategoryEntity.memberCategoryEntity;
 
     public static BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f) {
         try {
@@ -113,7 +113,8 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.address.as("address"),
                         qPerformanceEntity.imageUrl.as("imageUrl"),
                         qPerformanceEntity.price.as("price"),
-                        qPerformanceEntity.performanceStatus.as("status")
+                        qPerformanceEntity.performanceStatus.as("status"),
+                        qPerformanceEntity.remainingTickets.as("remainingTicket")
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
@@ -161,6 +162,82 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .where(performanceCategoryEq(performanceId))
                 .fetch();
     }
+
+
+    /**
+     * 사용자가 선호하는 카테고리를 기반으로 추천 공연 조회
+     * 매칭되는 카테고리 개수 순으로 최대 10개의 공연 내림차순 정렬
+     *
+     * @param memberId
+     * @return
+     */
+    @Override
+    public List<PerformanceWithCategory> getRecommendedPerformancesByMember(Long memberId) {
+
+        // 메인 쿼리 - 사용자 선호 카테고리와 매칭된 공연 조회
+        List<Tuple> results = jpaQueryFactory
+                .select(qMember.name,
+                        qPerformanceEntity.performanceId,
+                        qPerformanceEntity.title,
+                        qPerformanceEntity.dateStartTime,
+                        qPerformanceEntity.dateEndTime,
+                        qPerformanceEntity.address,
+                        qPerformanceEntity.imageUrl,
+                        qPerformanceEntity.price,
+                        qPerformanceEntity.performanceStatus,
+                        qPerformanceEntity.remainingTickets,
+                        qCategoryEntity.categoryId,
+                        qCategoryEntity.nameKr,
+                        qCategoryEntity.nameEn)
+                .from(qPerformanceCategoryEntity)
+                .join(qPerformanceEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .join(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .join(qCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
+                .join(qMemberCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qMemberCategoryEntity.category))
+                .where(qMemberCategoryEntity.member.memberId.eq(memberId))
+                .groupBy(qPerformanceEntity.performanceId,
+                        qCategoryEntity.categoryId)
+                .limit(10)
+                .fetch();
+
+        // PerformanceWithCategory 객체로 매핑
+        Map<Long, PerformanceWithCategory> performanceMap = new HashMap<>();
+
+        results.forEach(tuple -> {
+            Long performanceId = tuple.get(qPerformanceEntity.performanceId);
+
+            // performanceId 기준으로 이미 존재하는 PerformanceWithCategory 객체가 있는지 확인
+            PerformanceWithCategory performance = performanceMap.computeIfAbsent(performanceId, k -> new PerformanceWithCategory(
+                    tuple.get(qMember.name),
+                    performanceId,
+                    tuple.get(qPerformanceEntity.title),
+                    tuple.get(qPerformanceEntity.dateStartTime),
+                    tuple.get(qPerformanceEntity.dateEndTime),
+                    tuple.get(qPerformanceEntity.address),
+                    tuple.get(qPerformanceEntity.imageUrl),
+                    tuple.get(qPerformanceEntity.price),
+                    tuple.get(qPerformanceEntity.performanceStatus),
+                    tuple.get(qPerformanceEntity.remainingTickets)
+            ));
+
+            // 카테고리 리스트에 카테고리 추가
+            List<CategoryContent> categories = performance.getCategories() != null ? performance.getCategories() : new ArrayList<>();
+            categories.add(new CategoryContent(
+                    tuple.get(qCategoryEntity.categoryId),
+                    tuple.get(qCategoryEntity.nameKr),
+                    tuple.get(qCategoryEntity.nameEn)
+            ));
+            performance.updateCategories(categories);
+        });
+
+        // 카테고리 개수로 내림차순 정렬
+        List<PerformanceWithCategory> sortedPerformances = new ArrayList<>(performanceMap.values());
+        sortedPerformances.sort((p1, p2) -> Integer.compare(p2.getCategories().size(), p1.getCategories().size()));
+
+        return sortedPerformances;
+    }
+
+
 
     /**
      * 공연 상세 조회
@@ -212,7 +289,8 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.address.as("address"),
                         qPerformanceEntity.imageUrl.as("imageUrl"),
                         qPerformanceEntity.price.as("price"),
-                        qPerformanceEntity.performanceStatus.as("status")
+                        qPerformanceEntity.performanceStatus.as("status"),
+                        qPerformanceEntity.remainingTickets.as("remainingTicket")
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
