@@ -111,7 +111,7 @@ tasks.withType(JavaCompile) {
 
 tasks.named('test') {
     outputs.dir snippetsDir // snippetsDir변수 test의 output.dir로 설정.
-    // useJUnitPlatform()
+    useJUnitPlatform()
     finalizedBy asciidoctor // 이 태스크 끝나고 asciidoctor 태스크 시작
 }
 
