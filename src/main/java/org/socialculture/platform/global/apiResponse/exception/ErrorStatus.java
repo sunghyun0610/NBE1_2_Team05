@@ -33,7 +33,7 @@ public enum ErrorStatus implements BaseErrorCode{
     NAME_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "닉네임 형식이 올바르지 않습니다."),
     PASSWORD_INVALID(HttpStatus.BAD_REQUEST, "MEMBER400", "비밀번호 형식이 맞지 않습니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "MEMBER404", "해당 유저가 존재하지 않습니다."),
-
+    VERIFICATION_EMAIL_DUPLICATE(HttpStatus.CONFLICT, "EMAIL409", "해당 이메일은 이미 인증에 사용되었습니다."),
 
     // 소셜 유저 관련 에러
     SOCIAL_EMAIL_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL409", "이메일이 이미 다른 소셜 계정에서 사용중입니다."),
@@ -41,6 +41,8 @@ public enum ErrorStatus implements BaseErrorCode{
     SOCIAL_NAME_DUPLICATE(HttpStatus.CONFLICT, "SOCIAL409", "닉네임이 이미 사용 중입니다."),
     SOCIAL_NAME_REQUIRED(HttpStatus.FOUND, "SOCIAL302", "회원가입을 위해 닉네임이 필요합니다."),
     SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "사용자의 기본정보가 적절하지 않습니다."),
+
+
 
 
     // 멤버 카테고리 관련
@@ -51,6 +53,10 @@ public enum ErrorStatus implements BaseErrorCode{
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다."),
     PERFORMANCE_NOT_ACCESSIBLE(HttpStatus.FORBIDDEN, "PERFORMANCE403", "권한이 없습니다."),
+
+    // 공연 이미지 등록 관련
+    INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, "IMAGE400", "지원하지 않는 이미지 파일 형식입니다"),
+    IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "IMAGE404", "이미지를 찾을 수 없습니다."),
 
     //댓글
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT404","댓글을 찾을 수 없습니다."),

@@ -10,6 +10,7 @@ public class TokenResponseDTO {
     private String refreshToken;
     private String message;
     private String userName;
+    private boolean isFirstLogin;
 
     public TokenResponseDTO(String message) {
         this.message = message;

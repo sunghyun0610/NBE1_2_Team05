@@ -30,7 +30,7 @@ import java.util.Optional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final MemberValidatorService memberValidatorService;
@@ -42,6 +42,7 @@ public class MemberServiceImpl implements MemberService{
     /**
      * 일반 사용자 회원가입
      * 패스워드 암호화 하여 저장
+     *
      * @param localRegisterRequest
      */
     @Override
@@ -69,6 +70,7 @@ public class MemberServiceImpl implements MemberService{
      * 소셜 사용자가 가입되어있는지 확인
      * 가입되어 있지 않으면 회원가입 진행에 필요한 정보들
      * session에 저장
+     *
      * @param socialMemberCheckDto
      * @param session
      * @return true이면 가입되어있는 사용자, false면 가입되어있지 않는 사용자
@@ -79,8 +81,13 @@ public class MemberServiceImpl implements MemberService{
         Optional<MemberEntity> findMember = memberRepository.findByEmail(socialMemberCheckDto.email());
 
         return findMember.map(member -> {
+            if (member.getProviderId() == null) {
+                log.info("이메일이 이미 존재하지만 소셜 회원은 아닐때");
+                throw new GeneralException(ErrorStatus.EMAIL_DUPLICATE);
+            }
             boolean matchesProvider = member.getProviderId().equals(socialMemberCheckDto.providerId());
             if (!matchesProvider) {
+                log.info("이메일이 이미 존재하고 소셜 회원일때");
                 throw new GeneralException(ErrorStatus.SOCIAL_EMAIL_DUPLICATE);
             }
             return true;
@@ -90,12 +97,13 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 소셜 사용자의 닉네임 체크 후 회원가입
+     *
      * @param memberInfoDto
      * @param session
      */
     @Transactional
     @Override
-    public void  registerSocialMember(SocialRegisterRequest request, HttpSession session) {
+    public void registerSocialMember(SocialRegisterRequest request, HttpSession session) {
 
         validateEmailAndCheckDuplicate(request.email());
         MemberEntity memberEntity = request.toEntity();
@@ -107,6 +115,7 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 이메일 중복 확인(이메일 형식 검증도 같이확인)
+     *
      * @param email
      */
     @Override
@@ -121,6 +130,7 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 닉네임 중복 확인 (닉네임 형식 검증도 같이확인)
+     *
      * @param name
      */
     @Override
@@ -135,6 +145,7 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 닉네임 변경
+     *
      * @param email
      * @param name
      */
@@ -154,6 +165,7 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 사용자 선호 카테고리 추가
+     *
      * @param memberCategoryRequest
      * @param email
      */
@@ -169,6 +181,7 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 선호 카테고리 수정
+     *
      * @param memberCategoryRequest
      * @param email
      */
@@ -191,8 +204,8 @@ public class MemberServiceImpl implements MemberService{
     private void addCategories(MemberCategoryRequest memberCategoryRequest, MemberEntity memberEntity) {
         List<Long> categoryIds = memberCategoryRequest.categories();
         for (Long categoryId : categoryIds) {
-            CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId).orElseThrow(() ->
-                    new GeneralException(ErrorStatus.MEMBER_CATEGORY_NOT_FOUND));
+            CategoryEntity categoryEntity = categoryRepository.findByCategoryId(categoryId)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_CATEGORY_NOT_FOUND));
 
             MemberCategoryEntity memberCategoryEntity = MemberCategoryEntity.builder()
                     .category(categoryEntity)
@@ -206,6 +219,7 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 카테고리 전체 목록 조회
+     *
      * @return categoryId, categoryName
      */
     @Override
@@ -218,13 +232,14 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 사용자 선호 카테고리 조회
+     *
      * @param email
      * @return 선호하는 카테고리 목록
      */
     @Override
     public List<CategoryResponse> getFavoriteCategories(String email) {
-        MemberEntity memberEntity = memberRepository.findByEmail(email).orElseThrow(() ->
-                new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
         List<CategoryEntity> favoriteCategories = memberCategoryRepository
                 .findCategoriesByMemberId(memberEntity.getMemberId());
@@ -235,13 +250,45 @@ public class MemberServiceImpl implements MemberService{
 
     /**
      * 사용자 정보 조회
+     *
      * @param email
      * @return email, name, role
      */
     @Override
     public MemberInfoResponse getMemberInfoByEmail(String email) {
-        MemberEntity memberEntity = memberRepository.findByEmail(email).orElseThrow(() ->
-                new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+        MemberEntity memberEntity = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
         return MemberInfoResponse.fromEntity(memberEntity);
+    }
+
+
+    /**
+     * 공연관리자로 권한 변경
+     *
+     * @param email
+     */
+    @Override
+    @Transactional
+    public void changeRoleToPadmin(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.changeRole(MemberRole.ROLE_PADMIN);
+        memberRepository.save(member);
+    }
+
+
+    /**
+     * 사용자 첫 로그인 후 첫 로그인 여부 변경
+     *
+     * @param email
+     */
+    @Override
+    public void changeFirstLogin(String email) {
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        member.markFirstLoginComplete();
+        memberRepository.save(member);
     }
 }

@@ -3,6 +3,7 @@ package org.socialculture.platform.performance.dto.request;
 import lombok.Builder;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
