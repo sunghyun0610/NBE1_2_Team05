@@ -3,7 +3,7 @@ package org.socialculture.platform.chat.repository.querydsl;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.chat.entity.ChatMessageEntity;
-import org.socialculture.platform.chat.entity.QChatMessage;
+import org.socialculture.platform.chat.entity.QChatMessageEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,10 +16,10 @@ public class ChatMessageRepositoryCustomImpl implements ChatMessageRepositoryCus
 
     @Override
     public List<ChatMessageEntity> getMessagesByChatRoomId(Long chatRoomId) {
-        QChatMessage chatMessageEntity = QChatMessage.chatMessage;
+        QChatMessageEntity chatMessageEntity = QChatMessageEntity.chatMessageEntity;
 
         return queryFactory.selectFrom(chatMessageEntity)
-                .where(chatMessageEntity.chatRoom.chatRoomId.eq(chatRoomId))
+                .where(chatMessageEntity.chatRoomEntity.chatRoomId.eq(chatRoomId))
                 .fetch();
     }
 }

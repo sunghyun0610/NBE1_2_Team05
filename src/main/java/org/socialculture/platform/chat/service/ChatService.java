@@ -10,7 +10,7 @@ import java.util.List;
 public interface ChatService {
 
     // 새로운 채팅방 생성
-    ChatRoomResponseDto createChatRoom(String email, ChatRoomRequestDto chatRoomRequestDto);
+    ChatRoomResponseDto createChatRoom(String email, Long performanceId);
 
     // 채팅 메시지 전송
     ChatMessageResponseDto sendMessage(String email, Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto);
