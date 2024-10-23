@@ -8,14 +8,17 @@ import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "chat_room")
 public class ChatRoomEntity {
 
     @Id
@@ -35,8 +38,8 @@ public class ChatRoomEntity {
     @JoinColumn(name = "manager_id", nullable = false)
     private MemberEntity manager;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;  // 채팅방 생성 시간
 
 }

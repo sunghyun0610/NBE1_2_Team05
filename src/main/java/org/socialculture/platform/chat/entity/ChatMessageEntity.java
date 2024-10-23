@@ -7,14 +7,17 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "chat_message")
 public class ChatMessageEntity {
 
     @Id

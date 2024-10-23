@@ -24,11 +24,11 @@ public class ChatController {
     private final ChatService chatService;
 
     // 새로운 채팅방 생성
-    @PostMapping("/room")
+    @PostMapping("/room/{performanceId}")
     public ResponseEntity<ApiResponse<ChatRoomResponseDto>> createChatRoom(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestBody ChatRoomRequestDto chatRoomRequestDto) {
-        return ApiResponse.onSuccess(chatService.createChatRoom(userDetails.getUsername(), chatRoomRequestDto));
+            @PathVariable Long performanceId) {
+        return ApiResponse.onSuccess(chatService.createChatRoom(userDetails.getUsername(), performanceId));
     }
 
     // 채팅 메시지 전송

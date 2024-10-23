@@ -29,8 +29,8 @@ public class ChatServiceImpl implements ChatService {
     private final PerformanceRepository performanceRepository;
 
     @Override
-    public ChatRoomResponseDto createChatRoom(String email, ChatRoomRequestDto chatRoomRequestDto) {
-        PerformanceEntity performanceEntity = performanceRepository.findById(chatRoomRequestDto.performanceId())
+    public ChatRoomResponseDto createChatRoom(String email, Long performanceId) {
+        PerformanceEntity performanceEntity = performanceRepository.findById(performanceId)
                 .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
         MemberEntity memberEntity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -38,12 +38,10 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("공연 관리자를 찾을 수 없습니다."));
 
         // 채팅방 중복 확인
-        Optional<ChatRoomEntity> existingChatRoom = chatRoomRepository
-                .findByPerformanceIdAndMemberIdAndManagerId(
-                        chatRoomRequestDto.performanceId(),
-                        memberEntity.getMemberId(),
-                        managerEntity.getMemberId()
-                );
+        Optional<ChatRoomEntity> existingChatRoom = chatRoomRepository.getChatRoomByPerformanceIdAndMemberId(
+                performanceEntity.getPerformanceId(),
+                memberEntity.getMemberId()
+        );
 
         if (existingChatRoom.isPresent()) {
             throw new IllegalArgumentException("이미 해당 조건에 해당하는 채팅방이 존재합니다.");
