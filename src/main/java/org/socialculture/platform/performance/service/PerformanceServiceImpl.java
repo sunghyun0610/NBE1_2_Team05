@@ -1,6 +1,8 @@
 package org.socialculture.platform.performance.service;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.coupon.entity.CouponEntity;
+import org.socialculture.platform.coupon.repository.CouponRepository;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.MemberEntity;
@@ -40,6 +42,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
+    private final CouponRepository couponRepository;
 
 
     private final ImageUploadService imageUploadService;
@@ -54,6 +57,11 @@ public class PerformanceServiceImpl implements PerformanceService {
         String imageUrl = imageUploadService.uploadFileToFTP(imageFile);
         performanceEntity.updateImageUrl(imageUrl);
         performanceEntity = performanceRepository.save(performanceEntity);
+
+        //공연별 선착순 쿠폰 3장 생성
+        if (performanceEntity.getMaxAudience() > 3) {
+            createFirstComeCoupon(performanceEntity);
+        }
 
         List<CategoryEntity> categoryEntities = performanceCategorySave(performanceEntity, performanceRegisterRequest.categories());
         List<CategoryDto> categoryDtos = categoryEntities.stream()
@@ -173,5 +181,18 @@ public class PerformanceServiceImpl implements PerformanceService {
                 .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
 
         return memberEntity.getEmail().equals(performanceEntity.getMember().getEmail());
+    }
+
+    private void createFirstComeCoupon(PerformanceEntity performanceEntity) {
+        for (int i = 1; i <= 3; i++) {
+            CouponEntity couponEntity = CouponEntity.builder()
+                    .name(performanceEntity.getPerformanceId() + " 선착순 10% 할인 쿠폰 " + i)
+                    .percent(10)
+                    .performance(performanceEntity)
+                    .isUsed(false)
+                    .build();
+
+            couponRepository.save(couponEntity);
+        }
     }
 }
