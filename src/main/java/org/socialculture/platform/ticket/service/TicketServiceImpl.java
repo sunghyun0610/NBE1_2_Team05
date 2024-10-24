@@ -92,6 +92,11 @@ public class TicketServiceImpl implements TicketService {
         // 공연 검색
         PerformanceEntity performanceEntity = findPerformanceById(ticketRequest.performanceId());
 
+        // 남은 티켓 수가 충분한지 확인
+        if (performanceEntity.getRemainingTickets() < ticketRequest.quantity()) {
+            throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS); // 남은 티켓 수가 부족할 경우 예외 발생
+        }
+
         // 가격 계산 : 가격, 예매인원, 쿠폰 아이디 전달 -> 쿠폰이 있다면 할인율 까지 계산
         int finalPrice = calculateFinalPrice(performanceEntity.getPrice(), ticketRequest.quantity(), ticketRequest.couponId());
 
@@ -102,15 +107,8 @@ public class TicketServiceImpl implements TicketService {
         int remainTicket = performanceEntity.getRemainingTickets() - ticketEntity.getQuantity();
         log.info("남은 티켓 수량 " + remainTicket);
 
-
-        PerformanceUpdateRequest performanceUpdateRequest = PerformanceUpdateRequest.builder()
-                .remainTickets(remainTicket)
-                .build();
-        log.info("dto에서 티켓 수"+ remainTicket);
-        //수정된 티켓개수는 record에 저장한 상태 ->엔티티에 반영해야함
-
-        performanceEntity.updatePerformance(PerformanceUpdateRequest.toEntity(performanceUpdateRequest));
-        performanceRepository.save(performanceEntity);
+        performanceEntity.updateTicket(remainTicket);
+//        performanceRepository.save(performanceEntity);
         log.info("티켓 반영" + performanceEntity.getRemainingTickets());
 
         return TicketResponseDto.fromEntity(ticketEntity);
