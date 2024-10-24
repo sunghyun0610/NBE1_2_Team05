@@ -237,6 +237,32 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         return sortedPerformances;
     }
 
+    // 실시간 인기 공연 조회
+    @Override
+    public List<PerformanceWithCategory> getPerformancesByIds(List<Long> performanceIds) {
+
+        List<PerformanceWithCategory> performances = jpaQueryFactory.selectDistinct(Projections.constructor(PerformanceWithCategory.class,
+                        qMember.name.as("memberName"),
+                        qPerformanceEntity.performanceId.as("performanceId"),
+                        qPerformanceEntity.title.as("title"),
+                        qPerformanceEntity.dateStartTime.as("dateStartTime"),
+                        qPerformanceEntity.dateEndTime.as("dateEndTime"),
+                        qPerformanceEntity.address.as("address"),
+                        qPerformanceEntity.imageUrl.as("imageUrl"),
+                        qPerformanceEntity.price.as("price"),
+                        qPerformanceEntity.price.as("status"),
+                        qPerformanceEntity.remainingTickets.as("remainingTicket")
+                ))
+                .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .where(qPerformanceEntity.performanceId.in(performanceIds))
+                .fetch();
+
+        return addCategoriesToPerformances(performances);
+    }
+
+
 
 
     /**

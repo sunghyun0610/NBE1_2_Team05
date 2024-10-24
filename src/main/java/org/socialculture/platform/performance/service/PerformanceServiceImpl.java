@@ -71,6 +71,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         return PerformanceListResponse.from(performanceList.getTotalElements(), performanceList.getContent());
     }
 
+    // 조회수 증가 추가
     @Override
     public PerformanceDetailResponse getPerformanceDetail(String email, Long performanceId) {
         if (isAccessPerformance(email, performanceId)) {
@@ -157,7 +158,10 @@ public class PerformanceServiceImpl implements PerformanceService {
                 recommendedPerformancesByMember);
     }
 
-
+    // 실시간 조회가 많은 최대10개 공연 조회
+    public PerformanceListResponse getTopPerformanceIds(List<Long> performanceIds) {
+        return performanceRepository.getPerformancesByIds(performanceIds);
+    }
 
 
 

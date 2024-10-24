@@ -11,6 +11,8 @@ import org.socialculture.platform.performance.dto.response.PerformanceListRespon
 import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.socialculture.platform.performance.service.ImageUploadService;
+import org.socialculture.platform.performance.service.PerformanceViewCountService;
+import org.socialculture.platform.performance.service.PerformanceViewCountServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,7 @@ public class PerformanceController {
 
     private final PerformanceService performanceService;
     private final ImageUploadService imageService;
+    private final PerformanceViewCountService performanceViewCountService;
 
     /**
      * @author Icecoff22
@@ -84,6 +87,7 @@ public class PerformanceController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("performanceId") Long performanceId
     ) {
+        performanceViewCountService.incrementViewCount(performanceId);
         return ApiResponse.onSuccess(performanceService.getPerformanceDetail(userDetails.getUsername(), performanceId));
     }
 
@@ -138,6 +142,12 @@ public class PerformanceController {
         return ApiResponse.onSuccess(performanceListByUserCategories);
     }
 
+//    // 조회수가 많은 공연을 상위 10개씩 반환함.
+//    @GetMapping("/rank")
+//    public ResponseEntity<ApiResponse<PerformanceListResponse>> getTopRankPerformances() {
+//        return performanceViewCountService.getTopPerformanceIds();
+//    }
+
 
     @GetMapping("/admin/my")
     public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListAdmin(
@@ -145,6 +155,7 @@ public class PerformanceController {
             @RequestParam(name = "size") Integer size,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
+
         return ApiResponse.onSuccess(performanceService.getMyPerformanceList(userDetails.getUsername(), page, size));
     }
 
