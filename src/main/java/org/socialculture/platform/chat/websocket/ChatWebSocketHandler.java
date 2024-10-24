@@ -34,21 +34,34 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String payload = message.getPayload();
+//        String payload = message.getPayload();
+//        System.out.println("메시지 수신: " + payload);
+//
+//        ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);
+//
+//        // 채팅방에 있는 다른 사용자의 세션으로 메시지 전송
+//        for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
+//            String sessionKey = entry.getKey();
+//            WebSocketSession receiverSession = entry.getValue();
+//
+//            // 동일한 채팅방에 속한 사용자의 세션에만 메시지를 전송
+//            if (sessionKey.contains(String.valueOf(chatMessageDto.getChatRoomId()))) {
+//                if (receiverSession.isOpen()) {
+//                    receiverSession.sendMessage(new TextMessage(chatMessageDto.getContent()));
+//                }
+//            }
+//        }
+
+        String payload = message.getPayload(); // 수신된 메시지 (JSON 형식 등)
         System.out.println("메시지 수신: " + payload);
 
-        ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);
-
-        // 채팅방에 있는 다른 사용자의 세션으로 메시지 전송
+        // 채팅방에 있는 모든 사용자에게 수신한 데이터를 그대로 전송
         for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
-            String sessionKey = entry.getKey();
             WebSocketSession receiverSession = entry.getValue();
 
-            // 동일한 채팅방에 속한 사용자의 세션에만 메시지를 전송
-            if (sessionKey.contains(String.valueOf(chatMessageDto.getChatRoomId()))) {
-                if (receiverSession.isOpen()) {
-                    receiverSession.sendMessage(new TextMessage(chatMessageDto.getContent()));
-                }
+            // 동일한 채팅방에 속한 사용자에게만 전송
+            if (receiverSession.isOpen()) {
+                receiverSession.sendMessage(new TextMessage(payload)); // 수신된 데이터를 그대로 전송
             }
         }
     }
