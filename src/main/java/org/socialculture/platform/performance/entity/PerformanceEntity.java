@@ -84,6 +84,9 @@ public class PerformanceEntity extends BaseEntity {
         if (performanceEntity.getImageUrl() != null) {
             this.imageUrl = performanceEntity.getImageUrl();
         }
+        if(performanceEntity.getRemainingTickets() >0){
+            this.remainingTickets=performanceEntity.remainingTickets;
+        }
         if (performanceEntity.getPrice() != null) {
             this.price = performanceEntity.getPrice();
         }

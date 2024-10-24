@@ -2,12 +2,15 @@ package org.socialculture.platform.ticket.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.socialculture.platform.coupon.entity.CouponEntity;
 import org.socialculture.platform.coupon.repository.CouponRepository;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
+import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.socialculture.platform.ticket.dto.request.TicketRequestDto;
@@ -33,10 +36,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class TicketServiceImpl implements TicketService {
 
+    private static final Logger log = LoggerFactory.getLogger(TicketServiceImpl.class);
     private final MemberRepository memberRepository;
     private final PerformanceRepository performanceRepository;
     private final CouponRepository couponRepository;
-
     private final TicketRepository ticketRepository;
 
     // 내부에서 사용 - 회원 정보 Entity 가져오기(by email)
@@ -94,6 +97,21 @@ public class TicketServiceImpl implements TicketService {
 
         // 티켓 생성 및 저장
         TicketEntity ticketEntity = createAndSaveTicket(memberEntity, performanceEntity, ticketRequest.quantity(), finalPrice);
+
+        // 티켓 발급 완료됐으면 performance table의 remaining_tickets감소시켜줘야함 .
+        int remainTicket = performanceEntity.getRemainingTickets() - ticketEntity.getQuantity();
+        log.info("남은 티켓 수량 " + remainTicket);
+
+
+        PerformanceUpdateRequest performanceUpdateRequest = PerformanceUpdateRequest.builder()
+                .remainTickets(remainTicket)
+                .build();
+        log.info("dto에서 티켓 수"+ remainTicket);
+        //수정된 티켓개수는 record에 저장한 상태 ->엔티티에 반영해야함
+
+        performanceEntity.updatePerformance(PerformanceUpdateRequest.toEntity(performanceUpdateRequest));
+        performanceRepository.save(performanceEntity);
+        log.info("티켓 반영" + performanceEntity.getRemainingTickets());
 
         return TicketResponseDto.fromEntity(ticketEntity);
     }
