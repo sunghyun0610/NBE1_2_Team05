@@ -109,12 +109,12 @@ public class TicketServiceImpl implements TicketService {
             throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS);
         }
         //비관적 락이 걸린 후에 대기 시간 추가 (시각적으로 확인하기 위함)
-        try {
-            Thread.sleep(10000);  // 5초 동안 대기
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Thread.sleep(10000);  // 5초 동안 대기
+//        } catch (InterruptedException e) {
+//            Thread.currentThread().interrupt();
+//            throw new RuntimeException(e);
+//        }
 
         int finalPrice = calculateFinalPrice(performanceEntity.getPrice(), ticketRequest.quantity(), ticketRequest.couponId());
 
