@@ -91,22 +91,29 @@ public class TicketServiceImpl implements TicketService {
 
         MemberEntity memberEntity = findMemberByEmail(email);
 
-        log.info("공연에 대한 락을 획득 시도 중, 공연 ID: " + ticketRequest.performanceId());
+        log.info("공연에 대한 락을 획득 시도 중, 공연 ID: " + email);
 
         PerformanceEntity performanceEntity;
         try {
             performanceEntity = performanceRepository.findByIdWithLock(ticketRequest.performanceId())
                     .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
         } catch (PessimisticLockException e) {
-            log.error("공연 락 획득 실패, 공연 ID: " + ticketRequest.performanceId());
+            log.error("공연 락 획득 실패, 공연 ID: " + email);
             throw e;
         }
 
-        log.info("공연 락 획득 완료, 공연 ID: " + ticketRequest.performanceId());
+       log.info("공연 락 획득 완료, 공연 ID: " + email);
 
         if (performanceEntity.getRemainingTickets() < ticketRequest.quantity()) {
             log.warn("남은 티켓 수 부족, 공연 ID: " + ticketRequest.performanceId());
             throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS);
+        }
+        //비관적 락이 걸린 후에 대기 시간 추가 (시각적으로 확인하기 위함)
+        try {
+            Thread.sleep(10000);  // 5초 동안 대기
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException(e);
         }
 
         int finalPrice = calculateFinalPrice(performanceEntity.getPrice(), ticketRequest.quantity(), ticketRequest.couponId());
