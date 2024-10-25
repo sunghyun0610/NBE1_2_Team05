@@ -12,4 +12,6 @@ import java.util.List;
 public interface CouponService {
 
     List<CouponResponseDto> getAllCouponsByMemberEmail(String email);
+
+    CouponResponseDto getFirstComeCoupon(String username, Long performanceId);
 }
