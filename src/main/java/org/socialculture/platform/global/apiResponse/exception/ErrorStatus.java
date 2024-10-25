@@ -53,6 +53,7 @@ public enum ErrorStatus implements BaseErrorCode{
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다."),
     PERFORMANCE_NOT_ACCESSIBLE(HttpStatus.FORBIDDEN, "PERFORMANCE403", "권한이 없습니다."),
+    POPULAR_PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404","인기 공연을 찾을 수 없습니다"),
 
     // 공연 이미지 등록 관련
     INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, "IMAGE400", "지원하지 않는 이미지 파일 형식입니다"),

@@ -142,11 +142,17 @@ public class PerformanceController {
         return ApiResponse.onSuccess(performanceListByUserCategories);
     }
 
-//    // 조회수가 많은 공연을 상위 10개씩 반환함.
-//    @GetMapping("/rank")
-//    public ResponseEntity<ApiResponse<PerformanceListResponse>> getTopRankPerformances() {
-//        return performanceViewCountService.getTopPerformanceIds();
-//    }
+
+
+    /**
+     * 조회수가 많은 공연을 최대 10개 조회
+     * @return
+     */
+    @GetMapping("/rank")
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPopularPerformances() {
+        PerformanceListResponse popularPerformances = performanceViewCountService.getPopularPerformances();
+        return ApiResponse.onSuccess(popularPerformances);
+    }
 
 
     @GetMapping("/admin/my")
