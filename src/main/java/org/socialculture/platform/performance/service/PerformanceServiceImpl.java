@@ -42,7 +42,6 @@ public class PerformanceServiceImpl implements PerformanceService {
     private final PerformanceCategoryRepository performanceCategoryRepository;
     private final CategoryRepository categoryRepository;
     private final MemberRepository memberRepository;
-    private final MemberService memberService;
 
 
     private final ImageUploadService imageUploadService;
@@ -153,9 +152,12 @@ public class PerformanceServiceImpl implements PerformanceService {
     // 사용자 선호 카테고리 기반 추천 공연 조회
     @Override
     public PerformanceListResponse getPerformanceListByUserCategories(String email) {
-        Long memberId = memberService.getMemberIdByEmail(email);
+
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(MEMBER_NOT_FOUND));
+
         List<PerformanceWithCategory> recommendedPerformancesByMember = performanceRepository
-                .getRecommendedPerformancesByMember(memberId);
+                .getRecommendedPerformancesByMember(member.getMemberId());
 
         return PerformanceListResponse.from(recommendedPerformancesByMember.size(),
                 recommendedPerformancesByMember);
