@@ -1,5 +1,6 @@
 package org.socialculture.platform.ticket.service;
 
+import jakarta.persistence.PessimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -86,33 +87,44 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public TicketResponseDto registerTicket(String email, TicketRequestDto ticketRequest) {
-        // 회원 검색
+        log.info("티켓 등록 트랜잭션 시작, 사용자 이메일: " + email);
+
         MemberEntity memberEntity = findMemberByEmail(email);
 
-        // 공연 검색
-        PerformanceEntity performanceEntity = findPerformanceById(ticketRequest.performanceId());
+        log.info("공연에 대한 락을 획득 시도 중, 공연 ID: " + ticketRequest.performanceId());
 
-        // 남은 티켓 수가 충분한지 확인
-        if (performanceEntity.getRemainingTickets() < ticketRequest.quantity()) {
-            throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS); // 남은 티켓 수가 부족할 경우 예외 발생
+        PerformanceEntity performanceEntity;
+        try {
+            performanceEntity = performanceRepository.findByIdWithLock(ticketRequest.performanceId())
+                    .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+        } catch (PessimisticLockException e) {
+            log.error("공연 락 획득 실패, 공연 ID: " + ticketRequest.performanceId());
+            throw e;
         }
 
-        // 가격 계산 : 가격, 예매인원, 쿠폰 아이디 전달 -> 쿠폰이 있다면 할인율 까지 계산
+        log.info("공연 락 획득 완료, 공연 ID: " + ticketRequest.performanceId());
+
+        if (performanceEntity.getRemainingTickets() < ticketRequest.quantity()) {
+            log.warn("남은 티켓 수 부족, 공연 ID: " + ticketRequest.performanceId());
+            throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS);
+        }
+
         int finalPrice = calculateFinalPrice(performanceEntity.getPrice(), ticketRequest.quantity(), ticketRequest.couponId());
 
-        // 티켓 생성 및 저장
         TicketEntity ticketEntity = createAndSaveTicket(memberEntity, performanceEntity, ticketRequest.quantity(), finalPrice);
 
-        // 티켓 발급 완료됐으면 performance table의 remaining_tickets감소시켜줘야함 .
         int remainTicket = performanceEntity.getRemainingTickets() - ticketEntity.getQuantity();
-        log.info("남은 티켓 수량 " + remainTicket);
+        log.info("티켓 등록 후 남은 티켓 수량: " + remainTicket);
 
         performanceEntity.updateTicket(remainTicket);
-//        performanceRepository.save(performanceEntity);
-        log.info("티켓 반영" + performanceEntity.getRemainingTickets());
+
+        log.info("공연 테이블의 남은 티켓 수 업데이트 완료: " + performanceEntity.getRemainingTickets());
+
+        log.info("트랜잭션 완료, 사용자 이메일: " + email);
 
         return TicketResponseDto.fromEntity(ticketEntity);
     }
+
 
     /**
      * 티켓 취소
