@@ -186,7 +186,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     private void createFirstComeCoupon(PerformanceEntity performanceEntity) {
         for (int i = 1; i <= 3; i++) {
             CouponEntity couponEntity = CouponEntity.builder()
-                    .name(performanceEntity.getPerformanceId() + " 선착순 10% 할인 쿠폰 " + i)
+                    .name("선착순 10% 할인 쿠폰 " + i)
                     .percent(10)
                     .performance(performanceEntity)
                     .isUsed(false)
