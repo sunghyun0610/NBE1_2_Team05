@@ -34,7 +34,7 @@ public class ChatServiceImpl implements ChatService {
                 .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
         MemberEntity memberEntity = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        MemberEntity managerEntity = memberRepository.findById(performanceEntity.getPerformanceId())
+        MemberEntity managerEntity = memberRepository.findById(performanceEntity.getMember().getMemberId())
                 .orElseThrow(() -> new IllegalArgumentException("공연 관리자를 찾을 수 없습니다."));
 
         // 채팅방 중복 확인
