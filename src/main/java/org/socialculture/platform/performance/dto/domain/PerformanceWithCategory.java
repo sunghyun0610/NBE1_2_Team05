@@ -20,11 +20,12 @@ public class PerformanceWithCategory {
     private String imageUrl;
     int price;
     private PerformanceStatus status;
+    private Integer remainingTicket;
     private List<CategoryContent> categories;
 
     private PerformanceWithCategory() {}
 
-    public PerformanceWithCategory(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String address, String imageUrl, int price, PerformanceStatus status) {
+    public PerformanceWithCategory(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String address, String imageUrl, int price, PerformanceStatus status, Integer remainingTicket) {
         this.memberName = memberName;
         this.performanceId = performanceId;
         this.title = title;
@@ -34,6 +35,7 @@ public class PerformanceWithCategory {
         this.imageUrl = imageUrl;
         this.price = price;
         this.status = status;
+        this.remainingTicket =  remainingTicket;
     }
 
     public void updateCategories(List<CategoryContent> categories) {
