@@ -137,6 +137,7 @@ public class TicketServiceImpl implements TicketService {
      * 티켓 취소
      */
     @Override
+    @Transactional
     public void deleteTicket(String email, Long ticketId) {
         TicketEntity ticketEntity = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
@@ -145,6 +146,20 @@ public class TicketServiceImpl implements TicketService {
         if (!ticketEntity.getMember().getEmail().equals(email)) {
             throw new GeneralException(ErrorStatus._FORBIDDEN); // 권한 없음 예외
         }
+
+        int ticketNum=ticketEntity.getQuantity();
+        PerformanceEntity performanceEntity;
+        try {
+          performanceEntity=performanceRepository.findByIdWithLock(ticketEntity.getPerformance().getPerformanceId())
+                  .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+        }catch (PessimisticLockException e){
+            log.error("공연 락 획득 실패, 공연 ID: " + email);
+            throw e;
+        }
+        int updateTicket = performanceEntity.getRemainingTickets() + ticketNum;
+        performanceEntity.updateTicket(updateTicket);
+
+//        performanceRepository.save(performanceEntity); 영속성컨텍스트에서 flush commit날려주므로 save할 필요없을듯
 
         // 티켓 삭제
         ticketRepository.deleteById(ticketId);
