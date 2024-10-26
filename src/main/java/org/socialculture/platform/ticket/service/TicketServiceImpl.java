@@ -3,6 +3,7 @@ package org.socialculture.platform.ticket.service;
 import jakarta.persistence.PessimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.socialculture.platform.coupon.entity.CouponEntity;
@@ -35,9 +36,9 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TicketServiceImpl implements TicketService {
 
-    private static final Logger log = LoggerFactory.getLogger(TicketServiceImpl.class);
     private final MemberRepository memberRepository;
     private final PerformanceRepository performanceRepository;
     private final CouponRepository couponRepository;
@@ -53,6 +54,26 @@ public class TicketServiceImpl implements TicketService {
     private PerformanceEntity findPerformanceById(Long performanceId) {
         return performanceRepository.findById(performanceId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+    }
+
+    //내부에서 사용 - 비관적락 적용시킨 performanceEntity 가져오기(by performanceId)
+    private PerformanceEntity findPerformanceByIdWithLock(Long performanceId) {
+        PerformanceEntity performance;
+        try {
+            performance = performanceRepository.findByIdWithLock(performanceId)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+        } catch (PessimisticLockException e) {
+            throw e;
+        }
+        return performance;
+    }
+
+    //내부에서 사용 - 티켓 수량 체크 validation 메소드
+    private void validateTicketAvailablity(PerformanceEntity performanceEntity, TicketRequestDto ticketRequest) {
+        if (performanceEntity.getRemainingTickets() < ticketRequest.quantity()) {
+            log.warn("남은 티켓 수 부족, 공연 ID: " + ticketRequest.performanceId());
+            throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS);
+        }
     }
 
     /**
@@ -87,47 +108,20 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public TicketResponseDto registerTicket(String email, TicketRequestDto ticketRequest) {
-        log.info("티켓 등록 트랜잭션 시작, 사용자 이메일: " + email);
 
         MemberEntity memberEntity = findMemberByEmail(email);
 
-        log.info("공연에 대한 락을 획득 시도 중, 공연 ID: " + email);
+        PerformanceEntity performanceEntity = findPerformanceByIdWithLock(ticketRequest.performanceId());
 
-        PerformanceEntity performanceEntity;
-        try {
-            performanceEntity = performanceRepository.findByIdWithLock(ticketRequest.performanceId())
-                    .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
-        } catch (PessimisticLockException e) {
-            log.error("공연 락 획득 실패, 공연 ID: " + email);
-            throw e;
-        }
-
-       log.info("공연 락 획득 완료, 공연 ID: " + email);
-
-        if (performanceEntity.getRemainingTickets() < ticketRequest.quantity()) {
-            log.warn("남은 티켓 수 부족, 공연 ID: " + ticketRequest.performanceId());
-            throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS);
-        }
-        //비관적 락이 걸린 후에 대기 시간 추가 (시각적으로 확인하기 위함)
-//        try {
-//            Thread.sleep(10000);  // 5초 동안 대기
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//            throw new RuntimeException(e);
-//        }
+        validateTicketAvailablity(performanceEntity, ticketRequest);
 
         int finalPrice = calculateFinalPrice(performanceEntity.getPrice(), ticketRequest.quantity(), ticketRequest.couponId());
 
         TicketEntity ticketEntity = createAndSaveTicket(memberEntity, performanceEntity, ticketRequest.quantity(), finalPrice);
 
-        int remainTicket = performanceEntity.getRemainingTickets() - ticketEntity.getQuantity();
-        log.info("티켓 등록 후 남은 티켓 수량: " + remainTicket);
+        int remainTicket = calculateRemainTickets(performanceEntity,ticketEntity);
 
         performanceEntity.updateTicket(remainTicket);
-
-        log.info("공연 테이블의 남은 티켓 수 업데이트 완료: " + performanceEntity.getRemainingTickets());
-
-        log.info("트랜잭션 완료, 사용자 이메일: " + email);
 
         return TicketResponseDto.fromEntity(ticketEntity);
     }
@@ -147,15 +141,8 @@ public class TicketServiceImpl implements TicketService {
             throw new GeneralException(ErrorStatus._FORBIDDEN); // 권한 없음 예외
         }
 
-        int ticketNum=ticketEntity.getQuantity();
-        PerformanceEntity performanceEntity;
-        try {
-          performanceEntity=performanceRepository.findByIdWithLock(ticketEntity.getPerformance().getPerformanceId())
-                  .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
-        }catch (PessimisticLockException e){
-            log.error("공연 락 획득 실패, 공연 ID: " + email);
-            throw e;
-        }
+        int ticketNum = ticketEntity.getQuantity();
+        PerformanceEntity performanceEntity = findPerformanceByIdWithLock(ticketEntity.getPerformance().getPerformanceId());
         int updateTicket = performanceEntity.getRemainingTickets() + ticketNum;
         performanceEntity.updateTicket(updateTicket);
 
@@ -205,6 +192,11 @@ public class TicketServiceImpl implements TicketService {
         int finalPrice = totalPrice - discountAmount;
 
         return finalPrice;
+    }
+
+    private int calculateRemainTickets(PerformanceEntity performanceEntity, TicketEntity ticketEntity){
+        int remainTickets = performanceEntity.getRemainingTickets() - ticketEntity.getQuantity();
+        return remainTickets;
     }
 
     private CouponEntity findAndValidateCoupon(Long couponId) {
