@@ -56,6 +56,15 @@ public class TicketServiceImpl implements TicketService {
                 .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
     }
 
+    /**
+     * 티켓을 ID로 조회하여 존재 여부 확인
+     */
+    private TicketEntity findTicketById(Long ticketId) {
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
+    }
+
+
     //내부에서 사용 - 비관적락 적용시킨 performanceEntity 가져오기(by performanceId)
     private PerformanceEntity findPerformanceByIdWithLock(Long performanceId) {
         PerformanceEntity performance;
@@ -133,21 +142,12 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public void deleteTicket(String email, Long ticketId) {
-        TicketEntity ticketEntity = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
-        // 이메일이 티켓 소유자인지 확인
-        if (!ticketEntity.getMember().getEmail().equals(email)) {
-            throw new GeneralException(ErrorStatus._FORBIDDEN); // 권한 없음 예외
-        }
+        TicketEntity ticketEntity = findTicketById(ticketId);
 
-        int ticketNum = ticketEntity.getQuantity();
-        PerformanceEntity performanceEntity = findPerformanceByIdWithLock(ticketEntity.getPerformance().getPerformanceId());
-        int updateTicket = performanceEntity.getRemainingTickets() + ticketNum;
-        performanceEntity.updateTicket(updateTicket);
+        validateTicketOwnership(ticketEntity,email);
 
-//        performanceRepository.save(performanceEntity); 영속성컨텍스트에서 flush commit날려주므로 save할 필요없을듯
-
+        adjustRemainingTickets(ticketEntity);
         // 티켓 삭제
         ticketRepository.deleteById(ticketId);
 
@@ -199,6 +199,16 @@ public class TicketServiceImpl implements TicketService {
         return remainTickets;
     }
 
+    /**
+     * 남은 티켓 수량 조정
+     */
+    private void adjustRemainingTickets(TicketEntity ticketEntity) {
+        int ticketNum = ticketEntity.getQuantity();
+        PerformanceEntity performanceEntity = findPerformanceByIdWithLock(ticketEntity.getPerformance().getPerformanceId());
+        int updateTicket = performanceEntity.getRemainingTickets() + ticketNum;
+        performanceEntity.updateTicket(updateTicket);
+    }
+
     private CouponEntity findAndValidateCoupon(Long couponId) {
         CouponEntity couponEntity = couponRepository.findById(couponId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._COUPON_NOT_FOUND));
@@ -225,5 +235,14 @@ public class TicketServiceImpl implements TicketService {
                 .build();
 
         return ticketRepository.save(ticketEntity);
+    }
+
+    /**
+     * 티켓 소유자인지 확인
+     */
+    private void validateTicketOwnership(TicketEntity ticketEntity, String email) {
+        if (!ticketEntity.getMember().getEmail().equals(email)) {
+            throw new GeneralException(ErrorStatus._FORBIDDEN);
+        }
     }
 }
