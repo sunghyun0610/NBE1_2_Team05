@@ -72,7 +72,7 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
 
     /**
      * redis에 캐시에서 실시간 인기공연 조회
-     * 캐시에 없다면 mysql에서 직접 조회
+     * 캐시에 없다면 mysql에서 직접 조회후 캐싱
      * @return
      */
     @Override
@@ -84,7 +84,9 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
             return performances;
         } else {
             List<Long> performanceIds = getPopularPerformanceIds();
-            return performanceService.getPopularPerformances(performanceIds);
+            PerformanceListResponse popularPerformances = performanceService.getPopularPerformances(performanceIds);
+            performanceListResponseRedisTemplate.opsForValue().set(PERFORMANCE_VIEW_CACHE_KEY, popularPerformances);
+            return popularPerformances;
         }
     }
 
