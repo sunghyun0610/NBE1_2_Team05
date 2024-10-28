@@ -68,12 +68,8 @@ public class TicketServiceImpl implements TicketService {
     //내부에서 사용 - 비관적락 적용시킨 performanceEntity 가져오기(by performanceId)
     private PerformanceEntity findPerformanceByIdWithLock(Long performanceId) {
         PerformanceEntity performance;
-        try {
-            performance = performanceRepository.findByIdWithLock(performanceId)
-                    .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
-        } catch (PessimisticLockException e) {
-            throw e;
-        }
+        performance = performanceRepository.findByIdWithLock(performanceId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
         return performance;
     }
 
@@ -128,7 +124,7 @@ public class TicketServiceImpl implements TicketService {
 
         TicketEntity ticketEntity = createAndSaveTicket(memberEntity, performanceEntity, ticketRequest.quantity(), finalPrice);
 
-        int remainTicket = calculateRemainTickets(performanceEntity,ticketEntity);
+        int remainTicket = calculateRemainTickets(performanceEntity, ticketEntity);
 
         performanceEntity.updateTicket(remainTicket);
 
@@ -145,7 +141,7 @@ public class TicketServiceImpl implements TicketService {
 
         TicketEntity ticketEntity = findTicketById(ticketId);
 
-        validateTicketOwnership(ticketEntity,email);
+        validateTicketOwnership(ticketEntity, email);
 
         adjustRemainingTickets(ticketEntity);
         // 티켓 삭제
@@ -194,7 +190,7 @@ public class TicketServiceImpl implements TicketService {
         return finalPrice;
     }
 
-    private int calculateRemainTickets(PerformanceEntity performanceEntity, TicketEntity ticketEntity){
+    private int calculateRemainTickets(PerformanceEntity performanceEntity, TicketEntity ticketEntity) {
         int remainTickets = performanceEntity.getRemainingTickets() - ticketEntity.getQuantity();
         return remainTickets;
     }
