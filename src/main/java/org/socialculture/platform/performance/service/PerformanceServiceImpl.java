@@ -1,6 +1,7 @@
 package org.socialculture.platform.performance.service;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.coupon.dto.response.CouponResponseDto;
 import org.socialculture.platform.coupon.entity.CouponEntity;
 import org.socialculture.platform.coupon.repository.CouponRepository;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
@@ -9,6 +10,7 @@ import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.member.service.MemberService;
 import org.socialculture.platform.performance.dto.CategoryDto;
+import org.socialculture.platform.performance.dto.domain.PerformanceDetail;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
@@ -82,9 +84,18 @@ public class PerformanceServiceImpl implements PerformanceService {
     @Override
     public PerformanceDetailResponse getPerformanceDetail(String email, Long performanceId) {
         if (isAccessPerformance(email, performanceId)) {
-            return performanceRepository.getPerformanceDetail(performanceId)
-                    .map(performanceDetail -> PerformanceDetailResponse.from(true, performanceDetail))
+            //선착순 쿠폰
+            List<CouponResponseDto> firstComeCouponDtos = couponRepository.findByPerformance_PerformanceId(performanceId)
+                    .stream()
+                    .map(CouponResponseDto::fromEntity)
+                    .toList();
+
+            PerformanceDetail performanceDetail = performanceRepository.getPerformanceDetail(performanceId)
                     .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
+
+            performanceDetail.updateFirstComeCoupons(firstComeCouponDtos);
+
+            return PerformanceDetailResponse.from(true, performanceDetail);
         }
 
         return performanceRepository.getPerformanceDetail(performanceId)

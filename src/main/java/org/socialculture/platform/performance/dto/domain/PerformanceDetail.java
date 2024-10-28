@@ -1,6 +1,8 @@
 package org.socialculture.platform.performance.dto.domain;
 
 import lombok.Getter;
+import org.socialculture.platform.coupon.dto.response.CouponResponseDto;
+import org.socialculture.platform.coupon.entity.CouponEntity;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
 
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ public class PerformanceDetail {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CategoryContent> categories;
+    private List<CouponResponseDto> firstComeCoupons;
 
     private PerformanceDetail() {}
     public PerformanceDetail(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String description,
@@ -47,5 +50,9 @@ public class PerformanceDetail {
 
     public void updateCategories(List<CategoryContent> categories) {
         this.categories = categories;
+    }
+
+    public void updateFirstComeCoupons(List<CouponResponseDto> firstComeCoupons) {
+        this.firstComeCoupons = firstComeCoupons;
     }
 }
