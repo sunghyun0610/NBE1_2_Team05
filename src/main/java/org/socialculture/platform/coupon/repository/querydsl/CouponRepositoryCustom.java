@@ -15,5 +15,5 @@ public interface CouponRepositoryCustom {
     List<CouponEntity> getAllCouponsByMemberEmail(String email);
 
     Optional<CouponEntity> getFirstComeCouponByPerformanceId(Long performanceId);
-
+    Optional<CouponEntity> getCouponByPerformanceIdAndMemberId(Long performanceId, Long memberId);
 }

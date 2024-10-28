@@ -39,11 +39,16 @@ public class CouponServiceImpl implements CouponService {
     @Override
     @Transactional
     public CouponResponseDto getFirstComeCoupon(String email, Long performanceId) {
-        CouponEntity coupon = couponRepository.getFirstComeCouponByPerformanceId(performanceId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._FIRST_COME_COUPON_NOT_FOUND));
-
         MemberEntity member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
+
+        //이미 해당 공연의 선착순 티켓 발급 받은 경우
+        if(couponRepository.getCouponByPerformanceIdAndMemberId(performanceId, member.getMemberId()).isPresent()) {
+            throw new GeneralException(ErrorStatus._ALREADY_RECEIVED_FIRST_COME_COUPON);
+        }
+
+        CouponEntity coupon = couponRepository.getFirstComeCouponByPerformanceId(performanceId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._FIRST_COME_COUPON_NOT_FOUND));
 
         coupon.setMember(member);
         coupon.setExpireTime(LocalDateTime.now().plusDays(3)); //3일 뒤 만료

@@ -42,4 +42,16 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom{
 
         return Optional.ofNullable(coupon);
     }
+
+    @Override
+    public Optional<CouponEntity> getCouponByPerformanceIdAndMemberId(Long performanceId, Long memberId) {
+        QCouponEntity couponEntity = QCouponEntity.couponEntity;
+
+        CouponEntity coupon = jpaQueryFactory.selectFrom(couponEntity)
+                .where(couponEntity.performance.performanceId.eq(performanceId)
+                        .and(couponEntity.member.memberId.eq(memberId))) // member_id가 지정된 값과 일치
+                .fetchOne();
+
+        return Optional.ofNullable(coupon);
+    }
 }
