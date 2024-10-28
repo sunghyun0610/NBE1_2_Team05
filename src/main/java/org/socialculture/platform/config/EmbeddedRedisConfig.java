@@ -56,7 +56,7 @@ public class EmbeddedRedisConfig {
         redisServer.stop();
     }
 
-    public int findAvailablePort() throws IOException {
+    private int findAvailablePort() throws IOException {
         for (int port = 10000; port < 65535; port++) {
             Process process = executeGrepProcessCommand(port);
             if (!isRunning(process)) {
@@ -71,12 +71,22 @@ public class EmbeddedRedisConfig {
     }
 
 
-    private Process executeGrepProcessCommand(int redisPort) throws IOException {
-        String command = String.format("netstat -nat | grep LISTEN|grep %d", redisPort);
-        String[] shell = {"/bin/sh", "-c", command};
+    private Process executeGrepProcessCommand(int port) throws IOException {
+        String os = System.getProperty("os.name").toLowerCase();
 
+        String command;
+        if (os.contains("win")) {
+            // 윈도우인 경우
+            command = String.format("netstat -nao | find \"LISTENING\" | find \":%d\"", port);
+            String[] cmd = {"cmd.exe", "/y", "/c", command};
+            return Runtime.getRuntime().exec(cmd);
+        }
+        // Unix 계열인 경우 (맥OS, 리눅스)
+        command = String.format("netstat -nat | grep LISTEN | grep %d", port);
+        String[] shell = {"/bin/sh", "-c", command};
         return Runtime.getRuntime().exec(shell);
     }
+
 
     private boolean isRunning(Process process) {
         String line;

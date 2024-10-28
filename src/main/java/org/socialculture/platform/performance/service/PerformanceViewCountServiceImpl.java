@@ -2,8 +2,6 @@ package org.socialculture.platform.performance.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
-import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -11,6 +9,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -63,11 +62,11 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
         log.info("실시간 인기공연 스케줄러 동작");
 
         List<Long> performanceIds = getPopularPerformanceIds();
+        if(!performanceIds.isEmpty()){
+            PerformanceListResponse popularPerformances = performanceService.getPopularPerformances(performanceIds);
 
-        PerformanceListResponse popularPerformances = performanceService.getPopularPerformances(performanceIds);
-
-        performanceListResponseRedisTemplate.opsForValue().set(PERFORMANCE_VIEW_CACHE_KEY, popularPerformances);
-
+            performanceListResponseRedisTemplate.opsForValue().set(PERFORMANCE_VIEW_CACHE_KEY, popularPerformances);
+        }
     }
 
     /**
@@ -82,12 +81,16 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
 
         if (performances != null) {
             return performances;
-        } else {
-            List<Long> performanceIds = getPopularPerformanceIds();
+        }
+
+        List<Long> performanceIds = getPopularPerformanceIds();
+
+        if(!performanceIds.isEmpty()){
             PerformanceListResponse popularPerformances = performanceService.getPopularPerformances(performanceIds);
             performanceListResponseRedisTemplate.opsForValue().set(PERFORMANCE_VIEW_CACHE_KEY, popularPerformances);
             return popularPerformances;
         }
+        return new PerformanceListResponse(0, Collections.emptyList());
     }
 
     // 상위 인기공연 10개의 performanceId 반환
@@ -99,6 +102,7 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
             return topPerformanceIds.stream().map(ZSetOperations.TypedTuple::getValue)
                     .toList();
         }
-        throw new GeneralException(ErrorStatus.POPULAR_PERFORMANCE_NOT_FOUND);
+        log.info("조회된 공연이 없습니다.");
+        return Collections.emptyList();
     }
 }
