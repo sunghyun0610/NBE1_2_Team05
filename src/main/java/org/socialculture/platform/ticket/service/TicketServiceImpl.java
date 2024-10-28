@@ -1,13 +1,18 @@
 package org.socialculture.platform.ticket.service;
 
+import jakarta.persistence.PessimisticLockException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.socialculture.platform.coupon.entity.CouponEntity;
 import org.socialculture.platform.coupon.repository.CouponRepository;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
+import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.socialculture.platform.ticket.dto.request.TicketRequestDto;
@@ -31,12 +36,12 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TicketServiceImpl implements TicketService {
 
     private final MemberRepository memberRepository;
     private final PerformanceRepository performanceRepository;
     private final CouponRepository couponRepository;
-
     private final TicketRepository ticketRepository;
 
     // 내부에서 사용 - 회원 정보 Entity 가져오기(by email)
@@ -49,6 +54,31 @@ public class TicketServiceImpl implements TicketService {
     private PerformanceEntity findPerformanceById(Long performanceId) {
         return performanceRepository.findById(performanceId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+    }
+
+    /**
+     * 티켓을 ID로 조회하여 존재 여부 확인
+     */
+    private TicketEntity findTicketById(Long ticketId) {
+        return ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
+    }
+
+
+    //내부에서 사용 - 비관적락 적용시킨 performanceEntity 가져오기(by performanceId)
+    private PerformanceEntity findPerformanceByIdWithLock(Long performanceId) {
+        PerformanceEntity performance;
+        performance = performanceRepository.findByIdWithLock(performanceId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+        return performance;
+    }
+
+    //내부에서 사용 - 티켓 수량 체크 validation 메소드
+    private void validateTicketAvailablity(PerformanceEntity performanceEntity, TicketRequestDto ticketRequest) {
+        if (performanceEntity.getRemainingTickets() < ticketRequest.quantity()) {
+            log.warn("남은 티켓 수 부족, 공연 ID: " + ticketRequest.performanceId());
+            throw new GeneralException(ErrorStatus._NOT_ENOUGH_TICKETS);
+        }
     }
 
     /**
@@ -83,34 +113,37 @@ public class TicketServiceImpl implements TicketService {
     @Override
     @Transactional
     public TicketResponseDto registerTicket(String email, TicketRequestDto ticketRequest) {
-        // 회원 검색
+
         MemberEntity memberEntity = findMemberByEmail(email);
 
-        // 공연 검색
-        PerformanceEntity performanceEntity = findPerformanceById(ticketRequest.performanceId());
+        PerformanceEntity performanceEntity = findPerformanceByIdWithLock(ticketRequest.performanceId());
 
-        // 가격 계산 : 가격, 예매인원, 쿠폰 아이디 전달 -> 쿠폰이 있다면 할인율 까지 계산
+        validateTicketAvailablity(performanceEntity, ticketRequest);
+
         int finalPrice = calculateFinalPrice(performanceEntity.getPrice(), ticketRequest.quantity(), ticketRequest.couponId());
 
-        // 티켓 생성 및 저장
         TicketEntity ticketEntity = createAndSaveTicket(memberEntity, performanceEntity, ticketRequest.quantity(), finalPrice);
+
+        int remainTicket = calculateRemainTickets(performanceEntity, ticketEntity);
+
+        performanceEntity.updateTicket(remainTicket);
 
         return TicketResponseDto.fromEntity(ticketEntity);
     }
+
 
     /**
      * 티켓 취소
      */
     @Override
+    @Transactional
     public void deleteTicket(String email, Long ticketId) {
-        TicketEntity ticketEntity = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus._TICKET_NOT_FOUND));
 
-        // 이메일이 티켓 소유자인지 확인
-        if (!ticketEntity.getMember().getEmail().equals(email)) {
-            throw new GeneralException(ErrorStatus._FORBIDDEN); // 권한 없음 예외
-        }
+        TicketEntity ticketEntity = findTicketById(ticketId);
 
+        validateTicketOwnership(ticketEntity, email);
+
+        adjustRemainingTickets(ticketEntity);
         // 티켓 삭제
         ticketRepository.deleteById(ticketId);
 
@@ -157,6 +190,21 @@ public class TicketServiceImpl implements TicketService {
         return finalPrice;
     }
 
+    private int calculateRemainTickets(PerformanceEntity performanceEntity, TicketEntity ticketEntity) {
+        int remainTickets = performanceEntity.getRemainingTickets() - ticketEntity.getQuantity();
+        return remainTickets;
+    }
+
+    /**
+     * 남은 티켓 수량 조정
+     */
+    private void adjustRemainingTickets(TicketEntity ticketEntity) {
+        int ticketNum = ticketEntity.getQuantity();
+        PerformanceEntity performanceEntity = findPerformanceByIdWithLock(ticketEntity.getPerformance().getPerformanceId());
+        int updateTicket = performanceEntity.getRemainingTickets() + ticketNum;
+        performanceEntity.updateTicket(updateTicket);
+    }
+
     private CouponEntity findAndValidateCoupon(Long couponId) {
         CouponEntity couponEntity = couponRepository.findById(couponId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._COUPON_NOT_FOUND));
@@ -183,5 +231,14 @@ public class TicketServiceImpl implements TicketService {
                 .build();
 
         return ticketRepository.save(ticketEntity);
+    }
+
+    /**
+     * 티켓 소유자인지 확인
+     */
+    private void validateTicketOwnership(TicketEntity ticketEntity, String email) {
+        if (!ticketEntity.getMember().getEmail().equals(email)) {
+            throw new GeneralException(ErrorStatus._FORBIDDEN);
+        }
     }
 }
