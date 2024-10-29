@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: local
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ${HOME_URL}
@@ -46,6 +49,12 @@ spring:
           writetimeout: 5000
 #    auth-code-expiration-millis: 1800000
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      maxmemory: 128M
+
 
 jwt:
   secret: ${JWT_SECRET_KEY}  # JWT 비밀 키
@@ -68,3 +77,5 @@ ftp:
   password: ${FTP_PASSWORD}
   poster-path: ${FTP_POSTER-PATH}
   intro-path: ${FTP_INTRO-PATH}
+
+

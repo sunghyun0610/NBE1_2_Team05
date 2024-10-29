@@ -14,6 +14,9 @@ public interface PerformanceRepositoryCustom {
     // 사용자 선호 카테고리 공연 추천 조회
     List<PerformanceWithCategory> getRecommendedPerformancesByMember(Long memberId);
 
+    // 실시간 인기 공연 조회
+    List<PerformanceWithCategory> getPerformancesByIds(List<Long> performanceIds);
+
     Optional<PerformanceDetail> getPerformanceDetail(Long performanceId);
 
     Page<PerformanceWithCategory> getMyPerformanceWithCategoryList(String email, Pageable pageable);

@@ -44,6 +44,10 @@ public enum ErrorStatus implements BaseErrorCode{
     SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "사용자의 기본정보가 적절하지 않습니다."),
 
 
+    // EmbeddedRedis 관련
+    REDIS_SERVER_EXECUTABLE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "REDISSERVER500", "가용한 레디스 서버를 찾지 못했습니다."),
+    ERROR_EXECUTING_EMBEDDED_REDIS(HttpStatus.INTERNAL_SERVER_ERROR, "REDISSERVER500", "embedded redis 서버 실행에 실패하였습니다."),
+    AVAILABLE_PORT_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "REDISSERVER500", "연결 가능한 port를 찾을 수 없습니다"),
 
 
     // 멤버 카테고리 관련
@@ -54,6 +58,7 @@ public enum ErrorStatus implements BaseErrorCode{
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다."),
     PERFORMANCE_NOT_ACCESSIBLE(HttpStatus.FORBIDDEN, "PERFORMANCE403", "권한이 없습니다."),
+    POPULAR_PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404","인기 공연을 찾을 수 없습니다"),
 
     // 공연 이미지 등록 관련
     INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, "IMAGE400", "지원하지 않는 이미지 파일 형식입니다"),
