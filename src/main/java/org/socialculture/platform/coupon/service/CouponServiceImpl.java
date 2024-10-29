@@ -50,8 +50,7 @@ public class CouponServiceImpl implements CouponService {
         CouponEntity coupon = couponRepository.getFirstComeCouponByPerformanceId(performanceId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus._FIRST_COME_COUPON_NOT_FOUND));
 
-        coupon.setMember(member);
-        coupon.setExpireTime(LocalDateTime.now().plusDays(3)); //3일 뒤 만료
+        coupon.updateMemberAndExpiration(member);
 
         return CouponResponseDto.fromEntity(coupon);
     }

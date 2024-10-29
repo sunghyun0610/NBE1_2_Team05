@@ -54,4 +54,9 @@ public class CouponEntity extends BaseEntity {
     public void setUsed(boolean used) {
         this.isUsed = used;
     }
+
+    public void updateMemberAndExpiration(MemberEntity member) {
+        this.member = member;
+        this.expireTime = LocalDateTime.now().plusDays(3); //3일 뒤 만료
+    }
 }
