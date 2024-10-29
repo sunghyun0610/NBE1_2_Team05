@@ -61,7 +61,11 @@ public enum ErrorStatus implements BaseErrorCode{
 
     //댓글
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT404","댓글을 찾을 수 없습니다."),
-    _COMMENT_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "COMMENT403", "댓글 수정 권한이 없습니다. 본인이 작성한 댓글만 수정할 수 있습니다.");
+    _COMMENT_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "COMMENT403", "댓글 수정 권한이 없습니다. 본인이 작성한 댓글만 수정할 수 있습니다."),
+
+    //DB Lock 관련
+    DB_LOCK_FAILURE(HttpStatus.CONFLICT, "DB_LOCK409", "DB 락을 획득하지 못했습니다. 다시 시도해 주세요.");
+
 
 
     private final HttpStatus httpStatus;
