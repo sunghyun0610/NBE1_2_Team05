@@ -29,4 +29,6 @@ public interface PerformanceService {
     PerformanceListResponse getPerformanceListByUserCategories(String email);
 
     PerformanceListResponse getPopularPerformances(List<Long> performanceIds);
+
+    PerformanceListResponse getAroundPoint(Double latitude, Double longitude);
 }

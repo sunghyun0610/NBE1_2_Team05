@@ -180,6 +180,11 @@ public class PerformanceServiceImpl implements PerformanceService {
         return PerformanceListResponse.from(sortedPerformances.size(), sortedPerformances);
     }
 
+    @Override
+    public PerformanceListResponse getAroundPoint(Double latitude, Double longitude) {
+        return null;
+    }
+
 
     private boolean isAccessPerformance(String email, Long performanceId) {
         if (email == null) {
