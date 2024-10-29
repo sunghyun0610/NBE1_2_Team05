@@ -1,15 +1,19 @@
 package org.socialculture.platform.performance.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PerformanceListResponse {
 
     private long totalElements;
@@ -17,6 +21,8 @@ public class PerformanceListResponse {
 
     @Getter
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PerformanceList {
         private String memberName;
         private Long performanceId;

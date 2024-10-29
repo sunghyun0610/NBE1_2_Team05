@@ -1,6 +1,7 @@
 package org.socialculture.platform.performance.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
@@ -11,6 +12,8 @@ import org.socialculture.platform.performance.dto.response.PerformanceListRespon
 import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.socialculture.platform.performance.service.ImageUploadService;
+import org.socialculture.platform.performance.service.PerformanceViewCountService;
+import org.socialculture.platform.performance.service.PerformanceViewCountServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +27,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/performances")
+@Slf4j
 public class PerformanceController {
 
     private final PerformanceService performanceService;
     private final ImageUploadService imageService;
+    private final PerformanceViewCountService performanceViewCountService;
 
     /**
      * @author Icecoff22
@@ -84,6 +89,7 @@ public class PerformanceController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("performanceId") Long performanceId
     ) {
+        performanceViewCountService.incrementViewCount(performanceId);
         return ApiResponse.onSuccess(performanceService.getPerformanceDetail(userDetails.getUsername(), performanceId));
     }
 
@@ -131,11 +137,25 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListByUserCategories(
             @AuthenticationPrincipal UserDetails userDetails) {
 
+
         String email = userDetails.getUsername();
+        log.info(email);
         PerformanceListResponse performanceListByUserCategories = performanceService
                 .getPerformanceListByUserCategories(email);
 
         return ApiResponse.onSuccess(performanceListByUserCategories);
+    }
+
+
+
+    /**
+     * 조회수가 많은 공연을 최대 10개 조회
+     * @return
+     */
+    @GetMapping("/rank")
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPopularPerformances() {
+        PerformanceListResponse popularPerformances = performanceViewCountService.getPopularPerformances();
+        return ApiResponse.onSuccess(popularPerformances);
     }
 
 
@@ -145,6 +165,7 @@ public class PerformanceController {
             @RequestParam(name = "size") Integer size,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
+
         return ApiResponse.onSuccess(performanceService.getMyPerformanceList(userDetails.getUsername(), page, size));
     }
 

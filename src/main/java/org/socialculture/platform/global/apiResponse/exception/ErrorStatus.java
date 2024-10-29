@@ -17,6 +17,7 @@ public enum ErrorStatus implements BaseErrorCode{
     _TICKET_ID_MISSING(HttpStatus.BAD_REQUEST, "TICKET400", "티켓 ID가 제공되지 않았습니다."),
     _TICKET_INVALID_SORT_OPTION(HttpStatus.BAD_REQUEST, "TICKET400", "잘못된 정렬 옵션입니다. 허용된 값은 'ticketId', 'price', 'expired'입니다."),
     _TICKET_INVALID_PAGINATION_PARAMETERS(HttpStatus.BAD_REQUEST, "TICKET400", "페이지나 크기 값이 유효하지 않습니다. 0 이상의 값을 입력해 주세요."),
+    _NOT_ENOUGH_TICKETS(HttpStatus.BAD_REQUEST, "TICKET401", "남은 티켓 수가 부족합니다."),
 
     // 쿠폰
     _COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "COUPON400", "해당 쿠폰을 찾을 수 없습니다."),
@@ -43,6 +44,10 @@ public enum ErrorStatus implements BaseErrorCode{
     SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "사용자의 기본정보가 적절하지 않습니다."),
 
 
+    // EmbeddedRedis 관련
+    REDIS_SERVER_EXECUTABLE_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "REDISSERVER500", "가용한 레디스 서버를 찾지 못했습니다."),
+    ERROR_EXECUTING_EMBEDDED_REDIS(HttpStatus.INTERNAL_SERVER_ERROR, "REDISSERVER500", "embedded redis 서버 실행에 실패하였습니다."),
+    AVAILABLE_PORT_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "REDISSERVER500", "연결 가능한 port를 찾을 수 없습니다"),
 
 
     // 멤버 카테고리 관련
@@ -53,6 +58,7 @@ public enum ErrorStatus implements BaseErrorCode{
     PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연을 찾을 수 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404", "공연 카테고리를 찾을 수 없습니다."),
     PERFORMANCE_NOT_ACCESSIBLE(HttpStatus.FORBIDDEN, "PERFORMANCE403", "권한이 없습니다."),
+    POPULAR_PERFORMANCE_NOT_FOUND(HttpStatus.NOT_FOUND, "PERFORMANCE404","인기 공연을 찾을 수 없습니다"),
 
     // 공연 이미지 등록 관련
     INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, "IMAGE400", "지원하지 않는 이미지 파일 형식입니다"),

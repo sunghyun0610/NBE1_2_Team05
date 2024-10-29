@@ -15,6 +15,7 @@ public record PerformanceUpdateRequest(
         String imageUrl,
         Integer price,
         String description,
+        int remainTickets,
         Integer maxAudience,
         PerformanceStatus status
 ) {
@@ -26,6 +27,7 @@ public record PerformanceUpdateRequest(
                 .address(performanceUpdateRequest.address())
                 .imageUrl(performanceUpdateRequest.imageUrl())
                 .price(performanceUpdateRequest.price())
+                .remainingTickets(performanceUpdateRequest.remainTickets)
                 .description(performanceUpdateRequest.description())
                 .maxAudience(performanceUpdateRequest.maxAudience())
                 .performanceStatus(performanceUpdateRequest.status())
