@@ -39,6 +39,8 @@ import static org.socialculture.platform.global.apiResponse.exception.ErrorStatu
 @RequiredArgsConstructor
 public class PerformanceServiceImpl implements PerformanceService {
 
+    private static final int FIRST_COME_COUPON_LIMIT = 3;
+
     private final PerformanceRepository performanceRepository;
     private final PerformanceCategoryRepository performanceCategoryRepository;
     private final CategoryRepository categoryRepository;
@@ -61,7 +63,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         performanceEntity = performanceRepository.save(performanceEntity);
 
         //공연별 선착순 쿠폰 3장 생성
-        if (performanceEntity.getMaxAudience() > 3) {
+        if (performanceEntity.getMaxAudience() > FIRST_COME_COUPON_LIMIT) {
             createFirstComeCoupon(performanceEntity);
         }
 
@@ -195,7 +197,7 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     private void createFirstComeCoupon(PerformanceEntity performanceEntity) {
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= FIRST_COME_COUPON_LIMIT; i++) {
             CouponEntity couponEntity = CouponEntity.builder()
                     .name("선착순 10% 할인 쿠폰 " + i)
                     .percent(10)
