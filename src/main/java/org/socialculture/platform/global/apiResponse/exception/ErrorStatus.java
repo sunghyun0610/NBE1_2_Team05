@@ -17,6 +17,7 @@ public enum ErrorStatus implements BaseErrorCode{
     _TICKET_ID_MISSING(HttpStatus.BAD_REQUEST, "TICKET400", "티켓 ID가 제공되지 않았습니다."),
     _TICKET_INVALID_SORT_OPTION(HttpStatus.BAD_REQUEST, "TICKET400", "잘못된 정렬 옵션입니다. 허용된 값은 'ticketId', 'price', 'expired'입니다."),
     _TICKET_INVALID_PAGINATION_PARAMETERS(HttpStatus.BAD_REQUEST, "TICKET400", "페이지나 크기 값이 유효하지 않습니다. 0 이상의 값을 입력해 주세요."),
+    _NOT_ENOUGH_TICKETS(HttpStatus.BAD_REQUEST, "TICKET401", "남은 티켓 수가 부족합니다."),
 
     // 쿠폰
     _COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "COUPON400", "해당 쿠폰을 찾을 수 없습니다."),

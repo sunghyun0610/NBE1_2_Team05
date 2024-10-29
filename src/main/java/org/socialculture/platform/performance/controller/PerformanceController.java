@@ -1,6 +1,7 @@
 package org.socialculture.platform.performance.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
@@ -26,6 +27,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/performances")
+@Slf4j
 public class PerformanceController {
 
     private final PerformanceService performanceService;
@@ -135,7 +137,9 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListByUserCategories(
             @AuthenticationPrincipal UserDetails userDetails) {
 
+
         String email = userDetails.getUsername();
+        log.info(email);
         PerformanceListResponse performanceListByUserCategories = performanceService
                 .getPerformanceListByUserCategories(email);
 

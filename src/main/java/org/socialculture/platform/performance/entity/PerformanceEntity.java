@@ -106,4 +106,8 @@ public class PerformanceEntity extends BaseEntity {
     public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public void updateTicket(int remainingTickets){
+        this.remainingTickets=remainingTickets;
+    }
 }
