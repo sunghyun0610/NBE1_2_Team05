@@ -5,11 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
+import org.socialculture.platform.performance.dto.response.*;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.socialculture.platform.performance.service.ImageUploadService;
 import org.socialculture.platform.performance.service.PerformanceViewCountService;
@@ -182,7 +179,7 @@ public class PerformanceController {
      * @return PerformanceList
      */
     @GetMapping("/around-point")
-    public ResponseEntity<ApiResponse<?>> getAroundPoint(
+    public ResponseEntity<ApiResponse<List<PerformanceAroundPointResponse>>> getAroundPoint(
             @RequestParam("latitude") Double latitude,
             @RequestParam("longitude") Double longitude
     ) {

@@ -2,11 +2,8 @@ package org.socialculture.platform.performance.service;
 
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
+import org.socialculture.platform.performance.dto.response.*;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -30,5 +27,5 @@ public interface PerformanceService {
 
     PerformanceListResponse getPopularPerformances(List<Long> performanceIds);
 
-    PerformanceListResponse getAroundPoint(Double latitude, Double longitude);
+    List<PerformanceAroundPointResponse> getAroundPoint(Double latitude, Double longitude);
 }

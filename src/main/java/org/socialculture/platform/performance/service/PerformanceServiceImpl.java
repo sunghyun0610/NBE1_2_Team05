@@ -1,6 +1,10 @@
 package org.socialculture.platform.performance.service;
 
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
 import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.MemberEntity;
@@ -9,11 +13,8 @@ import org.socialculture.platform.member.service.MemberService;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
+import org.socialculture.platform.performance.dto.response.*;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.socialculture.platform.performance.entity.CategoryEntity;
 import org.socialculture.platform.performance.entity.PerformanceCategoryEntity;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
@@ -181,8 +182,16 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     @Override
-    public PerformanceListResponse getAroundPoint(Double latitude, Double longitude) {
-        return null;
+    public List<PerformanceAroundPointResponse> getAroundPoint(Double latitude, Double longitude) {
+        final Integer radius = 5000;
+        final Integer totalCount = 10;
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point location = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+
+        return performanceRepository.getPerformanceAroundPoint(location, radius, totalCount)
+                .stream()
+                .map(PerformanceAroundPointResponse::from)
+                .toList();
     }
 
 
