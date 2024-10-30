@@ -179,10 +179,12 @@ public class PerformanceController {
      * @return PerformanceList
      */
     @GetMapping("/around-point")
-    public ResponseEntity<ApiResponse<List<PerformanceAroundPointResponse>>> getAroundPoint(
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getAroundPoint(
             @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude
+            @RequestParam("longitude") Double longitude,
+            @RequestParam("offset") Integer offset,
+            @RequestParam("limit") Integer limit
     ) {
-        return ApiResponse.onSuccess(performanceService.getAroundPoint(latitude, longitude));
+        return ApiResponse.onSuccess(performanceService.getAroundPoint(latitude, longitude, offset, limit));
     }
 }

@@ -23,6 +23,7 @@ import org.socialculture.platform.performance.repository.PerformanceCategoryRepo
 import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -182,16 +183,18 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     @Override
-    public List<PerformanceAroundPointResponse> getAroundPoint(Double latitude, Double longitude) {
-        final Integer radius = 5000;
-        final Integer totalCount = 10;
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        Point location = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+    public PerformanceListResponse getAroundPoint(Double latitude, Double longitude, Integer offset, Integer limit) {
+        final Integer radius = 5000; // 반경 5km 이내 공연 추천
 
-        return performanceRepository.getPerformanceAroundPoint(location, radius, totalCount)
-                .stream()
-                .map(PerformanceAroundPointResponse::from)
-                .toList();
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point location = geometryFactory.createPoint(new Coordinate(latitude, longitude));
+
+        Pageable pageable = PageRequest.of(offset, limit);
+
+        Page<PerformanceWithCategory> performanceList =
+                performanceRepository.getPerformanceAroundPoint(location, radius, pageable);
+
+        return PerformanceListResponse.from(performanceList.getTotalElements(), performanceList.getContent());
     }
 
 
