@@ -23,6 +23,8 @@ public enum ErrorStatus implements BaseErrorCode{
     _COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "COUPON400", "해당 쿠폰을 찾을 수 없습니다."),
     _COUPON_ALREADY_USED(HttpStatus.BAD_REQUEST, "COUPON400", "이미 사용된 쿠폰입니다."),
     _COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "COUPON400", "만료된 쿠폰입니다."),
+    _FIRST_COME_COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "COUPON400", "선착순 쿠폰이 마감되었습니다."),
+    _ALREADY_RECEIVED_FIRST_COME_COUPON(HttpStatus.BAD_REQUEST, "COUPON401", "이미 발급 받은 선착순 쿠폰이 있습니다."),
 
     // 유저 관련 에러
     LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),
