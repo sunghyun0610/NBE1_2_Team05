@@ -1,5 +1,6 @@
 package org.socialculture.platform.performance.repository.querydsl;
 
+import org.locationtech.jts.geom.Point;
 import org.socialculture.platform.performance.dto.domain.PerformanceDetail;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.springframework.data.domain.Page;
@@ -20,4 +21,6 @@ public interface PerformanceRepositoryCustom {
     Optional<PerformanceDetail> getPerformanceDetail(Long performanceId);
 
     Page<PerformanceWithCategory> getMyPerformanceWithCategoryList(String email, Pageable pageable);
+
+    List<PerformanceWithCategory> getPerformanceAroundPoint(Point location, Integer radius, Integer totalCount);
 }
