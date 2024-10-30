@@ -26,10 +26,10 @@ public class CouponController {
     private final CouponService couponService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CouponResponseDto>>> getAllCouponsByMemberEmail(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<List<CouponResponseDto>>> getAllCouponsByMemberEmail(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Long performanceId) {
         log.info("Received request to get all coupons by member email");
 
-        return ApiResponse.onSuccess(couponService.getAllCouponsByMemberEmail(userDetails.getUsername()));
+        return ApiResponse.onSuccess(couponService.getAllCouponsByMemberEmail(userDetails.getUsername(), performanceId));
     }
 
     //선착순 쿠폰 발급받기

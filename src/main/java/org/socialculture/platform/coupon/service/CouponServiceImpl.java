@@ -28,9 +28,9 @@ public class CouponServiceImpl implements CouponService {
     private final MemberRepository memberRepository;
 
     @Override
-    public List<CouponResponseDto> getAllCouponsByMemberEmail(String email) {
+    public List<CouponResponseDto> getAllCouponsByMemberEmail(String email, Long performanceId) {
 
-        return couponRepository.getAllCouponsByMemberEmail(email)
+        return couponRepository.getAllCouponsByMemberEmail(email, performanceId)
                 .stream()
                 .map(CouponResponseDto::fromEntity)
                 .collect(Collectors.toList());

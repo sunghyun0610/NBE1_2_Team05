@@ -20,11 +20,17 @@ public class CouponRepositoryCustomImpl implements CouponRepositoryCustom{
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<CouponEntity> getAllCouponsByMemberEmail(String email) {
+    public List<CouponEntity> getAllCouponsByMemberEmail(String email, Long performanceId) {
         QCouponEntity couponEntity = QCouponEntity.couponEntity;
 
         return jpaQueryFactory.selectFrom(couponEntity)
-                .where(couponEntity.member.email.eq(email))
+                .where(
+                        couponEntity.member.email.eq(email)
+                                .and(
+                                        couponEntity.performance.performanceId.eq(performanceId)
+                                                .or(couponEntity.performance.isNull())
+                                )
+                )
                 .fetch();
     }
 

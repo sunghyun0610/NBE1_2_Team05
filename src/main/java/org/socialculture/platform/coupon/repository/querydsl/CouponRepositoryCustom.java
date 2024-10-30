@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 public interface CouponRepositoryCustom {
 
-    List<CouponEntity> getAllCouponsByMemberEmail(String email);
+    List<CouponEntity> getAllCouponsByMemberEmail(String email, Long performanceId);
 
     Optional<CouponEntity> getFirstComeCouponByPerformanceId(Long performanceId);
     Optional<CouponEntity> getCouponByPerformanceIdAndMemberId(Long performanceId, Long memberId);
