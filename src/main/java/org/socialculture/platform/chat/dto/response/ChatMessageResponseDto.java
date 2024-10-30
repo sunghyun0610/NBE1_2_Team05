@@ -10,6 +10,7 @@ public record ChatMessageResponseDto(
         Long messageId,
         Long chatRoomId,
         Long senderId,
+        String senderName,
         String messageContent,
         LocalDateTime sentAt
 ) {
@@ -19,6 +20,7 @@ public record ChatMessageResponseDto(
                 .messageId(chatMessageEntity.getMessageId())
                 .chatRoomId(chatMessageEntity.getChatRoomEntity().getChatRoomId())
                 .senderId(chatMessageEntity.getSender().getMemberId())
+                .senderName(chatMessageEntity.getSender().getName())
                 .messageContent(chatMessageEntity.getMessageContent())
                 .sentAt(chatMessageEntity.getSentAt())
                 .build();

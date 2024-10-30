@@ -1,6 +1,8 @@
 package org.socialculture.platform.chat.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.chat.dto.ChatMessageDto;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -8,95 +10,81 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
-    // (memberId + chatRoomId) 조합으로 세션을 관리
-    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    // 현재 연결된 세션들
+    private final Set<WebSocketSession> sessions = new HashSet<>();
+
+    // chatRoomId: {session1, session2}
+    private final Map<Long,Set<WebSocketSession>> chatRoomSessionMap = new HashMap<>();
+
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-        Long memberId = getMemberIdFromSession(session); // JWT 토큰에서 memberId 추출
-        Long chatRoomId = getChatRoomIdFromSession(session); // 요청에서 chatRoomId 추출
-
-        String sessionKey = generateSessionKey(memberId, chatRoomId); // (memberId + chatRoomId) 키 생성
-        sessions.put(sessionKey, session);
-
-        System.out.println("WebSocket 연결됨: " + session.getId() + ", 사용자 ID: " + memberId + ", 채팅방 ID: " + chatRoomId);
+        log.info("{} 연결됨", session.getId());
+        sessions.add(session);
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-//        String payload = message.getPayload();
-//        System.out.println("메시지 수신: " + payload);
-//
-//        ChatMessageDto chatMessageDto = objectMapper.readValue(payload, ChatMessageDto.class);
-//
-//        // 채팅방에 있는 다른 사용자의 세션으로 메시지 전송
-//        for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
-//            String sessionKey = entry.getKey();
-//            WebSocketSession receiverSession = entry.getValue();
-//
-//            // 동일한 채팅방에 속한 사용자의 세션에만 메시지를 전송
-//            if (sessionKey.contains(String.valueOf(chatMessageDto.getChatRoomId()))) {
-//                if (receiverSession.isOpen()) {
-//                    receiverSession.sendMessage(new TextMessage(chatMessageDto.getContent()));
-//                }
-//            }
-//        }
+        String payload = message.getPayload();
+        log.info("payload {}", payload);
 
-        String payload = message.getPayload(); // 수신된 메시지 (JSON 형식 등)
-        System.out.println("메시지 수신: " + payload);
+        // 페이로드 -> chatMessageDto로 변환
+        ChatMessageDto chatMessageDto = mapper.readValue(payload, ChatMessageDto.class);
+        log.info("session {}", chatMessageDto.toString());
 
-        // 채팅방에 있는 모든 사용자에게 수신한 데이터를 그대로 전송
-        for (Map.Entry<String, WebSocketSession> entry : sessions.entrySet()) {
-            WebSocketSession receiverSession = entry.getValue();
-
-            // 동일한 채팅방에 속한 사용자에게만 전송
-            if (receiverSession.isOpen()) {
-                receiverSession.sendMessage(new TextMessage(payload)); // 수신된 데이터를 그대로 전송
-            }
+        Long chatRoomId = chatMessageDto.getChatRoomId();
+        // 메모리 상에 채팅방에 대한 세션 없으면 만들어줌
+        if(!chatRoomSessionMap.containsKey(chatRoomId)){
+            chatRoomSessionMap.put(chatRoomId,new HashSet<>());
         }
+
+        Set<WebSocketSession> chatRoomSession = chatRoomSessionMap.get(chatRoomId);
+
+        // message 에 담긴 타입을 확인한다.
+        // 이때 message 에서 getType 으로 가져온 내용이
+        // ChatDTO 의 열거형인 MessageType 안에 있는 ENTER 과 동일한 값이라면
+        if (chatMessageDto.getMessageType().equals(ChatMessageDto.MessageType.ENTER)) {
+            // sessions 에 넘어온 session 을 담고,
+            chatRoomSession.add(session);
+        }
+        if (chatRoomSession.size()>=3) { // 채팅룸 불필요 세션 관리
+            removeClosedSession(chatRoomSession);
+        }
+        sendMessageToChatRoom(chatMessageDto, chatRoomSession);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        Long memberId = getMemberIdFromSession(session);
-        Long chatRoomId = getChatRoomIdFromSession(session);
-
-        String sessionKey = generateSessionKey(memberId, chatRoomId);
-        sessions.remove(sessionKey);
-
-        System.out.println("WebSocket 연결 종료됨: " + session.getId() + ", 사용자 ID: " + memberId + ", 채팅방 ID: " + chatRoomId);
+        log.info("{} 연결 끊김", session.getId());
+        sessions.remove(session);
     }
 
-    // memberId + chatRoomId 키 생성 메서드
-    private String generateSessionKey(Long memberId, Long chatRoomId) {
-        return memberId + "_" + chatRoomId;  // 예시로 'memberId_chatRoomId' 형식 사용
+    // ====== 채팅 관련 메소드 ======
+    private void removeClosedSession(Set<WebSocketSession> chatRoomSession) {
+        chatRoomSession.removeIf(sess -> !sessions.contains(sess));
     }
 
-    private Long getMemberIdFromSession(WebSocketSession session) {
-        String query = session.getUri().getQuery();  // 쿼리 스트링 가져오기
-        Map<String, String> params = Arrays.stream(query.split("&"))
-                .map(param -> param.split("="))
-                .collect(Collectors.toMap(pair -> pair[0], pair -> pair[1]));
-
-        return Long.parseLong(params.get("memberId")); // memberId 추출
+    private void sendMessageToChatRoom(ChatMessageDto chatMessageDto, Set<WebSocketSession> chatRoomSession) {
+        chatRoomSession.parallelStream().forEach(sess -> sendMessage(sess, chatMessageDto));//2
     }
 
-    private Long getChatRoomIdFromSession(WebSocketSession session) {
-        String query = session.getUri().getQuery();  // 쿼리 스트링 가져오기
-        Map<String, String> params = Arrays.stream(query.split("&"))
-                .map(param -> param.split("="))
-                .collect(Collectors.toMap(pair -> pair[0], pair -> pair[1]));
-
-        return Long.parseLong(params.get("chatRoomId")); // chatRoomId 추출
+    public <T> void sendMessage(WebSocketSession session, T message) {
+        try{
+            session.sendMessage(new TextMessage(mapper.writeValueAsString(message)));
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }

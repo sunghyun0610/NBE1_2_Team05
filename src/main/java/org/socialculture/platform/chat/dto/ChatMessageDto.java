@@ -1,14 +1,23 @@
 package org.socialculture.platform.chat.dto;
 
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ChatMessageDto {
-    private Long chatRoomId;      // 채팅방 ID
-    private Long senderId;        // 메시지를 보낸 사용자 ID
-    private Long receiverId;      // 메시지를 받을 사용자 ID (필요한 경우에만 사용)
-    private String content; // 실제 메시지 내용
+    // 메시지  타입 : 입장, 채팅
+    public enum MessageType{
+        ENTER, TALK, LEAVE
+    }
+
+    private MessageType messageType; // 메시지 타입
+    private Long chatRoomId; // 방 번호
+    private Long senderId; // 채팅을 보낸 사람
+    private String message; // 메시지
     private LocalDateTime sentAt;  // 메시지가 전송된 시간
 }
