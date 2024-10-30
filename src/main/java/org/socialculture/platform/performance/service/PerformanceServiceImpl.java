@@ -32,6 +32,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.socialculture.platform.global.apiResponse.exception.ErrorStatus.*;
 
@@ -50,6 +53,7 @@ public class PerformanceServiceImpl implements PerformanceService {
 
 
     private final ImageUploadService imageUploadService;
+
     //TODO : 사용자 넣기
     @Transactional
     @Override
@@ -170,16 +174,33 @@ public class PerformanceServiceImpl implements PerformanceService {
     // 사용자 선호 카테고리 기반 추천 공연 조회
     @Override
     public PerformanceListResponse getPerformanceListByUserCategories(String email) {
-        Long memberId = memberService.getMemberIdByEmail(email);
+
+        MemberEntity member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new GeneralException(MEMBER_NOT_FOUND));
+
         List<PerformanceWithCategory> recommendedPerformancesByMember = performanceRepository
-                .getRecommendedPerformancesByMember(memberId);
+                .getRecommendedPerformancesByMember(member.getMemberId());
 
         return PerformanceListResponse.from(recommendedPerformancesByMember.size(),
                 recommendedPerformancesByMember);
     }
 
 
+    // 실시간으로 조회수가 많은 공연 10개 정보 조회(순위를 고려하여 Map사용)
+    @Override
+    public PerformanceListResponse getPopularPerformances(List<Long> performanceIds) {
+        List<PerformanceWithCategory> performancesByIds = performanceRepository.getPerformancesByIds(performanceIds);
 
+        Map<Long, PerformanceWithCategory> performanceMap = performancesByIds.stream()
+                .collect(Collectors.toMap(PerformanceWithCategory::getPerformanceId, p -> p));
+
+        List<PerformanceWithCategory> sortedPerformances = performanceIds.stream()
+                .map(performanceMap::get)
+                .filter(Objects::nonNull) // null 값 제외 현재 카테고리가 없는 공연이 존재하여 체크해야함
+                .collect(Collectors.toList());
+
+        return PerformanceListResponse.from(sortedPerformances.size(), sortedPerformances);
+    }
 
 
     private boolean isAccessPerformance(String email, Long performanceId) {

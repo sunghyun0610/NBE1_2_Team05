@@ -10,8 +10,10 @@ import org.socialculture.platform.performance.dto.request.PerformanceUpdateReque
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
+import org.socialculture.platform.performance.entity.PerformanceStatus;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.socialculture.platform.performance.service.ImageUploadService;
+import org.socialculture.platform.performance.service.PerformanceViewCountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,7 @@ public class PerformanceController {
 
     private final PerformanceService performanceService;
     private final ImageUploadService imageService;
+    private final PerformanceViewCountService performanceViewCountService;
 
     /**
      * @author Icecoff22
@@ -86,7 +89,14 @@ public class PerformanceController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("performanceId") Long performanceId
     ) {
-        return ApiResponse.onSuccess(performanceService.getPerformanceDetail(userDetails.getUsername(), performanceId));
+
+        PerformanceDetailResponse performanceDetail = performanceService
+                .getPerformanceDetail(userDetails.getUsername(), performanceId);
+
+        if(performanceDetail.status().equals(PerformanceStatus.CONFIRMED)){
+            performanceViewCountService.incrementViewCount(performanceId);
+        }
+        return ApiResponse.onSuccess(performanceDetail);
     }
 
     /**
@@ -143,12 +153,25 @@ public class PerformanceController {
     }
 
 
+
+    /**
+     * 조회수가 많은 공연을 최대 10개 조회
+     * @return
+     */
+    @GetMapping("/rank")
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getPopularPerformances() {
+        PerformanceListResponse popularPerformances = performanceViewCountService.getPopularPerformances();
+        return ApiResponse.onSuccess(popularPerformances);
+    }
+
+
     @GetMapping("/admin/my")
     public ResponseEntity<ApiResponse<PerformanceListResponse>> getPerformanceListAdmin(
             @RequestParam(name = "page") Integer page,
             @RequestParam(name = "size") Integer size,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
+
         return ApiResponse.onSuccess(performanceService.getMyPerformanceList(userDetails.getUsername(), page, size));
     }
 

@@ -96,10 +96,10 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
     /**
      * 공연 리스트 조회
-     * @author Icecoff22
+     *
      * @param pageable
      * @return PerformanceWithCategory 형태의 리스트
-     *
+     * @author Icecoff22
      */
     @Override
     public Page<PerformanceWithCategory> getPerformanceWithCategoryList(Pageable pageable, Long categoryId, String search, String email) {
@@ -174,7 +174,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
     @Override
     public List<PerformanceWithCategory> getRecommendedPerformancesByMember(Long memberId) {
 
-        // 메인 쿼리 - 사용자 선호 카테고리와 매칭된 공연 조회
+        // 사용자 선호 카테고리와 매칭된 공연 조회
         List<Tuple> results = jpaQueryFactory
                 .select(qMember.name,
                         qPerformanceEntity.performanceId,
@@ -194,7 +194,8 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .join(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .join(qCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
                 .join(qMemberCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qMemberCategoryEntity.category))
-                .where(qMemberCategoryEntity.member.memberId.eq(memberId))
+                .where(qMemberCategoryEntity.member.memberId.eq(memberId)
+                        .and(qPerformanceEntity.performanceStatus.eq(CONFIRMED)))
                 .groupBy(qPerformanceEntity.performanceId,
                         qCategoryEntity.categoryId)
                 .limit(10)
@@ -207,21 +208,23 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
             Long performanceId = tuple.get(qPerformanceEntity.performanceId);
 
             // performanceId 기준으로 이미 존재하는 PerformanceWithCategory 객체가 있는지 확인
-            PerformanceWithCategory performance = performanceMap.computeIfAbsent(performanceId, k -> new PerformanceWithCategory(
-                    tuple.get(qMember.name),
-                    performanceId,
-                    tuple.get(qPerformanceEntity.title),
-                    tuple.get(qPerformanceEntity.dateStartTime),
-                    tuple.get(qPerformanceEntity.dateEndTime),
-                    tuple.get(qPerformanceEntity.address),
-                    tuple.get(qPerformanceEntity.imageUrl),
-                    tuple.get(qPerformanceEntity.price),
-                    tuple.get(qPerformanceEntity.performanceStatus),
-                    tuple.get(qPerformanceEntity.remainingTickets)
-            ));
+            PerformanceWithCategory performance = performanceMap.computeIfAbsent(
+                    performanceId, k -> new PerformanceWithCategory(
+                            tuple.get(qMember.name),
+                            performanceId,
+                            tuple.get(qPerformanceEntity.title),
+                            tuple.get(qPerformanceEntity.dateStartTime),
+                            tuple.get(qPerformanceEntity.dateEndTime),
+                            tuple.get(qPerformanceEntity.address),
+                            tuple.get(qPerformanceEntity.imageUrl),
+                            tuple.get(qPerformanceEntity.price),
+                            tuple.get(qPerformanceEntity.performanceStatus),
+                            tuple.get(qPerformanceEntity.remainingTickets)
+                    ));
 
             // 카테고리 리스트에 카테고리 추가
-            List<CategoryContent> categories = performance.getCategories() != null ? performance.getCategories() : new ArrayList<>();
+            List<CategoryContent> categories
+                    = performance.getCategories() != null ? performance.getCategories() : new ArrayList<>();
             categories.add(new CategoryContent(
                     tuple.get(qCategoryEntity.categoryId),
                     tuple.get(qCategoryEntity.nameKr),
@@ -237,14 +240,44 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
         return sortedPerformances;
     }
 
+    /**
+     * 실시간 인기공연을 조회한다.
+     *
+     * @param performanceIds
+     * @return
+     */
+    @Override
+    public List<PerformanceWithCategory> getPerformancesByIds(List<Long> performanceIds) {
+
+        List<PerformanceWithCategory> performances = jpaQueryFactory
+                .selectDistinct(Projections.constructor(PerformanceWithCategory.class,
+                        qMember.name.as("memberName"),
+                        qPerformanceEntity.performanceId.as("performanceId"),
+                        qPerformanceEntity.title.as("title"),
+                        qPerformanceEntity.dateStartTime.as("dateStartTime"),
+                        qPerformanceEntity.dateEndTime.as("dateEndTime"),
+                        qPerformanceEntity.address.as("address"),
+                        qPerformanceEntity.imageUrl.as("imageUrl"),
+                        qPerformanceEntity.price.as("price"),
+                        qPerformanceEntity.performanceStatus.as("status"),
+                        qPerformanceEntity.remainingTickets.as("remainingTicket")
+                ))
+                .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .where(qPerformanceEntity.performanceId.in(performanceIds))
+                .fetch();
+
+        return addCategoriesToPerformances(performances);
+    }
 
 
     /**
      * 공연 상세 조회
-     * @author Icecoff22
+     *
      * @param performanceId
      * @return Optional PerformanceDetail dto
-     *
+     * @author Icecoff22
      */
     @Override
     public Optional<PerformanceDetail> getPerformanceDetail(Long performanceId) {

@@ -95,6 +95,14 @@ dependencies {
 
     implementation 'commons-net:commons-net:3.9.0'
 
+    // redis 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+    // embedded-redis 의존성 추가
+    implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.2'
+
+
 }
 
 //querydsl 추가 시작
