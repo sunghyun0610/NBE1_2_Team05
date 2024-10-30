@@ -36,6 +36,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    implementation 'org.hibernate:hibernate-spatial:6.4.1.Final'
+    implementation 'org.locationtech.jts:jts-core:1.18.1'
+
     // query dsl 추가. spring boot 3 이상에서 :jakarta를 붙여야 오류 발생x
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
