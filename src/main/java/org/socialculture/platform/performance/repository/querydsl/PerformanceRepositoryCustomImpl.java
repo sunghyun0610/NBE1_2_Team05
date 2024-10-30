@@ -105,16 +105,16 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
     }
 
     private BooleanTemplate getContainsBooleanExpression(Point location, Integer radius) {
-        String geoFunction = "ST_CONTAINS(ST_BUFFER(ST_GeomFromText('%s', 4326), {0}), location)";
-        String expression = String.format(geoFunction, location.toString());
+        String geoFunction = "ST_CONTAINS(ST_BUFFER(ST_GeomFromText('%s', 4326), {0}), coordinate)";
+        String expression = String.format(geoFunction, location);
 
         return Expressions.booleanTemplate(expression, radius);
     }
 
-    private OrderSpecifier<?> getOrderSpecifiersByDistance(Point location) {
-        String geoFunction = "ST_Distance_Sphere(location, {0})";
-        return new OrderSpecifier<>(Order.ASC, Expressions.numberTemplate(Double.class, geoFunction, location));
-    }
+//    private OrderSpecifier<?> getOrderSpecifiersByDistance(Point location) {
+//        String geoFunction = "ST_Distance_Sphere(coordinate, {0})";
+//        return new OrderSpecifier<>(Order.ASC, Expressions.numberTemplate(Double.class, geoFunction, location));
+//    }
 
 
 
@@ -378,11 +378,11 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
      * @Author Icecoff22
      * @param location : geo 좌표
      * @param radius : 좌표 중심 원(~km까지)
-     * @param totalCount : 뽑아낼 공연 갯수
+     * @param pageable : 페이징
      * @return
      */
     @Override
-    public List<PerformanceWithCategory> getPerformanceAroundPoint(Point location, Integer radius, Integer totalCount) {
+    public Page<PerformanceWithCategory> getPerformanceAroundPoint(Point location, Integer radius, Pageable pageable) {
         // 사용자 선호 카테고리와 매칭된 공연 조회
         List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
                         qMember.name.as("memberName"),
@@ -400,9 +400,27 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
                 .where(getContainsBooleanExpression(location, radius))
-                .orderBy(getOrderSpecifiersByDistance(location))
-                .limit(totalCount)
+                //.orderBy(getOrderSpecifiersByDistance(location))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetch();
-        return addCategoriesToPerformances(performances);
+
+        if (performances.isEmpty()) {
+            return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
+        }
+
+        Long totalCount = jpaQueryFactory
+                .select(qPerformanceEntity.count())
+                .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .where(getContainsBooleanExpression(location, radius))
+                .fetchOne();
+
+        if (totalCount == null) {
+            totalCount = 0L;
+        }
+
+        return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
     }
 }

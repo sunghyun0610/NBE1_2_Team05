@@ -22,5 +22,5 @@ public interface PerformanceRepositoryCustom {
 
     Page<PerformanceWithCategory> getMyPerformanceWithCategoryList(String email, Pageable pageable);
 
-    List<PerformanceWithCategory> getPerformanceAroundPoint(Point location, Integer radius, Integer totalCount);
+    Page<PerformanceWithCategory> getPerformanceAroundPoint(Point location, Integer radius, Pageable pageable);
 }
