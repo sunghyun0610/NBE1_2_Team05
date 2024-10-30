@@ -67,10 +67,14 @@ public class TicketServiceImpl implements TicketService {
 
     //내부에서 사용 - 비관적락 적용시킨 performanceEntity 가져오기(by performanceId)
     private PerformanceEntity findPerformanceByIdWithLock(Long performanceId) {
-        PerformanceEntity performance;
-        performance = performanceRepository.findByIdWithLock(performanceId)
-                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
-        return performance;
+        try {
+            PerformanceEntity performance;
+            performance = performanceRepository.findByIdWithLock(performanceId)
+                    .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
+            return performance;
+        }catch (PessimisticLockException e){
+            throw new GeneralException(ErrorStatus.DB_LOCK_FAILURE);
+        }
     }
 
     //내부에서 사용 - 티켓 수량 체크 validation 메소드
