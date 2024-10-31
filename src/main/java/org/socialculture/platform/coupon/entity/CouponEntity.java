@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.socialculture.platform.global.entity.BaseEntity;
 import org.socialculture.platform.member.entity.MemberEntity;
+import org.socialculture.platform.performance.entity.PerformanceEntity;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,8 +32,12 @@ public class CouponEntity extends BaseEntity {
     private Long couponId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id")
     private MemberEntity member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "performance_id")
+    private PerformanceEntity performance;
 
     @Column(name = "name", nullable = false, length = 30)
     private String name;
@@ -41,10 +48,15 @@ public class CouponEntity extends BaseEntity {
     @Column(name = "is_used", nullable = false)
     private boolean isUsed;
 
-    @Column(name = "expire_time", nullable = false)
+    @Column(name = "expire_time")
     private LocalDateTime expireTime;
 
     public void setUsed(boolean used) {
         this.isUsed = used;
+    }
+
+    public void updateMemberAndExpiration(MemberEntity member) {
+        this.member = member;
+        this.expireTime = LocalDateTime.now().plusDays(3); //3일 뒤 만료
     }
 }

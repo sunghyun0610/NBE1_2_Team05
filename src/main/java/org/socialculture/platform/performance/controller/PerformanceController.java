@@ -10,10 +10,10 @@ import org.socialculture.platform.performance.dto.request.PerformanceUpdateReque
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
+import org.socialculture.platform.performance.entity.PerformanceStatus;
 import org.socialculture.platform.performance.service.PerformanceService;
 import org.socialculture.platform.performance.service.ImageUploadService;
 import org.socialculture.platform.performance.service.PerformanceViewCountService;
-import org.socialculture.platform.performance.service.PerformanceViewCountServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -89,8 +89,14 @@ public class PerformanceController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("performanceId") Long performanceId
     ) {
-        performanceViewCountService.incrementViewCount(performanceId);
-        return ApiResponse.onSuccess(performanceService.getPerformanceDetail(userDetails.getUsername(), performanceId));
+
+        PerformanceDetailResponse performanceDetail = performanceService
+                .getPerformanceDetail(userDetails.getUsername(), performanceId);
+
+        if(performanceDetail.status().equals(PerformanceStatus.CONFIRMED)){
+            performanceViewCountService.incrementViewCount(performanceId);
+        }
+        return ApiResponse.onSuccess(performanceDetail);
     }
 
     /**

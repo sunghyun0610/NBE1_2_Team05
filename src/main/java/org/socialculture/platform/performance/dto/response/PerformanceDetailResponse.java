@@ -1,6 +1,8 @@
 package org.socialculture.platform.performance.dto.response;
 
 import lombok.Builder;
+import org.socialculture.platform.coupon.dto.response.CouponResponseDto;
+import org.socialculture.platform.coupon.entity.CouponEntity;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceDetail;
 import org.socialculture.platform.performance.entity.PerformanceStatus;
@@ -26,7 +28,8 @@ public record PerformanceDetailResponse(
     boolean isUpdatable,
     LocalDateTime createdAt,
     LocalDateTime updatedAt,
-    List<CategoryDto>categories
+    List<CategoryDto>categories,
+    List<CouponResponseDto> firstComeCoupons
 ) {
     public static PerformanceDetailResponse from(boolean updatable, PerformanceDetail performanceDetail) {
         List<CategoryDto> categoryDtos = performanceDetail.getCategories().stream()
@@ -50,6 +53,7 @@ public record PerformanceDetailResponse(
                 .createdAt(performanceDetail.getCreatedAt())
                 .updatedAt(performanceDetail.getUpdatedAt())
                 .categories(categoryDtos)
+                .firstComeCoupons(performanceDetail.getFirstComeCoupons())
                 .build();
     }
 }
