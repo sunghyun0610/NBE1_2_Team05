@@ -183,13 +183,13 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     @Override
-    public PerformanceListResponse getAroundPoint(Double latitude, Double longitude, Integer offset, Integer limit) {
+    public PerformanceListResponse getAroundPoint(Double latitude, Double longitude, Integer page, Integer size) {
         final Integer radius = 5000; // 반경 5km 이내 공연 추천
 
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point location = geometryFactory.createPoint(new Coordinate(latitude, longitude));
 
-        Pageable pageable = PageRequest.of(offset, limit);
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<PerformanceWithCategory> performanceList =
                 performanceRepository.getPerformanceAroundPoint(location, radius, pageable);

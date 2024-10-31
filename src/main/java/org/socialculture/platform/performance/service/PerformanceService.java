@@ -27,5 +27,5 @@ public interface PerformanceService {
 
     PerformanceListResponse getPopularPerformances(List<Long> performanceIds);
 
-    PerformanceListResponse getAroundPoint(Double latitude, Double longitude, Integer offset, Integer limit);
+    PerformanceListResponse getAroundPoint(Double latitude, Double longitude, Integer page, Integer size);
 }

@@ -182,9 +182,9 @@ public class PerformanceController {
     public ResponseEntity<ApiResponse<PerformanceListResponse>> getAroundPoint(
             @RequestParam("latitude") Double latitude,
             @RequestParam("longitude") Double longitude,
-            @RequestParam("offset") Integer offset,
-            @RequestParam("limit") Integer limit
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size
     ) {
-        return ApiResponse.onSuccess(performanceService.getAroundPoint(latitude, longitude, offset, limit));
+        return ApiResponse.onSuccess(performanceService.getAroundPoint(latitude, longitude, page, size));
     }
 }
