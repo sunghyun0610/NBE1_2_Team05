@@ -2,6 +2,7 @@ package org.socialculture.platform.performance.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
+import org.socialculture.platform.performance.dto.response.PerformanceQueueResponse;
 import org.socialculture.platform.performance.service.PerformanceQueueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,8 @@ public class PerformanceQueueController {
 
    //대기열에 사용자 추가
     @PostMapping("/enter")
-    public ResponseEntity<ApiResponse<Map<String,Object>>> enterQueue(@AuthenticationPrincipal UserDetails userDetails ,@RequestParam("performanceId") Long performanceId) {
+    public ResponseEntity<ApiResponse<PerformanceQueueResponse>> enterQueue(@AuthenticationPrincipal UserDetails userDetails ,@RequestParam("performanceId") Long performanceId) {
+
 
         String  userEmail = userDetails.getUsername();
         Long performance = performanceId;// 공연별로 대기열 구축하는 확장성 고려
@@ -34,11 +36,10 @@ public class PerformanceQueueController {
         queueService.addToQueue(userEmail, performanceId);
 
         Long rank = queueService.getRank(userEmail, performanceId);
-        Map<String, Object> result = new HashMap<>();
-        result.put("userId", userEmail);
-        result.put("rank", rank);
 
-        return ApiResponse.onSuccess(result);
+        PerformanceQueueResponse performanceQueueResponse = PerformanceQueueResponse.from(userEmail,rank);
+
+        return ApiResponse.onSuccess(performanceQueueResponse);
     }
 
 
