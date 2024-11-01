@@ -30,7 +30,7 @@ public record PerformanceRegisterRequest(
     public PerformanceEntity toEntity(PerformanceRegisterRequest performanceRegisterRequest) {
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point coordinate = geometryFactory.createPoint(
-                new Coordinate(performanceRegisterRequest.latitude, performanceRegisterRequest.longitude));
+                new Coordinate(performanceRegisterRequest.longitude, performanceRegisterRequest.latitude));
 
         return PerformanceEntity.builder()
                 .title(performanceRegisterRequest.title)
