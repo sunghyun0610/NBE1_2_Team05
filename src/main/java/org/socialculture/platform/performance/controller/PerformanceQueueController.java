@@ -31,9 +31,9 @@ public class PerformanceQueueController {
         log.info("컨트롤러 userName " +userEmail);
         log.info("컨트롤러 performanceId " +performanceId);
         // Redis에 사용자 대기열 추가
-        queueService.addToQueue(userEmail);
+        queueService.addToQueue(userEmail, performanceId);
 
-        Long rank = queueService.getRank(userEmail);
+        Long rank = queueService.getRank(userEmail, performanceId);
         Map<String, Object> result = new HashMap<>();
         result.put("userId", userEmail);
         result.put("rank", rank);
