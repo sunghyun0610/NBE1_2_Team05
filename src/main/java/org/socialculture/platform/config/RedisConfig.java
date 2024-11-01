@@ -59,4 +59,14 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(redisConnectionFactory());
         return redisTemplate;
     }
+
+    @Bean(name = "queueRedisTemplate")
+    public RedisTemplate<String, String> queueRedisTemplate() {
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new StringRedisSerializer()); // 사용자 ID를 String으로 처리
+        return redisTemplate;
+    }
+
 }
