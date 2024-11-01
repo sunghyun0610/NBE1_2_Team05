@@ -218,7 +218,8 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .join(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .join(qCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qCategoryEntity))
                 .join(qMemberCategoryEntity).on(qPerformanceCategoryEntity.category.eq(qMemberCategoryEntity.category))
-                .where(qMemberCategoryEntity.member.memberId.eq(memberId))
+                .where(qMemberCategoryEntity.member.memberId.eq(memberId)
+                        .and(qPerformanceEntity.performanceStatus.eq(CONFIRMED)))
                 .groupBy(qPerformanceEntity.performanceId,
                         qCategoryEntity.categoryId)
                 .limit(10)

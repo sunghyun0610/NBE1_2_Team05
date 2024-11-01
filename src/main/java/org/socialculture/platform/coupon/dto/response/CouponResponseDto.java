@@ -17,7 +17,8 @@ public record CouponResponseDto(
         int percent,
         boolean isUsed,
         LocalDateTime expireTime,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String performanceTitle
 ) {
     // 정적 팩토리 메서드 create
     public static CouponResponseDto create(Long couponId, String name, int percent, boolean isUsed,
@@ -29,6 +30,7 @@ public record CouponResponseDto(
                 .isUsed(isUsed)
                 .expireTime(expireTime)
                 .createdAt(createdAt)
+                .performanceTitle(null)
                 .build();
     }
 
@@ -40,7 +42,8 @@ public record CouponResponseDto(
                 couponEntity.getPercent(),
                 couponEntity.isUsed(),
                 couponEntity.getExpireTime(),
-                couponEntity.getCreatedAt()
+                couponEntity.getCreatedAt(),
+                couponEntity.getPerformance().getTitle()
         );
     }
 }

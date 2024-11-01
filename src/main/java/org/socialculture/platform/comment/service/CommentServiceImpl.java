@@ -59,7 +59,8 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentReadDto> getAllComment(long performanceId, Pageable pageable) {
 
         // 부모 댓글만 조회하도록 수정 -> 즉 parentId == null인것들만 먼저 조회
-        List<CommentEntity> commentEntityList = commentRepository.findParentCommentsByPerformanceId(performanceId, pageable);
+        List<CommentEntity> commentEntityList = commentRepository.findParentCommentsByPerformanceId(
+                performanceId, pageable);
 
 
         if (commentEntityList.isEmpty()) {

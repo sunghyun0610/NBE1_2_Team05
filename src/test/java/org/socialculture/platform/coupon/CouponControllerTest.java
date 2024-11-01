@@ -59,7 +59,7 @@ public class CouponControllerTest {
                 )
         );
 
-        given(couponService.getAllCouponsByMemberEmail(username))
+        given(couponService.getAllCouponsByMemberEmail(username, null))
                 .willReturn(couponList);
 
         ResultActions result = this.mockMvc.perform(

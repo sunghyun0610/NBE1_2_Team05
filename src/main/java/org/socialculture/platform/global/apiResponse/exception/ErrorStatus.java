@@ -23,6 +23,8 @@ public enum ErrorStatus implements BaseErrorCode{
     _COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "COUPON400", "해당 쿠폰을 찾을 수 없습니다."),
     _COUPON_ALREADY_USED(HttpStatus.BAD_REQUEST, "COUPON400", "이미 사용된 쿠폰입니다."),
     _COUPON_EXPIRED(HttpStatus.BAD_REQUEST, "COUPON400", "만료된 쿠폰입니다."),
+    _FIRST_COME_COUPON_NOT_FOUND(HttpStatus.NOT_FOUND, "COUPON400", "선착순 쿠폰이 마감되었습니다."),
+    _ALREADY_RECEIVED_FIRST_COME_COUPON(HttpStatus.BAD_REQUEST, "COUPON401", "이미 발급 받은 선착순 쿠폰이 있습니다."),
 
     // 유저 관련 에러
     LOGIN_FAIL(HttpStatus.UNAUTHORIZED, "MEMBER4001", "로그인에 실패했습니다."),
@@ -66,7 +68,11 @@ public enum ErrorStatus implements BaseErrorCode{
 
     //댓글
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "COMMENT404","댓글을 찾을 수 없습니다."),
-    _COMMENT_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "COMMENT403", "댓글 수정 권한이 없습니다. 본인이 작성한 댓글만 수정할 수 있습니다.");
+    _COMMENT_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "COMMENT403", "댓글 수정 권한이 없습니다. 본인이 작성한 댓글만 수정할 수 있습니다."),
+
+    //DB Lock 관련
+    DB_LOCK_FAILURE(HttpStatus.CONFLICT, "DB_LOCK409", "DB 락을 획득하지 못했습니다. 다시 시도해 주세요.");
+
 
 
     private final HttpStatus httpStatus;
