@@ -37,4 +37,6 @@ out/
 ### VS Code ###
 .vscode/
 src/main/generated/
+src/main/resources/redis/dump.rdb
+
 

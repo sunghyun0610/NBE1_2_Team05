@@ -69,10 +69,14 @@ public class PerformanceQueueService {
     // 일정 간격으로 대기열 배치 처리
     @Scheduled(fixedDelay = 10000) // 10초마다 실행
     public void scheduledProcessBatch() {
-        List<String> processeduserEmails = processNextBatch(10);
-        if (!processeduserEmails.isEmpty()) {
-            log.info("Processed users: "+ processeduserEmails);
-            // 추가 처리가 필요한 경우(알림, 상태 업데이트 등)를 여기서 수행 가능
+
+        Long queueSize = redisTemplate.opsForZSet().zCard(QUEUE_KEY);
+        if(queueSize!=null && queueSize>0) {
+            List<String> processeduserEmails = processNextBatch(10);
+            if (!processeduserEmails.isEmpty()) {
+                log.info("Processed users: " + processeduserEmails);
+                // 추가 처리가 필요한 경우(알림, 상태 업데이트 등)를 여기서 수행 가능
+            }
         }
     }
 
