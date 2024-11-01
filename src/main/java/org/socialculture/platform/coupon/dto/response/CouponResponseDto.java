@@ -30,6 +30,7 @@ public record CouponResponseDto(
                 .isUsed(isUsed)
                 .expireTime(expireTime)
                 .createdAt(createdAt)
+                .performanceTitle(null)
                 .build();
     }
 
