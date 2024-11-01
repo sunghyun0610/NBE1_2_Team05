@@ -24,9 +24,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(chatWebSocketHandler, "/ws/chat")
+        registry.addHandler(chatWebSocketHandler, "/ws/chat", "/ws/chat/chat-list")
                 .setAllowedOrigins("*")  // CORS 설정, 모든 도메인 허용
-                .addInterceptors(new JwtHandshakeInterceptor(jwtTokenProvider))
+                // .addInterceptors(new JwtHandshakeInterceptor(jwtTokenProvider))
                 .addInterceptors(new HttpSessionHandshakeInterceptor());  // WebSocket 핸드셰이크 시 세션 정보 유지
     }
 }

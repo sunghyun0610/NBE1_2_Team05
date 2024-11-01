@@ -1,6 +1,7 @@
 package org.socialculture.platform.chat.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.chat.dto.ChatMessageDto;
 import org.socialculture.platform.chat.dto.request.ChatMessageRequestDto;
 import org.socialculture.platform.chat.dto.request.ChatRoomRequestDto;
 import org.socialculture.platform.chat.dto.response.ChatMessageResponseDto;
@@ -37,8 +38,10 @@ public class ChatController {
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long chatRoomId,
             @RequestBody ChatMessageRequestDto chatMessageRequestDto) {
-
-        return ApiResponse.onSuccess(chatService.sendMessage(userDetails.getUsername(), chatRoomId, chatMessageRequestDto));
+        ChatMessageDto chatMessageDto = ChatMessageDto.of(chatRoomId,
+                userDetails.getUsername(),
+                chatMessageRequestDto.messageContent());
+        return ApiResponse.onSuccess(chatService.saveMessage(chatMessageDto));
     }
 
     // 특정 채팅방의 메시지 목록 조회

@@ -1,5 +1,6 @@
 package org.socialculture.platform.chat.service;
 
+import org.socialculture.platform.chat.dto.ChatMessageDto;
 import org.socialculture.platform.chat.dto.request.ChatMessageRequestDto;
 import org.socialculture.platform.chat.dto.request.ChatRoomRequestDto;
 import org.socialculture.platform.chat.dto.response.ChatMessageResponseDto;
@@ -13,7 +14,7 @@ public interface ChatService {
     ChatRoomResponseDto createChatRoom(String email, Long performanceId);
 
     // 채팅 메시지 전송
-    ChatMessageResponseDto sendMessage(String email, Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto);
+    ChatMessageResponseDto saveMessage(ChatMessageDto chatMessageDto);
 
     // 특정 채팅방의 모든 메시지 조회
     List<ChatMessageResponseDto> getMessagesByChatRoom(Long chatRoomId);

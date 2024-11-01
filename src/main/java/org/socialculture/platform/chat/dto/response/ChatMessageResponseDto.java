@@ -1,6 +1,7 @@
 package org.socialculture.platform.chat.dto.response;
 
 import lombok.Builder;
+import lombok.Getter;
 import org.socialculture.platform.chat.entity.ChatMessageEntity;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,8 @@ public record ChatMessageResponseDto(
         Long senderId,
         String senderName,
         String messageContent,
-        LocalDateTime sentAt
+        LocalDateTime sentAt,
+        int unreadCount
 ) {
     // fromEntity 메서드
     public static ChatMessageResponseDto fromEntity(ChatMessageEntity chatMessageEntity) {
@@ -23,6 +25,7 @@ public record ChatMessageResponseDto(
                 .senderName(chatMessageEntity.getSender().getName())
                 .messageContent(chatMessageEntity.getMessageContent())
                 .sentAt(chatMessageEntity.getSentAt())
+                .unreadCount(10)
                 .build();
     }
 }

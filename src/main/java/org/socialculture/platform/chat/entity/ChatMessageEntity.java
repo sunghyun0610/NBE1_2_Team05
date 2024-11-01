@@ -39,4 +39,7 @@ public class ChatMessageEntity {
     @Column(name = "sent_at", nullable = false, updatable = false)
     @CreatedDate
     private LocalDateTime sentAt;  // 메시지가 전송된 시간 (자동 설정)
+
+    @Column(name = "is_read", nullable = false)
+    private Boolean isRead = false;  // 메시지 읽음 여부 (기본값: false)
 }

@@ -1,6 +1,7 @@
 package org.socialculture.platform.chat.service;
 
 import lombok.RequiredArgsConstructor;
+import org.socialculture.platform.chat.dto.ChatMessageDto;
 import org.socialculture.platform.chat.dto.request.ChatMessageRequestDto;
 import org.socialculture.platform.chat.dto.request.ChatRoomRequestDto;
 import org.socialculture.platform.chat.dto.response.ChatMessageResponseDto;
@@ -61,16 +62,17 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public ChatMessageResponseDto sendMessage(String email, Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto) {
-        ChatRoomEntity chatRoomEntity = chatRoomRepository.findById(chatRoomId)
+    public ChatMessageResponseDto saveMessage(ChatMessageDto chatMessageDto) {
+        ChatRoomEntity chatRoomEntity = chatRoomRepository.findById(chatMessageDto.getChatRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
-        MemberEntity senderEntity = memberRepository.findByEmail(email)
+        MemberEntity senderEntity = memberRepository.findByEmail(chatMessageDto.getSenderEmail())
                 .orElseThrow(() -> new IllegalArgumentException("메시지 보낸 사용자를 찾을 수 없습니다."));
 
         ChatMessageEntity message = ChatMessageEntity.builder()
                 .chatRoomEntity(chatRoomEntity)
                 .sender(senderEntity)
-                .messageContent(chatMessageRequestDto.messageContent())
+                .messageContent(chatMessageDto.getMessage())
+                .isRead(false)
                 .build();
 
         ChatMessageEntity savedMessage = chatMessageRepository.save(message);
