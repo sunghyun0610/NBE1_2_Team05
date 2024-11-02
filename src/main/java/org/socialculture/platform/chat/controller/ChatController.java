@@ -52,7 +52,9 @@ public class ChatController {
 
     // 사용자가 참여한 채팅방 목록 조회
     @GetMapping("/room/my")
-    public ResponseEntity<ApiResponse<List<ChatRoomResponseDto>>> getChatRooms(@AuthenticationPrincipal UserDetails userDetails) {
-        return ApiResponse.onSuccess(chatService.getChatRoomsByMember(userDetails.getUsername()));
+    public ResponseEntity<ApiResponse<List<ChatRoomResponseDto>>> getChatRooms(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(name = "isManager", defaultValue = "false") boolean isManager) {
+        return ApiResponse.onSuccess(chatService.getChatRoomsByMember(userDetails.getUsername(), isManager));
     }
 }

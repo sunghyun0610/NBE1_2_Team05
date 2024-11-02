@@ -32,13 +32,14 @@ public class ChatRoomRepositoryCustomImpl implements ChatRoomRepositoryCustom {
     }
 
     @Override
-    public List<ChatRoomEntity> getChatRoomsByMemberEmail(String email) {
+    public List<ChatRoomEntity> getChatRoomsByEmail(String email, boolean isManager) {
         QChatRoomEntity chatRoomEntity = QChatRoomEntity.chatRoomEntity;
         QMemberEntity memberEntity = QMemberEntity.memberEntity;
 
         return queryFactory.selectFrom(chatRoomEntity)
-                .join(chatRoomEntity.member, memberEntity) // ChatRoom의 member와 MemberEntity를 조인
+                .join(isManager ? chatRoomEntity.manager : chatRoomEntity.member, memberEntity) // manager 또는 member로 조인
                 .where(memberEntity.email.eq(email)) // 이메일 조건으로 필터링
                 .fetch();
     }
+
 }

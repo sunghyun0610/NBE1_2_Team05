@@ -69,7 +69,7 @@ public class ChatServiceImpl implements ChatService {
     public ChatMessageResponseDto saveMessage(ChatMessageDto chatMessageDto) {
         ChatRoomEntity chatRoomEntity = chatRoomRepository.findById(chatMessageDto.getChatRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
-        MemberEntity senderEntity = memberRepository.findByEmail(chatMessageDto.getSenderEmail())
+        MemberEntity senderEntity = memberRepository.findByName(chatMessageDto.getSenderName())
                 .orElseThrow(() -> new IllegalArgumentException("메시지 보낸 사용자를 찾을 수 없습니다."));
 
         ChatMessageEntity message = ChatMessageEntity.builder()
@@ -94,9 +94,9 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatRoomResponseDto> getChatRoomsByMember(String email) {
+    public List<ChatRoomResponseDto> getChatRoomsByMember(String email, boolean isManager) {
         // 이메일로 사용자가 참여한 채팅방 목록을 조회
-        return chatRoomRepository.getChatRoomsByMemberEmail(email).stream()
+        return chatRoomRepository.getChatRoomsByEmail(email, isManager).stream()
                 .map(chatRoomEntity -> {
                     // 각 채팅방의 마지막 메시지와 시간 경과 조회
                     Map<String, Object> lastMessageInfo = chatMessageRepository.findLastMessageAndTimeAgoForChatRoom(chatRoomEntity.getChatRoomId());

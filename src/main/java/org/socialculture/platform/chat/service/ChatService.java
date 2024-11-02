@@ -20,5 +20,5 @@ public interface ChatService {
     List<ChatMessageResponseDto> getMessagesByChatRoom(Long chatRoomId);
 
     // 특정 유저의 채팅방 목록 조회
-    List<ChatRoomResponseDto> getChatRoomsByMember(String email);
+    List<ChatRoomResponseDto> getChatRoomsByMember(String email, boolean isManager);
 }
