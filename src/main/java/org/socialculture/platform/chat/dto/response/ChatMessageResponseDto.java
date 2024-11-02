@@ -1,8 +1,8 @@
 package org.socialculture.platform.chat.dto.response;
 
 import lombok.Builder;
-import lombok.Getter;
 import org.socialculture.platform.chat.entity.ChatMessageEntity;
+import org.socialculture.platform.chat.util.TimeAgoUtil;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +14,7 @@ public record ChatMessageResponseDto(
         String senderName,
         String messageContent,
         LocalDateTime sentAt,
+        String formattedSentTime, // 채팅 화면에서 채팅 시간 설정
         int unreadCount
 ) {
     // fromEntity 메서드
@@ -25,6 +26,7 @@ public record ChatMessageResponseDto(
                 .senderName(chatMessageEntity.getSender().getName())
                 .messageContent(chatMessageEntity.getMessageContent())
                 .sentAt(chatMessageEntity.getSentAt())
+                .formattedSentTime(TimeAgoUtil.formatToAmPm(chatMessageEntity.getSentAt())) // 변경된 필드명 반영
                 .unreadCount(10)
                 .build();
     }

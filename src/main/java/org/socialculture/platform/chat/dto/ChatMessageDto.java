@@ -18,7 +18,6 @@ public class ChatMessageDto {
     private Long senderId; // 채팅을 보낸 사람
     private String senderEmail;
     private String message; // 메시지
-    private LocalDateTime sentAt;  // 메시지가 전송된 시간
 
     // chatRoomId, senderEmail, message를 담은 정적 팩토리 메서드
     public static ChatMessageDto of(Long chatRoomId, String senderEmail, String message) {
@@ -26,16 +25,14 @@ public class ChatMessageDto {
                 .chatRoomId(chatRoomId)
                 .senderEmail(senderEmail)
                 .message(message)
-                .sentAt(LocalDateTime.now())
                 .build();
     }
 
     @Builder
-    public ChatMessageDto(Long chatRoomId, Long senderId, String senderEmail, String message, LocalDateTime sentAt) {
+    public ChatMessageDto(Long chatRoomId, Long senderId, String senderEmail, String message) {
         this.chatRoomId = chatRoomId;
         this.senderId = senderId;
         this.senderEmail = senderEmail;
         this.message = message;
-        this.sentAt = sentAt;
     }
 }
