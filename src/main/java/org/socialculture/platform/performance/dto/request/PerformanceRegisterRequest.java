@@ -18,6 +18,7 @@ public record PerformanceRegisterRequest(
         LocalDateTime dateStartTime,
         LocalDateTime dateEndTime,
         String address,
+        String location,
         Double latitude,
         Double longitude,
         String imageUrl,
@@ -38,6 +39,7 @@ public record PerformanceRegisterRequest(
                 .dateEndTime(performanceRegisterRequest.dateEndTime)
                 .description(performanceRegisterRequest.description)
                 .maxAudience(performanceRegisterRequest.maxAudience)
+                .location(performanceRegisterRequest.location)
                 .address(performanceRegisterRequest.address)
                 .coordinate(coordinate)
                 .imageUrl(performanceRegisterRequest.imageUrl)

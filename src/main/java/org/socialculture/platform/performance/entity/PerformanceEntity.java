@@ -46,6 +46,9 @@ public class PerformanceEntity extends BaseEntity {
     @Column(name = "address")
     private String address;
 
+    @Column(name = "location")
+    private String location;
+
     @Column(name = "coordinate", columnDefinition = "GEOMETRY(POINT, 4326)")
     private Point coordinate;
 

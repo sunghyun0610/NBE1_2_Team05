@@ -209,7 +209,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         final Integer radius = 5000; // 반경 5km 이내 공연 추천
 
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        Point location = geometryFactory.createPoint(new Coordinate(latitude, longitude));
+        Point location = geometryFactory.createPoint(new Coordinate(longitude, latitude));
 
         Pageable pageable = PageRequest.of(page, size);
 
