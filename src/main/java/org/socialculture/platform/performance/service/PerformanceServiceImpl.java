@@ -1,6 +1,10 @@
 package org.socialculture.platform.performance.service;
 
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.socialculture.platform.coupon.dto.response.CouponResponseDto;
 import org.socialculture.platform.coupon.entity.CouponEntity;
 import org.socialculture.platform.coupon.repository.CouponRepository;
@@ -13,11 +17,8 @@ import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.domain.PerformanceDetail;
 import org.socialculture.platform.performance.dto.domain.PerformanceWithCategory;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
+import org.socialculture.platform.performance.dto.response.*;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
-import org.socialculture.platform.performance.dto.response.PerformanceUpdateResponse;
 import org.socialculture.platform.performance.entity.CategoryEntity;
 import org.socialculture.platform.performance.entity.PerformanceCategoryEntity;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
@@ -26,6 +27,7 @@ import org.socialculture.platform.performance.repository.PerformanceCategoryRepo
 import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -200,6 +202,21 @@ public class PerformanceServiceImpl implements PerformanceService {
                 .collect(Collectors.toList());
 
         return PerformanceListResponse.from(sortedPerformances.size(), sortedPerformances);
+    }
+
+    @Override
+    public PerformanceListResponse getAroundPoint(Double latitude, Double longitude, Integer page, Integer size) {
+        final Integer radius = 5000; // 반경 5km 이내 공연 추천
+
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point location = geometryFactory.createPoint(new Coordinate(latitude, longitude));
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<PerformanceWithCategory> performanceList =
+                performanceRepository.getPerformanceAroundPoint(location, radius, pageable);
+
+        return PerformanceListResponse.from(performanceList.getTotalElements(), performanceList.getContent());
     }
 
 

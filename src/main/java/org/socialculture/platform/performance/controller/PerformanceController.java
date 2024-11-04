@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.socialculture.platform.global.apiResponse.ApiResponse;
 import org.socialculture.platform.performance.dto.CategoryDto;
 import org.socialculture.platform.performance.dto.request.PerformanceRegisterRequest;
-import org.socialculture.platform.performance.dto.response.PerformanceRegisterResponse;
+import org.socialculture.platform.performance.dto.response.*;
 import org.socialculture.platform.performance.dto.request.PerformanceUpdateRequest;
 import org.socialculture.platform.performance.dto.response.PerformanceDetailResponse;
 import org.socialculture.platform.performance.dto.response.PerformanceListResponse;
@@ -178,5 +178,22 @@ public class PerformanceController {
     @GetMapping("/categories")
     public ResponseEntity<ApiResponse<List<CategoryDto>>> getCategories() {
         return ApiResponse.onSuccess(performanceService.getCategoryList());
+    }
+
+    /**
+     * 특정 지점 주변 공연 리스트를 조회할 수 있다.(최대20개)
+     * @Author Icecoff22
+     * @param latitude
+     * @param longitude
+     * @return PerformanceList
+     */
+    @GetMapping("/around-point")
+    public ResponseEntity<ApiResponse<PerformanceListResponse>> getAroundPoint(
+            @RequestParam("latitude") Double latitude,
+            @RequestParam("longitude") Double longitude,
+            @RequestParam("page") Integer page,
+            @RequestParam("size") Integer size
+    ) {
+        return ApiResponse.onSuccess(performanceService.getAroundPoint(latitude, longitude, page, size));
     }
 }

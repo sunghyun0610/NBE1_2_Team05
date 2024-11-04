@@ -2,9 +2,17 @@ package org.socialculture.platform.performance.repository.querydsl;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.BooleanTemplate;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.locationtech.jts.geom.Point;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.QMemberCategoryEntity;
 import org.socialculture.platform.member.entity.QMemberEntity;
 import org.socialculture.platform.performance.dto.domain.CategoryContent;
@@ -14,9 +22,11 @@ import org.socialculture.platform.performance.entity.PerformanceStatus;
 import org.socialculture.platform.performance.entity.QCategoryEntity;
 import org.socialculture.platform.performance.entity.QPerformanceCategoryEntity;
 import org.socialculture.platform.performance.entity.QPerformanceEntity;
+import org.socialculture.platform.ticket.entity.QTicketEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.*;
 import java.util.function.Supplier;
@@ -93,6 +103,20 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
 
         return builder;
     }
+
+    private BooleanTemplate getContainsBooleanExpression(Point location, Integer radius) {
+        String geoFunction = "ST_CONTAINS(ST_BUFFER(ST_GeomFromText('%s', 4326), {0}), coordinate)";
+        String expression = String.format(geoFunction, location);
+
+        return Expressions.booleanTemplate(expression, radius);
+    }
+
+//    private OrderSpecifier<?> getOrderSpecifiersByDistance(Point location) {
+//        String geoFunction = "ST_Distance_Sphere(coordinate, {0})";
+//        return new OrderSpecifier<>(Order.ASC, Expressions.numberTemplate(Double.class, geoFunction, location));
+//    }
+
+
 
     /**
      * 공연 리스트 조회
@@ -341,6 +365,57 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
                 .where(memberEmailEq(email))
+                .fetchOne();
+
+        if (totalCount == null) {
+            totalCount = 0L;
+        }
+
+        return new PageImpl<>(addCategoriesToPerformances(performances), pageable, totalCount);
+    }
+
+    /**
+     * 특정 좌표에서 가까운 순서대로 공연을 조회한다.
+     * @Author Icecoff22
+     * @param location : geo 좌표
+     * @param radius : 좌표 중심 원(~km까지)
+     * @param pageable : 페이징
+     * @return
+     */
+    @Override
+    public Page<PerformanceWithCategory> getPerformanceAroundPoint(Point location, Integer radius, Pageable pageable) {
+        // 사용자 선호 카테고리와 매칭된 공연 조회
+        List<PerformanceWithCategory> performances = jpaQueryFactory.select(Projections.constructor(PerformanceWithCategory.class,
+                        qMember.name.as("memberName"),
+                        qPerformanceEntity.performanceId.as("performanceId"),
+                        qPerformanceEntity.title.as("title"),
+                        qPerformanceEntity.dateStartTime.as("dateStartTime"),
+                        qPerformanceEntity.dateEndTime.as("dateEndTime"),
+                        qPerformanceEntity.address.as("address"),
+                        qPerformanceEntity.imageUrl.as("imageUrl"),
+                        qPerformanceEntity.price.as("price"),
+                        qPerformanceEntity.performanceStatus.as("status"),
+                        qPerformanceEntity.remainingTickets.as("remainingTicket")
+                ))
+                .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .where(getContainsBooleanExpression(location, radius))
+                //.orderBy(getOrderSpecifiersByDistance(location))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        if (performances.isEmpty()) {
+            return new PageImpl<>(addCategoriesToPerformances(performances), pageable, 0);
+        }
+
+        Long totalCount = jpaQueryFactory
+                .select(qPerformanceEntity.count())
+                .from(qPerformanceEntity)
+                .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
+                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
+                .where(getContainsBooleanExpression(location, radius))
                 .fetchOne();
 
         if (totalCount == null) {
