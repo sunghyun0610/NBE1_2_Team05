@@ -19,7 +19,6 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
     private final ChatWebSocketHandler chatWebSocketHandler;
-    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
