@@ -42,6 +42,8 @@ public enum ErrorStatus implements BaseErrorCode{
     SOCIAL_NAME_REQUIRED(HttpStatus.FOUND, "SOCIAL302", "회원가입을 위해 닉네임이 필요합니다."),
     SOCIAL_INFO_INVALID(HttpStatus.BAD_REQUEST, "SOCIAL400", "사용자의 기본정보가 적절하지 않습니다."),
 
+    // 채팅 관련
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CHAT404", "채팅방을 찾을 수 없습니다."),
 
 
 

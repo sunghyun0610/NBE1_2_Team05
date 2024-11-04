@@ -1,24 +1,21 @@
 package org.socialculture.platform.chat.service;
 
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.socialculture.platform.chat.dto.ChatMessageDto;
-import org.socialculture.platform.chat.dto.request.ChatMessageRequestDto;
-import org.socialculture.platform.chat.dto.request.ChatRoomRequestDto;
 import org.socialculture.platform.chat.dto.response.ChatMessageResponseDto;
 import org.socialculture.platform.chat.dto.response.ChatRoomResponseDto;
 import org.socialculture.platform.chat.entity.ChatMessageEntity;
 import org.socialculture.platform.chat.entity.ChatRoomEntity;
 import org.socialculture.platform.chat.repository.ChatMessageRepository;
 import org.socialculture.platform.chat.repository.ChatRoomRepository;
-import org.socialculture.platform.chat.util.TimeAgoUtil;
+import org.socialculture.platform.global.apiResponse.exception.ErrorStatus;
+import org.socialculture.platform.global.apiResponse.exception.GeneralException;
 import org.socialculture.platform.member.entity.MemberEntity;
 import org.socialculture.platform.member.repository.MemberRepository;
 import org.socialculture.platform.performance.entity.PerformanceEntity;
 import org.socialculture.platform.performance.repository.PerformanceRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,11 +33,11 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatRoomResponseDto createChatRoom(String email, Long performanceId) {
         PerformanceEntity performanceEntity = performanceRepository.findById(performanceId)
-                .orElseThrow(() -> new IllegalArgumentException("공연을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.PERFORMANCE_NOT_FOUND));
         MemberEntity memberEntity = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
         MemberEntity managerEntity = memberRepository.findById(performanceEntity.getMember().getMemberId())
-                .orElseThrow(() -> new IllegalArgumentException("공연 관리자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
         // 채팅방 중복 확인
         Optional<ChatRoomEntity> existingChatRoom = chatRoomRepository.getChatRoomByPerformanceIdAndMemberId(
@@ -49,7 +46,9 @@ public class ChatServiceImpl implements ChatService {
         );
 
         if (existingChatRoom.isPresent()) {
-            throw new IllegalArgumentException("이미 해당 조건에 해당하는 채팅방이 존재합니다.");
+            ChatRoomEntity existingRoom = existingChatRoom.get();
+
+            return ChatRoomResponseDto.fromEntity(existingRoom, null, null);
         }
 
         // 새 채팅방 생성
@@ -68,9 +67,9 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatMessageResponseDto saveMessage(ChatMessageDto chatMessageDto) {
         ChatRoomEntity chatRoomEntity = chatRoomRepository.findById(chatMessageDto.getChatRoomId())
-                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.CHAT_ROOM_NOT_FOUND));
         MemberEntity senderEntity = memberRepository.findByName(chatMessageDto.getSenderName())
-                .orElseThrow(() -> new IllegalArgumentException("메시지 보낸 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.MEMBER_NOT_FOUND));
 
         ChatMessageEntity message = ChatMessageEntity.builder()
                 .chatRoomEntity(chatRoomEntity)
