@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/performances/queue")
+@RequestMapping("/api/v1/performances")
 @Slf4j
 public class PerformanceQueueController {
 
@@ -23,7 +23,7 @@ public class PerformanceQueueController {
     private PerformanceQueueService queueService;
 
    //대기열에 사용자 추가
-    @PostMapping("/enter")
+    @PostMapping("/queue")
     public ResponseEntity<ApiResponse<PerformanceQueueResponse>> enterQueue(@AuthenticationPrincipal UserDetails userDetails ,@RequestParam("performanceId") Long performanceId) {
 
 
