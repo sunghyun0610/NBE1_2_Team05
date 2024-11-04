@@ -20,6 +20,7 @@ public record PerformanceDetailResponse(
     String description,
     int maxAudience,
     String address,
+    String location,
     String imageUrl,
     int price,
     int remainingTickets,
@@ -44,6 +45,7 @@ public record PerformanceDetailResponse(
                 .description(performanceDetail.getDescription())
                 .maxAudience(performanceDetail.getMaxAudience())
                 .address(performanceDetail.getAddress())
+                .location(performanceDetail.getLocation())
                 .imageUrl(performanceDetail.getImageUrl())
                 .price(performanceDetail.getPrice())
                 .remainingTickets(performanceDetail.getRemainingTickets())

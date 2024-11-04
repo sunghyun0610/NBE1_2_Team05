@@ -314,6 +314,7 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                         qPerformanceEntity.description.as("description"),
                         qPerformanceEntity.maxAudience.as("maxAudience"),
                         qPerformanceEntity.address.as("address"),
+                        qPerformanceEntity.location.as("location"),
                         qPerformanceEntity.imageUrl.as("imageUrl"),
                         qPerformanceEntity.price.as("price"),
                         qPerformanceEntity.remainingTickets.as("remainingTickets"),
