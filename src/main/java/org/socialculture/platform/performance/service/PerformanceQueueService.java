@@ -36,7 +36,7 @@ public class PerformanceQueueService {
 
         Long currentQueueSize = redisTemplate.opsForZSet().zCard(queueKey);
         if (currentQueueSize != null && currentQueueSize >= MAX_QUEUE_SIZE) {
-            throw new GeneralException(ErrorStatus._NOT_ENOUGH_QUEUE);
+            throw new GeneralException(ErrorStatus.QUEUE_FULL);
         }
 
         long timestamp = System.currentTimeMillis();
@@ -87,7 +87,6 @@ public class PerformanceQueueService {
             List<String> processedUserEmails = processNextBatch(10, performanceId);
             if (!processedUserEmails.isEmpty()) {
                 log.info("공연 {}의 처리된 사용자들: {}", performanceId, processedUserEmails);
-                // 추가 처리가 필요한 경우(알림, 상태 업데이트 등)를 여기서 수행 가능
             }
         }
     }

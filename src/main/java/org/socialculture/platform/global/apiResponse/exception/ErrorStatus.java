@@ -74,7 +74,7 @@ public enum ErrorStatus implements BaseErrorCode{
     DB_LOCK_FAILURE(HttpStatus.CONFLICT, "DB_LOCK409", "DB 락을 획득하지 못했습니다. 다시 시도해 주세요."),
 
     //레디스 큐 관련
-    _NOT_ENOUGH_QUEUE(HttpStatus.BAD_REQUEST, "QUEUE401", "큐가 꽉 찼습니다."),
+    QUEUE_FULL(HttpStatus.BAD_REQUEST, "QUEUE401", "큐가 꽉 찼습니다."),
     USER_ADDITION_FAILED(HttpStatus.BAD_REQUEST, "QUEUE404", "사용자 추가에 실패하였습니다.");
 
 
