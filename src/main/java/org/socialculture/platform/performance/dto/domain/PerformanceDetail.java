@@ -18,6 +18,7 @@ public class PerformanceDetail {
     private String description;
     private Integer maxAudience;
     private String address;
+    private String location;
     private String imageUrl;
     private Integer price;
     private Integer remainingTickets;
@@ -30,7 +31,8 @@ public class PerformanceDetail {
 
     private PerformanceDetail() {}
     public PerformanceDetail(String memberName, Long performanceId, String title, LocalDateTime dateStartTime, LocalDateTime dateEndTime, String description,
-                      int maxAudience, String address, String imageUrl, int price, int remainingTickets, LocalDateTime startDate, PerformanceStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                      int maxAudience, String address, String location, String imageUrl, int price, int remainingTickets, LocalDateTime startDate,
+                             PerformanceStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.memberName = memberName;
         this.performanceId = performanceId;
         this.title = title;
@@ -39,6 +41,7 @@ public class PerformanceDetail {
         this.description = description;
         this.maxAudience = maxAudience;
         this.address = address;
+        this.location = location;
         this.imageUrl = imageUrl;
         this.price = price;
         this.remainingTickets = remainingTickets;
