@@ -19,13 +19,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/chats")
+@RequestMapping("/api/v1/chats/room")
 public class ChatController {
 
     private final ChatService chatService;
 
     // 새로운 채팅방 생성
-    @PostMapping("/room/{performanceId}")
+    @PostMapping("/{performanceId}")
     public ResponseEntity<ApiResponse<ChatRoomResponseDto>> createChatRoom(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long performanceId) {
@@ -33,7 +33,7 @@ public class ChatController {
     }
 
     // 채팅 메시지 전송
-    @PostMapping("/room/{chatRoomId}/message")
+    @PostMapping("/{chatRoomId}/message")
     public ResponseEntity<ApiResponse<ChatMessageResponseDto>> sendMessage(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long chatRoomId,
@@ -45,13 +45,13 @@ public class ChatController {
     }
 
     // 특정 채팅방의 메시지 목록 조회
-    @GetMapping("/room/{chatRoomId}/messages")
+    @GetMapping("/{chatRoomId}/messages")
     public ResponseEntity<ApiResponse<List<ChatMessageResponseDto>>> getMessages(@PathVariable Long chatRoomId) {
         return ApiResponse.onSuccess(chatService.getMessagesByChatRoom(chatRoomId));
     }
 
     // 사용자가 참여한 채팅방 목록 조회
-    @GetMapping("/room/my")
+    @GetMapping("/my")
     public ResponseEntity<ApiResponse<List<ChatRoomResponseDto>>> getChatRooms(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(name = "isManager", defaultValue = "false") boolean isManager) {
