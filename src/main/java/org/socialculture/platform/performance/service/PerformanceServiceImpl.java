@@ -91,24 +91,24 @@ public class PerformanceServiceImpl implements PerformanceService {
 
     @Override
     public PerformanceDetailResponse getPerformanceDetail(String email, Long performanceId) {
+        PerformanceEntity performance = performanceRepository.findById(performanceId).orElseThrow();
+
+        //선착순 쿠폰
+        List<CouponResponseDto> firstComeCouponDtos = couponRepository.findByPerformance(performance)
+                .stream()
+                .map(CouponResponseDto::fromEntity)
+                .toList();
+
+        PerformanceDetail performanceDetail = performanceRepository.getPerformanceDetail(performanceId)
+                .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
+
+        performanceDetail.updateFirstComeCoupons(firstComeCouponDtos);
+
         if (isAccessPerformance(email, performanceId)) {
-            //선착순 쿠폰
-            List<CouponResponseDto> firstComeCouponDtos = couponRepository.findByPerformance_PerformanceId(performanceId)
-                    .stream()
-                    .map(CouponResponseDto::fromEntity)
-                    .toList();
-
-            PerformanceDetail performanceDetail = performanceRepository.getPerformanceDetail(performanceId)
-                    .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
-
-            performanceDetail.updateFirstComeCoupons(firstComeCouponDtos);
-
             return PerformanceDetailResponse.from(true, performanceDetail);
         }
 
-        return performanceRepository.getPerformanceDetail(performanceId)
-                .map(performanceDetail -> PerformanceDetailResponse.from(false, performanceDetail))
-                .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
+        return PerformanceDetailResponse.from(false, performanceDetail);
     }
 
     // Todo : 사용자 이메일과 같은지 확인 절차 추가할 것
