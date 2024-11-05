@@ -400,7 +400,6 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 ))
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
-                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
                 .where(getContainsBooleanExpression(location, radius))
                 //.orderBy(getOrderSpecifiersByDistance(location))
                 .offset(pageable.getOffset())
@@ -415,7 +414,6 @@ public class PerformanceRepositoryCustomImpl implements PerformanceRepositoryCus
                 .select(qPerformanceEntity.count())
                 .from(qPerformanceEntity)
                 .leftJoin(qMember).on(qPerformanceEntity.member.eq(qMember))
-                .leftJoin(qPerformanceCategoryEntity).on(qPerformanceCategoryEntity.performance.eq(qPerformanceEntity))
                 .where(getContainsBooleanExpression(location, radius))
                 .fetchOne();
 
