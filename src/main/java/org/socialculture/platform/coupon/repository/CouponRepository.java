@@ -9,9 +9,10 @@ import java.util.List;
 
 /**
  * 쿠폰 레파지토리
- * 
+ *
  * @author ycjung
  */
 public interface CouponRepository extends JpaRepository<CouponEntity, Long>, CouponRepositoryCustom {
     List<CouponEntity> findByPerformance_PerformanceId(Long performanceId);
+    List<CouponEntity> findByPerformance(PerformanceEntity performanceEntity);
 }
