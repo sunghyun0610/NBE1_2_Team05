@@ -99,9 +99,6 @@ public class PerformanceServiceImpl implements PerformanceService {
                 .map(CouponResponseDto::fromEntity)
                 .toList();
 
-        System.out.println(firstComeCouponDtos);
-        System.out.println("test");
-
         PerformanceDetail performanceDetail = performanceRepository.getPerformanceDetail(performanceId)
                 .orElseThrow(() -> new GeneralException(PERFORMANCE_NOT_FOUND));
 
