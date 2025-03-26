@@ -15,13 +15,13 @@ spring:
       max-request-size: 50MB
 
   jpa:
-    #    show-sql: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
-    #        format_sql: true
+        format_sql: true
     database: mysql
-  #    hibernate:
-  #      ddl-auto: create
   kakao:
     client_id: ${KAKAO_CLIENT_ID}
     redirect_uri: ${KAKAO_REDIRECT_URI}
