@@ -55,6 +55,7 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
 
     /**
      * 5분마다 실시간 인기공연 갱신
+     * 사용자 요청 전에 미리 5분마다 상위 10개 공연을 캐싱하는 cache-warming 전략
      * 메인DB에서 공연정보 받아와서 redis에 캐싱
      */
     @Scheduled(fixedRate = SCHEDULER_TIME)
@@ -78,11 +79,12 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
     public PerformanceListResponse getPopularPerformances() {
         PerformanceListResponse performances = (PerformanceListResponse)
                 performanceListResponseRedisTemplate.opsForValue().get(PERFORMANCE_VIEW_CACHE_KEY);
-
+        //cache hit -> 그대로 리턴
         if (performances != null) {
             return performances;
         }
 
+        //캐시 Miss
         List<Long> performanceIds = getPopularPerformanceIds();
 
         if(!performanceIds.isEmpty()){
@@ -94,6 +96,7 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
     }
 
     // 상위 인기공연 10개의 performanceId 반환
+    //Zset에서 score 높은 순서대로 상위 10개의 performanceID를 조회
     private List<Long> getPopularPerformanceIds() {
         Set<ZSetOperations.TypedTuple<Long>> topPerformanceIds = longRedisTemplate.opsForZSet()
                 .reverseRangeWithScores(PERFORMANCE_VIEW_COUNT_KEY, 0, 9);
@@ -102,6 +105,7 @@ public class PerformanceViewCountServiceImpl implements PerformanceViewCountServ
             return topPerformanceIds.stream().map(ZSetOperations.TypedTuple::getValue)
                     .toList();
         }
+        //조회된 공연 없는 경우
         log.info("조회된 공연이 없습니다.");
         return Collections.emptyList();
     }
